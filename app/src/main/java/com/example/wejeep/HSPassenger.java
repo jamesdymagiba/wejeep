@@ -1,5 +1,20 @@
 package com.example.wejeep;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,21 +24,14 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.caverock.androidsvg.BuildConfig;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -34,9 +42,11 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
-import java.util.Locale;
+import android.graphics.drawable.Drawable;
+import androidx.core.content.ContextCompat;
 
 public class HSPassenger extends AppCompatActivity {
+
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     FirebaseAuth auth;
@@ -49,6 +59,8 @@ public class HSPassenger extends AppCompatActivity {
     private MapView mapView;
     private boolean isLocationEnabled = false;
     private Marker locationMarker;
+    private FusedLocationProviderClient fusedLocationClient;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +87,13 @@ public class HSPassenger extends AppCompatActivity {
                 int id = item.getItemId();
                 switch (id) {
                     case R.id.itmHomeHSP:
+                        Log.d("HSPassenger","Home clicked");
                         Toast.makeText(HSPassenger.this, "Home", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, HSPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.itmSignoutHSP:
+                        Log.d("HSPassenger","Signout clicked");
                         Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
@@ -122,14 +136,14 @@ public class HSPassenger extends AppCompatActivity {
         locationMarker = new Marker(mapView);
         locationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
-        // Check for location permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            enableMyLocation();
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        // Set custom icon for the marker
+        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.people);  // Replace `user_icon` with your drawable resource name
+        if (drawable != null) {
+            locationMarker.setIcon(drawable);
         }
+
+        // Initialize location services
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         // Set up the toggle button
         Button toggleLocationButton = findViewById(R.id.toggleLocationButton);
@@ -143,30 +157,82 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
+
+        // Check for location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            enableMyLocation();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+
+        // Set up location callback
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateLocationOnMap(location);
+                }
+            }
+        };
     }
 
     private void enableMyLocation() {
-        isLocationEnabled = true;
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            isLocationEnabled = true;
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setInterval(10000); // 10 seconds
+            locationRequest.setFastestInterval(5000); // 5 seconds
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        // Use a fixed location for demonstration purposes
-        GeoPoint startPoint = new GeoPoint(48.8583, 2.2944); // Example: Eiffel Tower
-        mapView.getController().setZoom(15.0);
-        mapView.getController().setCenter(startPoint);
+            if (locationCallback == null) {
+                Log.d("HSPassenger", "LocationCallback is null");
+                return;
+            }
 
-        // Add the marker to the map
-        locationMarker.setPosition(startPoint);
-        mapView.getOverlays().add(locationMarker);
-        mapView.invalidate();
+            try {
+                fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+            } catch (SecurityException e) {
+                Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
+                Log.d("HSPassenger", "SecurityException in enableMyLocation", e);
+            }
+        } else {
+            Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void disableMyLocation() {
         isLocationEnabled = false;
+        try {
+            fusedLocationClient.removeLocationUpdates(locationCallback);
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Failed to stop location updates", Toast.LENGTH_SHORT).show();
+        }
         mapView.getOverlays().remove(locationMarker);
+        mapView.invalidate();
+    }
+
+    private void updateLocationOnMap(Location location) {
+        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+        mapView.getController().setZoom(19.0);
+        mapView.getController().setCenter(geoPoint);
+
+        locationMarker.setPosition(geoPoint);
+        if (!mapView.getOverlays().contains(locationMarker)) {
+            mapView.getOverlays().add(locationMarker);
+        }
         mapView.invalidate();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);  // Call super method
+
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 enableMyLocation();
@@ -180,12 +246,18 @@ public class HSPassenger extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         mapView.onResume();
+        if (isLocationEnabled) {
+            enableMyLocation();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mapView.onPause();
+        if (isLocationEnabled) {
+            disableMyLocation();
+        }
     }
 
     @Override
