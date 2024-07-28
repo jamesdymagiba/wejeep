@@ -1,7 +1,5 @@
 package com.example.wejeep;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -48,6 +46,7 @@ import androidx.core.content.ContextCompat;
 public class HSPassenger extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final String TAG = "HSPassenger";
 
     FirebaseAuth auth;
     FirebaseUser user;
@@ -81,19 +80,22 @@ public class HSPassenger extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+        Log.d(TAG, "Drawer and toggle initialized");
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
+                Log.d(TAG, "Navigation item selected: " + id);
                 switch (id) {
                     case R.id.itmHomeHSP:
-                        Log.d("HSPassenger","Home clicked");
+                        Log.d("HSPassenger", "Home clicked");
                         Toast.makeText(HSPassenger.this, "Home", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, HSPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.itmSignoutHSP:
-                        Log.d("HSPassenger","Signout clicked");
+                        Log.d("HSPassenger", "Signout clicked");
                         Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
@@ -191,7 +193,7 @@ public class HSPassenger extends AppCompatActivity {
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             if (locationCallback == null) {
-                Log.d("HSPassenger", "LocationCallback is null");
+                Log.d(TAG, "LocationCallback is null");
                 return;
             }
 
@@ -199,7 +201,7 @@ public class HSPassenger extends AppCompatActivity {
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
             } catch (SecurityException e) {
                 Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
-                Log.d("HSPassenger", "SecurityException in enableMyLocation", e);
+                Log.d(TAG, "SecurityException in enableMyLocation", e);
             }
         } else {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
