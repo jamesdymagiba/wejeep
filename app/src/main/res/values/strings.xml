@@ -1,0 +1,24 @@
+<resources>
+    <string name="app_name">We Jeep</string>
+    <string name="contentDescriptionUseless">deco</string>
+    <string name="contentDescriptionAction">action button</string>
+    <string name="contentDescriptionContent">image with data</string>
+    <string name="contentDescriptionUserContent">image from an other user</string>
+    <string name="signup">Sign up</string>
+    <string name="login">Login</string>
+    <string name="we">We</string>
+    <string name="jeep">Jeep</string>
+    <string name="help">Help</string>
+    <string name="email">Email</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="or_login_with">Or Log in with</string>
+    <string name="or_sign_up_with">Or Sign up with</string>
+    <string name="google">Google</string>
+    <string name="signout">Sign out</string>
+    <string name="open">Open Navigation Drawer</string>
+    <string name="close">Close Navigation Drawer</string>
+    <string name="default_web_client_id">117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com</string>
+
+
+</resources>

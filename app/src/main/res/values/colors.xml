@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="sunColor">#FFA800</color>
+    <color name="backgroundColor">#F5FEFD</color>
+    <color name="blueTextColor">#0074FF</color>
+    <color name="orangeTextColor">#FE6F1F</color>
+    <color name="ellipseColor">#B56023</color>
+    <color name="gray">#808080</color>
+</resources>
