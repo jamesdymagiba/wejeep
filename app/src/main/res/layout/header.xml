@@ -4,6 +4,26 @@
     android:layout_height="match_parent"
     android:padding="20dp"
     android:background="@color/blueTextColor"
-    android:gravity="bottom">
+    android:gravity="bottom"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/ivProfilePictureHSP"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="left"
+        android:layout_marginBottom="10dp"
+        android:scaleType="centerCrop"
+        android:cropToPadding="true"
+        android:background="@drawable/circular_background" />
+
+    <TextView
+        android:id="@+id/tvNameHSP"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="left"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@android:color/white"
+        android:textSize="18sp" />
 
 </LinearLayout>
