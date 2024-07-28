@@ -50,12 +50,12 @@
 
         <Button
             android:id="@+id/toggleLocationButton"
-            android:layout_width="266dp"
-            android:layout_height="41dp"
+            android:layout_width="265dp"
+            android:layout_height="57dp"
             android:layout_marginBottom="45dp"
             android:background="@drawable/round_btn_blue"
             android:fontFamily="@font/londrina_solid_regular"
-            android:text="Toggle Location"
+            android:text="@string/toggle_location"
             android:textSize="20sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

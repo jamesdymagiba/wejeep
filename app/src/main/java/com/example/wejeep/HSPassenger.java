@@ -34,14 +34,12 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.osmdroid.api.IGeoPoint;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 
 import android.graphics.drawable.Drawable;
-import androidx.core.content.ContextCompat;
 
 public class HSPassenger extends AppCompatActivity {
 
@@ -82,6 +80,7 @@ public class HSPassenger extends AppCompatActivity {
 
         Log.d(TAG, "Drawer and toggle initialized");
 
+        // Set NavigationItemSelectedListener
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -106,6 +105,8 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
+
+        Log.d(TAG, "NavigationView listener set");
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -156,18 +157,10 @@ public class HSPassenger extends AppCompatActivity {
                     disableMyLocation();
                 } else {
                     enableMyLocation();
+                    Log.d("HSpassenger","toggle clicked");
                 }
             }
         });
-
-        // Check for location permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            enableMyLocation();
-        } else {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
 
         // Set up location callback
         locationCallback = new LocationCallback() {
@@ -181,11 +174,25 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         };
+
+        // Check for location permissions
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+            enableMyLocation();
+        } else {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
     }
 
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+                == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
             isLocationEnabled = true;
             LocationRequest locationRequest = LocationRequest.create();
             locationRequest.setInterval(10000); // 10 seconds
@@ -236,7 +243,7 @@ public class HSPassenger extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);  // Call super method
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                 enableMyLocation();
             } else {
                 Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
@@ -267,4 +274,5 @@ public class HSPassenger extends AppCompatActivity {
         super.onDestroy();
         mapView.onDetach();
     }
+
 }

@@ -19,6 +19,7 @@
     <string name="open">Open Navigation Drawer</string>
     <string name="close">Close Navigation Drawer</string>
     <string name="default_web_client_id">117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com</string>
+    <string name="toggle_location">Toggle Location</string>
 
 
 </resources>
