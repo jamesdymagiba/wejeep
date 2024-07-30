@@ -46,13 +46,12 @@ public class HSPassenger extends AppCompatActivity {
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     private static final String TAG = "HSPassenger";
 
-    FirebaseAuth auth;
-    FirebaseUser user;
+    private FirebaseAuth auth;
+    private FirebaseUser user;
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-
     private MapView mapView;
     private boolean isLocationEnabled = false;
     private Marker locationMarker;
@@ -62,10 +61,6 @@ public class HSPassenger extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Configure the osmDroid library
-        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
-
         setContentView(R.layout.activity_hspassenger);
 
         // Initialize Toolbar
@@ -77,24 +72,17 @@ public class HSPassenger extends AppCompatActivity {
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
-        Log.d(TAG, "Drawer and toggle initialized");
-
-        // Set NavigationItemSelectedListener
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-                Log.d(TAG, "Navigation item selected: " + id);
                 switch (id) {
                     case R.id.itmHomeHSP:
-                        Log.d("HSPassenger", "Home clicked");
                         Toast.makeText(HSPassenger.this, "Home", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, HSPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     case R.id.itmSignoutHSP:
-                        Log.d("HSPassenger", "Signout clicked");
                         Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
@@ -105,9 +93,6 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
-
-        Log.d(TAG, "NavigationView listener set");
-
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -130,7 +115,8 @@ public class HSPassenger extends AppCompatActivity {
                         .into(ivProfilePictureHSP);
             }
         }
-
+        // Configure the osmDroid library
+        Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         // Initialize the Map
         mapView = findViewById(R.id.map);
         mapView.setMultiTouchControls(true);
@@ -140,28 +126,10 @@ public class HSPassenger extends AppCompatActivity {
         locationMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
         // Set custom icon for the marker
-        Drawable drawable = ContextCompat.getDrawable(this, R.drawable.people);  // Replace `user_icon` with your drawable resource name
-        if (drawable != null) {
-            locationMarker.setIcon(drawable);
-        }
+        locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
 
         // Initialize location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-        // Set up the toggle button
-        Button toggleLocationButton = findViewById(R.id.toggleLocationButton);
-        toggleLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isLocationEnabled) {
-                    disableMyLocation();
-                } else {
-                    enableMyLocation();
-                    Log.d("HSpassenger","toggle clicked");
-                }
-            }
-        });
-
         // Set up location callback
         locationCallback = new LocationCallback() {
             @Override
@@ -174,6 +142,20 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         };
+        // Set up the toggle button
+        Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+        toggleLocationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isLocationEnabled) {
+                    disableMyLocation();
+                } else {
+                    enableMyLocation();
+                }
+            }
+        });
+
+
 
         // Check for location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
