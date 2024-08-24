@@ -191,7 +191,14 @@ public class HSPassenger extends AppCompatActivity {
             } catch (SecurityException e) {
                 Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "SecurityException in enableMyLocation", e);
+
+
             }
+
+            Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+            toggleLocationButton.setText("Location is On");
+            toggleLocationButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blueTextColor));
+
         } else {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
         }
@@ -206,6 +213,10 @@ public class HSPassenger extends AppCompatActivity {
         }
         mapView.getOverlays().remove(locationMarker);
         mapView.invalidate();
+
+        Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+        toggleLocationButton.setText("Location is Off");
+        toggleLocationButton.setBackgroundColor(ContextCompat.getColor(this, R.color.orangeTextColor));
     }
 
     private void updateLocationOnMap(Location location) {
