@@ -15,6 +15,7 @@ import android.media.Image;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,13 +34,21 @@ public class PPassenger extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    Button btnEditProfilePP;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_ppassenger);
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
 
+        btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
+
+        btnEditProfilePP.setOnClickListener(view -> {
+            startActivity(new Intent(PPassenger.this, EPPassenger.class));
+        });
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);

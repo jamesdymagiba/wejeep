@@ -25,6 +25,8 @@
     <string name="activeMJeeps">Active Modern Jeeps</string>
     <string name="editProfile">Edit Profile</string>
     <string name="hello">Hello,</string>
+    <string name="apply_changes">Apply Changes</string>
+    <string name="back">Back</string>
 
 
 </resources>

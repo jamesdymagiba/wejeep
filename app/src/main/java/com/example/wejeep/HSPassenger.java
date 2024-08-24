@@ -271,7 +271,7 @@ public class HSPassenger extends AppCompatActivity {
                                 // Create a marker for other users' locations
                                 Marker otherUserMarker = new Marker(mapView);
                                 otherUserMarker.setPosition(geoPoint);
-                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.mjeep));
+                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
                                 otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
 
                                 // Add the marker to the map

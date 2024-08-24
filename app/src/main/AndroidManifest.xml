@@ -17,6 +17,9 @@
         android:theme="@style/Theme.WeJeep"
         tools:targetApi="31">
         <activity
+            android:name=".EPPassenger"
+            android:exported="false" />
+        <activity
             android:name=".PPassenger"
             android:exported="false" />
         <activity
