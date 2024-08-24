@@ -24,6 +24,7 @@
     <string name="home">Home</string>
     <string name="activeMJeeps">Active Modern Jeeps</string>
     <string name="editProfile">Edit Profile</string>
+    <string name="hello">Hello,</string>
 
 
 </resources>

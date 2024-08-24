@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +24,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import org.w3c.dom.Text;
 
 public class PPassenger extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -82,10 +85,21 @@ public class PPassenger extends AppCompatActivity {
         } else {
             // User is logged in, update UI with user information
             View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
 
+            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
+            ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+
+            Glide.with(this)
+                    .load(user.getPhotoUrl())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(ivProfilePicturePP);
+
+            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
+            TextView tvNamePP = findViewById(R.id.tvNamePP);
+
+            tvNamePP.setText(user.getDisplayName());
             tvNameHSP.setText(user.getDisplayName());
+
             if (user.getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(user.getPhotoUrl())
