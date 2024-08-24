@@ -1,10 +1,15 @@
 package com.example.wejeep;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,13 +38,19 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.Overlay;
 
 import android.graphics.drawable.Drawable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class HSPassenger extends AppCompatActivity {
 
@@ -57,21 +68,27 @@ public class HSPassenger extends AppCompatActivity {
     private Marker locationMarker;
     private FusedLocationProviderClient fusedLocationClient;
     private LocationCallback locationCallback;
+    private Handler locationTimerHandler;
+    private Runnable locationTimerRunnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
 
-        // Initialize Toolbar
+        locationTimerHandler = new Handler(Looper.getMainLooper());
+
         Toolbar toolbar = findViewById(R.id.toolbarHSP);
-        setSupportActionBar(toolbar);
+
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+        Drawable drawable = drawerToggle.getDrawerArrowDrawable();
+        drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -87,6 +104,11 @@ public class HSPassenger extends AppCompatActivity {
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
                         finish();
+                        return true;
+                    case R.id.itmProfileHSP:
+                        Toast.makeText(HSPassenger.this, "Profile", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this, PPassenger.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     default:
                         return false;
@@ -139,6 +161,7 @@ public class HSPassenger extends AppCompatActivity {
                 }
                 for (Location location : locationResult.getLocations()) {
                     updateLocationOnMap(location);
+                    updateLocationInFirestore(location);
                 }
             }
         };
@@ -163,6 +186,7 @@ public class HSPassenger extends AppCompatActivity {
                 ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION)
                         == PackageManager.PERMISSION_GRANTED) {
             enableMyLocation();
+            listenToOtherUsersLocations();
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
@@ -191,14 +215,13 @@ public class HSPassenger extends AppCompatActivity {
             } catch (SecurityException e) {
                 Toast.makeText(this, "Location permission not granted", Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "SecurityException in enableMyLocation", e);
-
-
             }
-
             Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
             toggleLocationButton.setText("Location is On");
-            toggleLocationButton.setBackgroundColor(ContextCompat.getColor(this, R.color.blueTextColor));
+            toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
 
+            startLocationTimer();
+            Toast.makeText(this, "Location will be turned off automatically after 5 minutes", Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
         }
@@ -216,7 +239,50 @@ public class HSPassenger extends AppCompatActivity {
 
         Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
         toggleLocationButton.setText("Location is Off");
-        toggleLocationButton.setBackgroundColor(ContextCompat.getColor(this, R.color.orangeTextColor));
+        toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+
+        cancelLocationTimer();
+    }
+    private void listenToOtherUsersLocations() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("locations")
+                .addSnapshotListener((queryDocumentSnapshots, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
+
+                    // CLear other user's markers
+                    for (int i = mapView.getOverlays().size() - 1; i >= 0; i--) {
+                        Overlay overlay = mapView.getOverlays().get(i);
+                        if (overlay instanceof Marker && overlay != locationMarker) {
+                            mapView.getOverlays().remove(overlay);
+                        }
+                    }
+
+                    for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        if (!document.getId().equals(user.getUid())) { // Skip the current user's location
+                            Double latitude = document.getDouble("latitude");
+                            Double longitude = document.getDouble("longitude");
+
+                            if (latitude != null && longitude != null) {
+                                GeoPoint geoPoint = new GeoPoint(latitude, longitude);
+
+                                // Create a marker for other users' locations
+                                Marker otherUserMarker = new Marker(mapView);
+                                otherUserMarker.setPosition(geoPoint);
+                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.mjeep));
+                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+                                // Add the marker to the map
+                                mapView.getOverlays().add(otherUserMarker);
+                            } else {
+                                Log.w(TAG, "Latitude or Longitude is null for document: " + document.getId());
+                            }
+                        }
+                    }
+                    mapView.invalidate();
+                });
     }
 
     private void updateLocationOnMap(Location location) {
@@ -231,6 +297,21 @@ public class HSPassenger extends AppCompatActivity {
         mapView.invalidate();
     }
 
+    private void updateLocationInFirestore(Location location) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+
+        Map<String, Object> locationData = new HashMap<>();
+        locationData.put("latitude", location.getLatitude());
+        locationData.put("longitude", location.getLongitude());
+        locationData.put("timestamp", System.currentTimeMillis());
+
+        db.collection("locations").document(userId)
+                .set(locationData)
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);  // Call super method
@@ -243,14 +324,29 @@ public class HSPassenger extends AppCompatActivity {
             }
         }
     }
+    private void startLocationTimer() {
+        locationTimerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Automatically disable location after 5 minutes
+                disableMyLocation();
+                Toast.makeText(HSPassenger.this, "Location turned off", Toast.LENGTH_SHORT).show();
+            }
+        };
+        locationTimerHandler.postDelayed(locationTimerRunnable, 300000);
+    }
+
+    private void cancelLocationTimer() {
+        if (locationTimerHandler != null && locationTimerRunnable != null) {
+            locationTimerHandler.removeCallbacks(locationTimerRunnable);
+        }
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
-        if (isLocationEnabled) {
-            enableMyLocation();
-        }
     }
 
     @Override
@@ -265,6 +361,7 @@ public class HSPassenger extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        cancelLocationTimer();
         mapView.onDetach();
     }
 

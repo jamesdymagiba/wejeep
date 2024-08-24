@@ -11,28 +11,9 @@
         android:orientation="vertical">
 
         <include
-            android:id="@+id/toolbarHSP"
+            android:id="@+id/toolbarPP"
             layout="@layout/custom_toolbar" />
 
-
-        <org.osmdroid.views.MapView
-            android:id="@+id/map"
-            android:layout_width="300dp"
-            android:layout_height="500dp"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center"/>
-
-        <Button
-            android:id="@+id/btnToggleLocationHSP"
-            android:layout_width="265dp"
-            android:layout_height="57dp"
-            android:layout_marginTop="45dp"
-            android:background="@drawable/round_btn_blue"
-            android:fontFamily="@font/londrina_solid_regular"
-            android:text="@string/toggle_location"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:layout_gravity="center"/>
 
     </LinearLayout>
 
