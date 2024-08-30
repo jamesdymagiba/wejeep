@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminEditRouteScreen">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blueTextColor"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/imgview_2"
+        android:layout_width="370dp"
+        android:layout_height="370dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_2"
+        app:layout_constraintVertical_bias="0.295"
+        app:srcCompat="@drawable/rectangle_white_bg"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/edit_route"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_2"
+        app:layout_constraintEnd_toEndOf="@+id/toolbar_2"
+        app:layout_constraintStart_toStartOf="@+id/toolbar_2"
+        app:layout_constraintTop_toTopOf="@+id/toolbar_2" />
+
+    <Button
+        android:id="@+id/btn_3"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/confirm"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.615"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/from"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintHorizontal_bias="0.134"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.108" />
+
+    <TextView
+        android:id="@+id/textView25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to"
+        android:textColor="@color/black"
+        android:fontFamily="@font/londrina_solid_regular"
+        app:layout_constraintBottom_toTopOf="@+id/et_4"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintHorizontal_bias="0.134"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.889" />
+
+    <EditText
+        android:id="@+id/et_3"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/muzon_central"
+        android:textAlignment="center"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintHorizontal_bias="0.468"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.233"
+        android:importantForAutofill="no" />
+
+    <EditText
+        android:id="@+id/et_4"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/san_jose"
+        android:textAlignment="center"
+        android:inputType="text"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.806"
+        android:importantForAutofill="no" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

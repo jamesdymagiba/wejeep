@@ -27,6 +27,40 @@
     <string name="hello">Hello,</string>
     <string name="apply_changes">Apply Changes</string>
     <string name="back">Back</string>
+    <string name="manage_route">Manage Route</string>
+    <string name="route_info">Route Info</string>
+    <string name="add_route">Add Route</string>
+    <string name="to">To</string>
+    <string name="where">where</string>
+    <string name="confirm">Confirm</string>
+    <string name="edit_route">Edit Route</string>
+    <string name="from">From</string>
+    <string name="san_jose">San Jose</string>
+    <string name="muzon_central">Muzon Central</string>
+    <string name="unit_info">Unit Info</string>
+    <string name="add_unit">Add Unit</string>
+    <string name="manage_unit">Manage Unit</string>
+    <string name="vehicle_model">Vehicle Model:</string>
+    <string name="plate_no">Plate No.</string>
+    <string name="date_added">Date Added</string>
+    <string name="hd505">HD505</string>
+    <string name="abc_123">ABC 123</string>
+    <string name="edit_unit">Edit Unit</string>
+    <string name="unit_no">Unit No. :</string>
+    <string name="_01">01</string>
+    <string name="schedule_info">Schedule Info</string>
+    <string name="manage_schedule">Manage Schedule</string>
+    <string name="add_schedule">Add Schedule</string>
+    <string name="from_day">From Day:</string>
+    <string name="to_day">To Day:</string>
+    <string name="from_time">From Time:</string>
+    <string name="to_time">To Time:</string>
+    <string name="edit_schedule">Edit Schedule</string>
+    <string name="select_date">Select Date</string>
+    <string name="active_unit_info">Active Unit Info</string>
+    <string name="manage_active_unit_list_s">Manage Active Unit List/s</string>
+    <string name="assign_unit">Assign Unit</string>
+    <string name="edit_assigned_unit">Edit Assigned Unit</string>
 
 
 </resources>

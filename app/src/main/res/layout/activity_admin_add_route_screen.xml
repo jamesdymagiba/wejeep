@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminAddRouteScreen">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blueTextColor"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="4dp"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/add_route"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.452"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.705"
+        tools:ignore="MissingConstraints" />
+
+
+    <Button
+        android:id="@+id/btn_2"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/confirm"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgview_2"
+        tools:ignore="MissingConstraints" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/imgview_2"
+        android:layout_width="370dp"
+        android:layout_height="370dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.39"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_2"
+        app:layout_constraintVertical_bias="0.299"
+        app:srcCompat="@drawable/rectangle_white_bg"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/from"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintHorizontal_bias="0.204"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.141"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/textView23"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/to"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintHorizontal_bias="0.195"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.535" />
+
+    <EditText
+        android:id="@+id/et_1"
+        android:layout_width="230sp"
+        android:layout_height="48sp"
+        android:background="@drawable/rounded_edit_text"
+        android:inputType="text"
+        android:hint="@string/where"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.263"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+    <EditText
+        android:id="@+id/et_2"
+        android:layout_width="230sp"
+        android:layout_height="48sp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="@string/where"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_2"
+        app:layout_constraintStart_toStartOf="@+id/imgview_2"
+        app:layout_constraintTop_toTopOf="@+id/imgview_2"
+        app:layout_constraintVertical_bias="0.68"
+        android:importantForAutofill="no"
+        tools:ignore="LabelFor" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

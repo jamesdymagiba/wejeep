@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminAddScheduleScreen">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blueTextColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView28"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add Schedule"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/imgview_1"
+        android:layout_width="370dp"
+        android:layout_height="370dp"
+        android:layout_marginBottom="144dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.491"
+        app:srcCompat="@drawable/rectangle_white_bg"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView29"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/from_day"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/editTextText2"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <TextView
+        android:id="@+id/textView30"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_day"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.276" />
+
+    <TextView
+        android:id="@+id/textView31"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/from_time"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.524" />
+
+    <TextView
+        android:id="@+id/textView32"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/to_time"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.757" />
+
+    <EditText
+        android:id="@+id/editTextText2"
+        android:layout_width="wrap_content"
+        android:layout_height="48sp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="Monday"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.111" />
+
+    <EditText
+        android:id="@+id/editTextText3"
+        android:layout_width="wrap_content"
+        android:layout_height="48sp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="Tuesday"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.388" />
+
+    <EditText
+        android:id="@+id/editTextText4"
+        android:layout_width="wrap_content"
+        android:layout_height="48sp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="7 AM"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.645" />
+
+    <EditText
+        android:id="@+id/editTextText5"
+        android:layout_width="wrap_content"
+        android:layout_height="48sp"
+        android:ems="10"
+        android:inputType="text"
+        android:hint="7 PM"
+        android:textAlignment="center"
+        android:background="@drawable/rounded_edit_text"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.91" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/confirm"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.639" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
