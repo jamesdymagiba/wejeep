@@ -59,7 +59,6 @@ public class HSPassenger extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseUser user;
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
