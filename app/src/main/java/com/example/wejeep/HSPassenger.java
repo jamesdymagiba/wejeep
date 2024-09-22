@@ -433,7 +433,6 @@ public class HSPassenger extends AppCompatActivity {
             menu.setGroupVisible(R.id.passenger, true);
             menu.setGroupVisible(R.id.pao, true);
         } else if ("admin".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
             menu.setGroupVisible(R.id.pao, true);
             menu.setGroupVisible(R.id.admin, true);
         }
