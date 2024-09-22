@@ -109,6 +109,7 @@ public class HSPassenger extends AppCompatActivity {
                         return true;
                     case R.id.itmSignoutHSP:
                         Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
+                        removeUserLocationFromFirestore();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
                         finish();
@@ -251,8 +252,16 @@ public class HSPassenger extends AppCompatActivity {
         toggleLocationButton.setText("Location is Off");
         toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
 
+        // Remove user's location from Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+        db.collection("locations").document(userId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed from Firestore"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing location", e));
+
         cancelLocationTimer();
     }
+
     private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
@@ -373,7 +382,16 @@ public class HSPassenger extends AppCompatActivity {
         super.onDestroy();
         cancelLocationTimer();
         mapView.onDetach();
+        removeUserLocationFromFirestore();
     }
+    private void removeUserLocationFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+        db.collection("locations").document(userId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed on sign out"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing location on sign out", e));
+    }
+
     private void fetchUserRole() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
