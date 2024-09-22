@@ -123,6 +123,7 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -144,6 +145,7 @@ public class HSPassenger extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
+            fetchUserRole();
         }
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
@@ -372,5 +374,39 @@ public class HSPassenger extends AppCompatActivity {
         cancelLocationTimer();
         mapView.onDetach();
     }
+    private void fetchUserRole() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String userRole = documentSnapshot.getString("role");
+                        setMenuVisibility(userRole);
+                    }
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
+    }
+    private void setMenuVisibility(String userRole) {
+        Menu menu = navigationView.getMenu();
+
+        // Hide all groups first
+        menu.setGroupVisible(R.id.passenger, false);
+        menu.setGroupVisible(R.id.pao, false);
+        menu.setGroupVisible(R.id.admin, false);
+
+        // Show the relevant group based on the user's role
+        if ("passenger".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+        } else if ("pao".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+        } else if ("admin".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+            menu.setGroupVisible(R.id.admin, true);
+        }
+    }
+
 
 }

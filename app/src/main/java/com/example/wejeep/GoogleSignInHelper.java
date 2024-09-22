@@ -82,14 +82,28 @@ public class GoogleSignInHelper {
         String email = user.getEmail();
         String name = user.getDisplayName();
         String profilePicture = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : "";
-        String role = "passenger";
 
-        User userInfo = new User(email, name, profilePicture, role);
+        // Check if user already exists in Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(userId).set(userInfo)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "User profile successfully written!"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error writing user profile", e));
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (!task.getResult().exists()) {
+                    // User doesn't exist, create a new one with role "passenger"
+                    String role = "passenger";
+                    User userInfo = new User(email, name, profilePicture, role);
+                    db.collection("users").document(userId).set(userInfo)
+                            .addOnSuccessListener(aVoid -> Log.d(TAG, "User profile successfully written!"))
+                            .addOnFailureListener(e -> Log.w(TAG, "Error writing user profile", e));
+                } else {
+                    // User already exists
+                    Log.d(TAG, "User already exists, not overwriting.");
+                }
+            } else {
+                Log.w(TAG, "Error checking if user exists", task.getException());
+            }
+        });
     }
+
     public interface SignInCallback {
         void onSignInSuccess(FirebaseUser user);
         void onSignInFailure(Exception e);

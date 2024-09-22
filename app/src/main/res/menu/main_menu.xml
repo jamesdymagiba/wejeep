@@ -37,8 +37,7 @@
         android:id="@+id/admin">
         <item
             android:title="Admin"
-            android:icon="@drawable/admin_icon"
- />
+            android:icon="@drawable/admin_icon" />
         <item
             android:id="@+id/itmManageDriverHSP"
             android:icon="@drawable/managedriver_icon"
