@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/passenger">
         <item
             android:id="@+id/itmHomeHSP"
             android:icon="@drawable/home_logo"
@@ -18,6 +20,29 @@
             android:id="@+id/itmSignoutHSP"
             android:icon="@drawable/logout"
             android:title="Sign out" />
+    </group>
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/pao">
+        <item
+            android:title="Pao"
+            android:icon="@drawable/pao_icon"/>
+        <item
+            android:id="@+id/itmScheduleHSP"
+            android:icon="@drawable/schedule_icon"
+            android:title="Schedule" />
+    </group>
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/admin">
+        <item
+            android:title="Admin"
+            android:icon="@drawable/admin_icon"
+ />
+        <item
+            android:id="@+id/itmManageDriverHSP"
+            android:icon="@drawable/managedriver_icon"
+            android:title="Manage Driver" />
     </group>
 
 </menu>
