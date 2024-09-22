@@ -153,6 +153,7 @@ public class HSPassenger extends AppCompatActivity {
         // Initialize the Map
         mapView = findViewById(R.id.map);
         mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(19.0);
 
         // Initialize the marker
         locationMarker = new Marker(mapView);
@@ -212,8 +213,8 @@ public class HSPassenger extends AppCompatActivity {
                         == PackageManager.PERMISSION_GRANTED) {
             isLocationEnabled = true;
             LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setInterval(10000); // 10 seconds
-            locationRequest.setFastestInterval(5000); // 5 seconds
+            locationRequest.setInterval(1000); // 1 second
+            locationRequest.setFastestInterval(500); // 0.5 seconds
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             if (locationCallback == null) {
@@ -304,16 +305,28 @@ public class HSPassenger extends AppCompatActivity {
                 });
     }
 
+    private GeoPoint initialCenterPoint = null; // Store the initial center point
+
     private void updateLocationOnMap(Location location) {
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-        mapView.getController().setZoom(19.0);
-        mapView.getController().setCenter(geoPoint);
+
+        // Center the map only once
+        if (initialCenterPoint == null) {
+            initialCenterPoint = geoPoint;
+            centerMapOnUserLocation(initialCenterPoint);
+        }
 
         locationMarker.setPosition(geoPoint);
+
         if (!mapView.getOverlays().contains(locationMarker)) {
             mapView.getOverlays().add(locationMarker);
         }
         mapView.invalidate();
+    }
+
+    private void centerMapOnUserLocation(GeoPoint geoPoint) {
+        mapView.getController().setCenter(geoPoint);
+        mapView.getController().setZoom(19.0); // Set your desired zoom level
     }
 
     private void updateLocationInFirestore(Location location) {
