@@ -1,3 +1,5 @@
+package com.example.wejeep;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -5,7 +7,6 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.wejeep.R;
 
 import java.util.List;
 
@@ -47,3 +48,4 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
         }
     }
 }
+

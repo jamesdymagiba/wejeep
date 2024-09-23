@@ -31,7 +31,6 @@ public class AdminManageDriver extends AppCompatActivity {
         setContentView(R.layout.activity_admin_manage_driver);
 
         Toolbar toolbar = findViewById(R.id.toolbarAdminManageDriver);
-        setSupportActionBar(toolbar);
 
         btnAddDriver = findViewById(R.id.btnAddDriver);
         btnAddDriver.setOnClickListener(view -> {
@@ -87,21 +86,10 @@ public class AdminManageDriver extends AppCompatActivity {
         } else {
             // User is logged in, update UI with user information
             View headerView = navigationView.getHeaderView(0);
-
             ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
-
-            Glide.with(this)
-                    .load(user.getPhotoUrl())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(ivProfilePicturePP);
-
             TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-            TextView tvNamePP = findViewById(R.id.tvNamePP);
 
-            tvNamePP.setText(user.getDisplayName());
             tvNameHSP.setText(user.getDisplayName());
-
             if (user.getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(user.getPhotoUrl())

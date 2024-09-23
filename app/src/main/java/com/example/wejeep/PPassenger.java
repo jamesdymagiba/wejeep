@@ -38,8 +38,6 @@ public class PPassenger extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_ppassenger);
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
@@ -120,6 +118,7 @@ public class PPassenger extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
+
         }
     }
 }
