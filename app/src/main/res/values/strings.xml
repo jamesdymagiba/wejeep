@@ -31,6 +31,7 @@
     <string name="drivercontactnumber">Contact Number:</string>
     <string name="driverdateadded">Date Added:</string>
     <string name="add_driver">Add Driver</string>
+    <string name="manage_driver">Manage Driver</string>
 
 
 </resources>

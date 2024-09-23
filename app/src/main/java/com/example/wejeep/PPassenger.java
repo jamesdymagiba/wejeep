@@ -78,6 +78,11 @@ public class PPassenger extends AppCompatActivity {
                         startActivity(new Intent(PPassenger.this, PPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmManageDriverHSP:
+                        Toast.makeText(PPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(PPassenger.this, AdminManageDriver.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }

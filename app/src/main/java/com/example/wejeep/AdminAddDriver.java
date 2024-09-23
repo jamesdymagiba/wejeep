@@ -23,7 +23,7 @@ public class AdminAddDriver extends AppCompatActivity {
         btnBack = findViewById(R.id.btnBack);
 
         btnBack.setOnClickListener(view -> {
-            startActivity(new Intent(AdminAddDriver.this, AdminAddDriver.class));
+            startActivity(new Intent(AdminAddDriver.this, AdminManageDriver.class));
         });
 
         etDateAdded = findViewById(R.id.etdriverdateadded);
