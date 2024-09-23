@@ -27,6 +27,10 @@
     <string name="hello">Hello,</string>
     <string name="apply_changes">Apply Changes</string>
     <string name="back">Back</string>
+    <string name="drivername">Name:</string>
+    <string name="drivercontactnumber">Contact Number:</string>
+    <string name="driverdateadded">Date Added:</string>
+    <string name="add_driver">Add Driver</string>
 
 
 </resources>

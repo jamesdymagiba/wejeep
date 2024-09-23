@@ -19,7 +19,7 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
 
     @Override
     public DriverViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.ac, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.driver_card_view, parent, false);
         return new DriverViewHolder(view);
     }
 
