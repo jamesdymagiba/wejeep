@@ -75,13 +75,13 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
                     .addOnSuccessListener(aVoid -> {
                         driverList.remove(position);
                         notifyItemRemoved(position);
-                        Toast.makeText(context, "Driver deleted", Toast.LENGTH_SHORT).show(); // Use context here
+                        Toast.makeText(context, "Driver deleted", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Error deleting driver", Toast.LENGTH_SHORT).show(); // Use context here
+                        Toast.makeText(context, "Error deleting driver", Toast.LENGTH_SHORT).show();
                     });
         } else {
-            Toast.makeText(context, "Driver ID is null", Toast.LENGTH_SHORT).show(); // Use context here
+            Toast.makeText(context, "Driver ID is null", Toast.LENGTH_SHORT).show();
         }
     }
 }
