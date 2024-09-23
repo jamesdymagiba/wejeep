@@ -17,6 +17,15 @@
         android:theme="@style/Theme.WeJeep"
         tools:targetApi="31">
         <activity
+            android:name=".DriverCardView"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageDriverCardView"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageDriver"
+            android:exported="false" />
+        <activity
             android:name=".EPPassenger"
             android:exported="false" />
         <activity
