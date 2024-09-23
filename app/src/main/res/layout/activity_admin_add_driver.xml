@@ -11,7 +11,7 @@
         android:id="@+id/toolbarAdminAdd"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="68dp"
+        android:layout_marginBottom="69dp"
         android:background="@color/blueTextColor"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintBottom_toTopOf="@+id/textView9"
@@ -32,11 +32,12 @@
     </androidx.appcompat.widget.Toolbar>
 
     <TextView
+
         android:id="@+id/textView9"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="35dp"
-        android:layout_marginBottom="12dp"
+        android:layout_marginBottom="11dp"
         android:fontFamily="@font/londrina_solid_regular"
         android:text="@string/drivername"
         android:textColor="@color/black"

@@ -14,15 +14,22 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.util.ArrayList;
 
 public class AdminManageDriver extends AppCompatActivity {
     private DrawerLayout drawerLayout;
+    private RecyclerView recyclerView;
+    private ArrayList<DriverModel> driverList;
+    private DriverAdapter driverAdapter;
     Button btnAddDriver;
 
     @Override
@@ -38,11 +45,22 @@ public class AdminManageDriver extends AppCompatActivity {
             startActivity(intent);
         });
 
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.item_driver);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        driverList = new ArrayList<>();
+        driverAdapter = new DriverAdapter(driverList);
+        recyclerView.setAdapter(driverAdapter);
+
+        //Initialize Drawer for menu
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+        // Fetch data from Firestore and populate the RecyclerView
+        fetchDriversFromFirestore();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -97,6 +115,22 @@ public class AdminManageDriver extends AppCompatActivity {
                         .into(ivProfilePictureHSP);
             }
         }
+    }
+    // Method to fetch driver data from Firestore
+    private void fetchDriversFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("drivers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (QueryDocumentSnapshot document : task.getResult()) {
+                    DriverModel driver = document.toObject(DriverModel.class);
+                    driver.setDocumentId(document.getId()); // Set the document ID
+                    driverList.add(driver);
+                }
+                driverAdapter.notifyDataSetChanged(); // Update the RecyclerView with data
+            } else {
+                Toast.makeText(AdminManageDriver.this, "Error getting drivers.", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

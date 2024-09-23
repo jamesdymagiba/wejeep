@@ -35,6 +35,7 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
+                    android:id="@+id/tvDriverName"
                     android:hint="Name Here"
                     android:textColor="@color/black"
                     android:textSize="16sp"
@@ -51,7 +52,6 @@
 
                 <TextView
                     android:text="@string/drivercontactnumber"
-                    android:id="@+id/tvDriverName"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:fontFamily="@font/londrina_solid_regular"
