@@ -39,8 +39,12 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), AdminEditDriver.class);
             intent.putExtra("documentId", driver.getDocumentId()); // Pass the document ID
-            holder.itemView.getContext().startActivity(intent);
+            intent.putExtra("driverName", driver.getName()); // Pass driver's name
+            intent.putExtra("driverContact", driver.getContact()); // Pass driver's contact
+            intent.putExtra("dateAdded", driver.getDateAdded()); // Pass date added
+            ((AdminManageDriver) holder.itemView.getContext()).startActivityForResult(intent, 100); // Start for result with a request code
         });
+
 
         // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {

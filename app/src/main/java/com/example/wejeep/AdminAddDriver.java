@@ -36,6 +36,10 @@ public class AdminAddDriver extends AppCompatActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
+        // Initialize driverList and driverAdapter
+        driverList = new ArrayList<>(); // Initialize the list here
+        driverAdapter = new DriverAdapter(driverList); // Pass the list to the adapter
+
         // Reference UI elements
         etDriverName = findViewById(R.id.etdrivername);
         etDriverContact = findViewById(R.id.etdrivercontact);

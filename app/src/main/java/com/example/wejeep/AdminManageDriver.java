@@ -133,6 +133,16 @@ public class AdminManageDriver extends AppCompatActivity {
         });
     }
 
+    @Override //override code to notify succesful editing of driver and refresh the list
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 100 && resultCode == RESULT_OK) {
+            // Refresh the driver list
+            driverList.clear(); // Clear the current list
+            fetchDriversFromFirestore(); // Fetch updated data
+        }
+    }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
