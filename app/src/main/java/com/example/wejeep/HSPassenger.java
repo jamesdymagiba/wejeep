@@ -311,7 +311,7 @@ public class HSPassenger extends AppCompatActivity {
                                                     otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
                                                 }
 
-                                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
 
                                                 // Add the marker to the map
                                                 mapView.getOverlays().add(otherUserMarker);
@@ -480,6 +480,4 @@ public class HSPassenger extends AppCompatActivity {
             menu.setGroupVisible(R.id.admin, true);
         }
     }
-
-
 }
