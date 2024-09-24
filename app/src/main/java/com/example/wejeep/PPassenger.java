@@ -1,5 +1,7 @@
 package com.example.wejeep;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +15,8 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +29,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.w3c.dom.Text;
 
@@ -35,18 +40,19 @@ public class PPassenger extends AppCompatActivity {
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     Button btnEditProfilePP;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ppassenger);
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
-
         btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
 
         btnEditProfilePP.setOnClickListener(view -> {
             startActivity(new Intent(PPassenger.this, EPPassenger.class));
         });
+
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
@@ -55,6 +61,7 @@ public class PPassenger extends AppCompatActivity {
 
         Drawable drawable = drawerToggle.getDrawerArrowDrawable();
         drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -86,6 +93,7 @@ public class PPassenger extends AppCompatActivity {
                 }
             }
         });
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -96,29 +104,67 @@ public class PPassenger extends AppCompatActivity {
             finish();
         } else {
             // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
+            updateUserUI();
+            fetchUserRoleAndSetMenuVisibility(); // New method to fetch user role and set visibility
+        }
+    }
 
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+    private void updateUserUI() {
+        View headerView = navigationView.getHeaderView(0);
+        ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
+        ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
 
+        Glide.with(this)
+                .load(user.getPhotoUrl())
+                .apply(RequestOptions.circleCropTransform())
+                .into(ivProfilePicturePP);
+
+        TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
+        TextView tvNamePP = findViewById(R.id.tvNamePP);
+
+        tvNamePP.setText(user.getDisplayName());
+        tvNameHSP.setText(user.getDisplayName());
+
+        if (user.getPhotoUrl() != null) {
             Glide.with(this)
                     .load(user.getPhotoUrl())
                     .apply(RequestOptions.circleCropTransform())
-                    .into(ivProfilePicturePP);
+                    .into(ivProfilePictureHSP);
+        }
+    }
 
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-            TextView tvNamePP = findViewById(R.id.tvNamePP);
+    private void   fetchUserRoleAndSetMenuVisibility() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
 
-            tvNamePP.setText(user.getDisplayName());
-            tvNameHSP.setText(user.getDisplayName());
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String userRole = documentSnapshot.getString("role");
+                        setMenuVisibility(userRole);
+                    }
+                })
+                .addOnFailureListener(e -> Log.w("PPassenger", "Error fetching user role", e));
+    }
 
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
+    private void setMenuVisibility(String userRole) {
+        Menu menu = navigationView.getMenu();
 
+        // Hide all groups first
+        menu.setGroupVisible(R.id.passenger, false);
+        menu.setGroupVisible(R.id.pao, false);
+        menu.setGroupVisible(R.id.admin, false);
+
+        // Show the relevant group based on the user's role
+        if ("passenger".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+        } else if ("pao".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+        } else if ("admin".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+            menu.setGroupVisible(R.id.admin, true);
         }
     }
 }
