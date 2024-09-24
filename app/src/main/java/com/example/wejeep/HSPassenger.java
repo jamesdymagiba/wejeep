@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
+import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.bumptech.glide.Glide;
@@ -59,7 +61,6 @@ public class HSPassenger extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseUser user;
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
@@ -70,7 +71,14 @@ public class HSPassenger extends AppCompatActivity {
     private LocationCallback locationCallback;
     private Handler locationTimerHandler;
     private Runnable locationTimerRunnable;
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
+        MenuCompat.setGroupDividerEnabled(menu, true);
+
+        return true;
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +109,7 @@ public class HSPassenger extends AppCompatActivity {
                         return true;
                     case R.id.itmSignoutHSP:
                         Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
+                        removeUserLocationFromFirestore();
                         FirebaseAuth.getInstance().signOut();
                         startActivity(new Intent(HSPassenger.this, MainActivity.class));
                         finish();
@@ -110,11 +119,17 @@ public class HSPassenger extends AppCompatActivity {
                         startActivity(new Intent(HSPassenger.this, PPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmManageDriverHSP:
+                        Toast.makeText(HSPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this, AdminManageDriver.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }
             }
         });
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
@@ -136,12 +151,14 @@ public class HSPassenger extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
+            fetchUserRole();
         }
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         // Initialize the Map
         mapView = findViewById(R.id.map);
         mapView.setMultiTouchControls(true);
+        mapView.getController().setZoom(19.0);
 
         // Initialize the marker
         locationMarker = new Marker(mapView);
@@ -201,8 +218,8 @@ public class HSPassenger extends AppCompatActivity {
                         == PackageManager.PERMISSION_GRANTED) {
             isLocationEnabled = true;
             LocationRequest locationRequest = LocationRequest.create();
-            locationRequest.setInterval(10000); // 10 seconds
-            locationRequest.setFastestInterval(5000); // 5 seconds
+            locationRequest.setInterval(1000); // 1 second
+            locationRequest.setFastestInterval(500); // 0.5 seconds
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             if (locationCallback == null) {
@@ -241,8 +258,16 @@ public class HSPassenger extends AppCompatActivity {
         toggleLocationButton.setText("Location is Off");
         toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
 
+        // Remove user's location from Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+        db.collection("locations").document(userId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed from Firestore"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing location", e));
+
         cancelLocationTimer();
     }
+
     private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
@@ -252,7 +277,7 @@ public class HSPassenger extends AppCompatActivity {
                         return;
                     }
 
-                    // CLear other user's markers
+                    // Clear other users' markers
                     for (int i = mapView.getOverlays().size() - 1; i >= 0; i--) {
                         Overlay overlay = mapView.getOverlays().get(i);
                         if (overlay instanceof Marker && overlay != locationMarker) {
@@ -268,33 +293,62 @@ public class HSPassenger extends AppCompatActivity {
                             if (latitude != null && longitude != null) {
                                 GeoPoint geoPoint = new GeoPoint(latitude, longitude);
 
-                                // Create a marker for other users' locations
-                                Marker otherUserMarker = new Marker(mapView);
-                                otherUserMarker.setPosition(geoPoint);
-                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
-                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                // Fetch the user's role
+                                String userId = document.getId();
+                                db.collection("users").document(userId).get()
+                                        .addOnSuccessListener(userDocument -> {
+                                            if (userDocument.exists()) {
+                                                String userRole = userDocument.getString("role");
 
-                                // Add the marker to the map
-                                mapView.getOverlays().add(otherUserMarker);
+                                                // Create a marker for other users' locations
+                                                Marker otherUserMarker = new Marker(mapView);
+                                                otherUserMarker.setPosition(geoPoint);
+
+                                                // Set marker icon based on user role
+                                                if ("passenger".equals(userRole)) {
+                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+                                                } else if ("pao".equals(userRole)) {
+                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+                                                }
+
+                                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+                                                // Add the marker to the map
+                                                mapView.getOverlays().add(otherUserMarker);
+                                                mapView.invalidate();
+                                            }
+                                        });
                             } else {
                                 Log.w(TAG, "Latitude or Longitude is null for document: " + document.getId());
                             }
                         }
                     }
-                    mapView.invalidate();
                 });
     }
 
+
+    private GeoPoint initialCenterPoint = null; // Store the initial center point
+
     private void updateLocationOnMap(Location location) {
         GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-        mapView.getController().setZoom(19.0);
-        mapView.getController().setCenter(geoPoint);
+
+        // Center the map only once
+        if (initialCenterPoint == null) {
+            initialCenterPoint = geoPoint;
+            centerMapOnUserLocation(initialCenterPoint);
+        }
 
         locationMarker.setPosition(geoPoint);
+
         if (!mapView.getOverlays().contains(locationMarker)) {
             mapView.getOverlays().add(locationMarker);
         }
         mapView.invalidate();
+    }
+
+    private void centerMapOnUserLocation(GeoPoint geoPoint) {
+        mapView.getController().setCenter(geoPoint);
+        mapView.getController().setZoom(19.0); // Set your desired zoom level
     }
 
     private void updateLocationInFirestore(Location location) {
@@ -363,6 +417,69 @@ public class HSPassenger extends AppCompatActivity {
         super.onDestroy();
         cancelLocationTimer();
         mapView.onDetach();
+        removeUserLocationFromFirestore();
     }
+    private void removeUserLocationFromFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+        db.collection("locations").document(userId).delete()
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed on sign out"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing location on sign out", e));
+    }
+
+    private void fetchUserRole() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = user.getUid();
+
+        db.collection("users").document(userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String userRole = documentSnapshot.getString("role");
+                        setMenuVisibility(userRole);
+                        updateCurrentUserMarker(userRole);  // Update the current user's marker based on role
+                    }
+                })
+                .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
+    }
+    private void updateCurrentUserMarker(String userRole) {
+        // Set marker icon based on the logged-in user's role
+        if ("passenger".equals(userRole)) {
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        } else if ("pao".equals(userRole)) {
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+        } else {
+            // Default marker for other roles or if role is not defined
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        }
+
+        // Add or update the marker on the map
+        if (!mapView.getOverlays().contains(locationMarker)) {
+            mapView.getOverlays().add(locationMarker);
+        }
+        mapView.invalidate();  // Refresh the map
+    }
+
+
+    private void setMenuVisibility(String userRole) {
+        Menu menu = navigationView.getMenu();
+
+        // Hide all groups first
+        menu.setGroupVisible(R.id.passenger, false);
+        menu.setGroupVisible(R.id.pao, false);
+        menu.setGroupVisible(R.id.admin, false);
+
+        // Show the relevant group based on the user's role
+        if ("passenger".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+        } else if ("pao".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+        } else if ("admin".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
+            menu.setGroupVisible(R.id.pao, true);
+            menu.setGroupVisible(R.id.admin, true);
+        }
+    }
+
 
 }

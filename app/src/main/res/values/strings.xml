@@ -61,6 +61,14 @@
     <string name="manage_active_unit_list_s">Manage Active Unit List/s</string>
     <string name="assign_unit">Assign Unit</string>
     <string name="edit_assigned_unit">Edit Assigned Unit</string>
+    <string name="drivername">Name: </string>
+    <string name="drivercontactnumber">Contact Number: </string>
+    <string name="driverdateadded">Date Added: </string>
+    <string name="add_driver">Add Driver</string>
+    <string name="manage_driver">Manage Driver</string>
+    <string name="edit_button_description">edit button</string>
+    <string name="delete_button_description">delete button</string>
+    <string name="edit_driver">Edit Driver</string>
 
 
 </resources>

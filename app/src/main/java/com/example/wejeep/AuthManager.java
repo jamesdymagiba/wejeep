@@ -108,25 +108,39 @@ public class AuthManager {
     }
 
     private void addUserProfile(FirebaseUser user, String name, String email, String role) {
-        UserProfile userProfile = new UserProfile(name, email, role);
-
-        db.collection("users").document(user.getUid())
-                .set(userProfile)
-                .addOnSuccessListener(aVoid -> {
-                    Log.d("AuthManager", "User profile added.");
-                    Toast.makeText(context, "Please check your email for verification.", Toast.LENGTH_SHORT).show();
-                    // Start login activity after user profile is added
-                    Intent intent = new Intent(context, Login.class);
-                    context.startActivity(intent);
-                    if (context instanceof AppCompatActivity) {
-                        ((AppCompatActivity) context).finish();
+        // Check if the user already exists
+        db.collection("users").document(user.getUid()).get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        if (!task.getResult().exists()) {
+                            // User doesn't exist, create a new profile
+                            UserProfile userProfile = new UserProfile(name, email, role);
+                            db.collection("users").document(user.getUid())
+                                    .set(userProfile)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Log.d("AuthManager", "User profile added.");
+                                        Toast.makeText(context, "Please check your email for verification.", Toast.LENGTH_SHORT).show();
+                                        // Start login activity after user profile is added
+                                        Intent intent = new Intent(context, Login.class);
+                                        context.startActivity(intent);
+                                        if (context instanceof AppCompatActivity) {
+                                            ((AppCompatActivity) context).finish();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.w("AuthManager", "Error adding user profile.", e);
+                                        Toast.makeText(context,  "Error adding user profile.", Toast.LENGTH_SHORT).show();
+                                    });
+                        } else {
+                            // User already exists
+                            Log.d("AuthManager", "User already exists, not adding.");
+                        }
+                    } else {
+                        Log.w("AuthManager", "Error checking if user exists", task.getException());
                     }
-                })
-                .addOnFailureListener(e -> {
-                    Log.w("AuthManager", "Error adding user profile.", e);
-                    Toast.makeText(context, "Error adding user profile.", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     public boolean isUserSignedIn() {
         return mAuth.getCurrentUser() != null;

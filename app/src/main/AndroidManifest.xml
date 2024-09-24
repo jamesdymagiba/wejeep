@@ -53,6 +53,21 @@
             android:name=".AdminManageRouteScreen"
             android:exported="false" />
         <activity
+            android:name=".AdminEditDriver"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddDriver"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageDriver"
+            android:exported="false" />
+        <activity
+            android:name=".DriverCardView"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageDriverCardView"
+            android:exported="false" />
+        <activity
             android:name=".EPPassenger"
             android:exported="false" />
         <activity
