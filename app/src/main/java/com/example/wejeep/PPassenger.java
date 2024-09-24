@@ -38,8 +38,6 @@ public class PPassenger extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_ppassenger);
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
@@ -76,6 +74,11 @@ public class PPassenger extends AppCompatActivity {
                     case R.id.itmProfileHSP:
                         Toast.makeText(PPassenger.this, "Profile", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(PPassenger.this, PPassenger.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.itmManageDriverHSP:
+                        Toast.makeText(PPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(PPassenger.this, AdminManageDriver.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     default:
@@ -115,6 +118,7 @@ public class PPassenger extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
+
         }
     }
 }

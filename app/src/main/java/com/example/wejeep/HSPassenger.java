@@ -119,6 +119,11 @@ public class HSPassenger extends AppCompatActivity {
                         startActivity(new Intent(HSPassenger.this, PPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmManageDriverHSP:
+                        Toast.makeText(HSPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this, AdminManageDriver.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }
@@ -272,7 +277,7 @@ public class HSPassenger extends AppCompatActivity {
                         return;
                     }
 
-                    // CLear other user's markers
+                    // Clear other users' markers
                     for (int i = mapView.getOverlays().size() - 1; i >= 0; i--) {
                         Overlay overlay = mapView.getOverlays().get(i);
                         if (overlay instanceof Marker && overlay != locationMarker) {
@@ -288,22 +293,39 @@ public class HSPassenger extends AppCompatActivity {
                             if (latitude != null && longitude != null) {
                                 GeoPoint geoPoint = new GeoPoint(latitude, longitude);
 
-                                // Create a marker for other users' locations
-                                Marker otherUserMarker = new Marker(mapView);
-                                otherUserMarker.setPosition(geoPoint);
-                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
-                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                                // Fetch the user's role
+                                String userId = document.getId();
+                                db.collection("users").document(userId).get()
+                                        .addOnSuccessListener(userDocument -> {
+                                            if (userDocument.exists()) {
+                                                String userRole = userDocument.getString("role");
 
-                                // Add the marker to the map
-                                mapView.getOverlays().add(otherUserMarker);
+                                                // Create a marker for other users' locations
+                                                Marker otherUserMarker = new Marker(mapView);
+                                                otherUserMarker.setPosition(geoPoint);
+
+                                                // Set marker icon based on user role
+                                                if ("passenger".equals(userRole)) {
+                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+                                                } else if ("pao".equals(userRole)) {
+                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+                                                }
+
+                                                otherUserMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+
+                                                // Add the marker to the map
+                                                mapView.getOverlays().add(otherUserMarker);
+                                                mapView.invalidate();
+                                            }
+                                        });
                             } else {
                                 Log.w(TAG, "Latitude or Longitude is null for document: " + document.getId());
                             }
                         }
                     }
-                    mapView.invalidate();
                 });
     }
+
 
     private GeoPoint initialCenterPoint = null; // Store the initial center point
 
@@ -414,10 +436,30 @@ public class HSPassenger extends AppCompatActivity {
                     if (documentSnapshot.exists()) {
                         String userRole = documentSnapshot.getString("role");
                         setMenuVisibility(userRole);
+                        updateCurrentUserMarker(userRole);  // Update the current user's marker based on role
                     }
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
+    private void updateCurrentUserMarker(String userRole) {
+        // Set marker icon based on the logged-in user's role
+        if ("passenger".equals(userRole)) {
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        } else if ("pao".equals(userRole)) {
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+        } else {
+            // Default marker for other roles or if role is not defined
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        }
+
+        // Add or update the marker on the map
+        if (!mapView.getOverlays().contains(locationMarker)) {
+            mapView.getOverlays().add(locationMarker);
+        }
+        mapView.invalidate();  // Refresh the map
+    }
+
+
     private void setMenuVisibility(String userRole) {
         Menu menu = navigationView.getMenu();
 
@@ -433,6 +475,7 @@ public class HSPassenger extends AppCompatActivity {
             menu.setGroupVisible(R.id.passenger, true);
             menu.setGroupVisible(R.id.pao, true);
         } else if ("admin".equals(userRole)) {
+            menu.setGroupVisible(R.id.passenger, true);
             menu.setGroupVisible(R.id.pao, true);
             menu.setGroupVisible(R.id.admin, true);
         }
