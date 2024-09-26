@@ -30,7 +30,7 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-    <EditText
+                   <EditText
         android:id="@+id/etDriverName"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -41,6 +41,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/etDriverContact"
         app:layout_constraintEnd_toEndOf="@+id/etDriverContact"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/etDriverContact"
         app:layout_constraintTop_toBottomOf="@+id/toolbarAdminEdit" />
 
@@ -55,6 +56,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/etDateAdded"
         app:layout_constraintEnd_toEndOf="@+id/etDateAdded"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/etDateAdded"
         app:layout_constraintTop_toBottomOf="@+id/etDriverName" />
 

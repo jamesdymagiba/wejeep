@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="@+id/toolbar_1" />
 
     <Button
-        android:id="@+id/btn_5"
+        android:id="@+id/btnAddUnit"
         android:layout_width="220dp"
         android:layout_height="50dp"
         android:layout_marginBottom="80dp"
@@ -46,7 +46,24 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.998"
+        app:layout_constraintVertical_bias="0.783"
+        tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/back"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.946"
         tools:ignore="MissingConstraints" />
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
@@ -58,7 +75,7 @@
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
-        app:layout_constraintVertical_bias="0.282"
+        app:layout_constraintVertical_bias="0.278"
         app:srcCompat="@drawable/rectangle_white_bg"
         tools:ignore="MissingConstraints" />
 
@@ -120,20 +137,8 @@
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.798" />
 
-    <Button
-        android:id="@+id/btn_6"
-        android:layout_width="100dp"
-        android:layout_height="48dp"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="@string/select_date"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.95" />
-
     <EditText
-        android:id="@+id/et_5"
+        android:id="@+id/etUnitNo"
         android:layout_width="100dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
@@ -151,7 +156,7 @@
         tools:ignore="MissingConstraints" />
 
     <EditText
-        android:id="@+id/et_6"
+        android:id="@+id/etVehicleModel"
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
@@ -169,13 +174,12 @@
         android:importantForAutofill="no" />
 
     <EditText
-        android:id="@+id/et_7"
+        android:id="@+id/etPlateNumber"
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
         android:importantForAutofill="no"
-        android:inputType="number"
         android:hint="@string/abc_123"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
@@ -185,5 +189,21 @@
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.673"
         tools:ignore="MissingConstraints" />
+
+    <EditText
+        android:id="@+id/etUnitDateAdded"
+        android:layout_width="130dp"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="Select Data"
+        android:importantForAutofill="no"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.191"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.956" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

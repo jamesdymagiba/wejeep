@@ -69,6 +69,7 @@
     <string name="edit_button_description">edit button</string>
     <string name="delete_button_description">delete button</string>
     <string name="edit_driver">Edit Driver</string>
+    <string name="plate_number">Plate Number:</string>
 
 
 </resources>

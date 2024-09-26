@@ -42,6 +42,10 @@
             android:id="@+id/itmManageDriverHSP"
             android:icon="@drawable/managedriver_icon"
             android:title="Manage Driver" />
+        <item
+            android:id="@+id/itmManageUnitHSP"
+            android:icon="@drawable/manageunit_icon"
+            android:title="Manage Unit" />
     </group>
 
 </menu>

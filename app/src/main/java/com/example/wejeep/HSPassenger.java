@@ -1,6 +1,7 @@
 package com.example.wejeep;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -84,6 +85,15 @@ public class HSPassenger extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
 
+        Button buttonP = findViewById(R.id.practicebtn);
+
+        buttonP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(HSPassenger.this, AdminAddUnitScreen.class));
+            }
+        });
+
         locationTimerHandler = new Handler(Looper.getMainLooper());
 
         Toolbar toolbar = findViewById(R.id.toolbarHSP);
@@ -98,6 +108,7 @@ public class HSPassenger extends AppCompatActivity {
         Drawable drawable = drawerToggle.getDrawerArrowDrawable();
         drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @SuppressLint("NonConstantResourceId")
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
@@ -122,6 +133,11 @@ public class HSPassenger extends AppCompatActivity {
                     case R.id.itmManageDriverHSP:
                         Toast.makeText(HSPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, AdminManageDriver.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.itmManageUnitHSP:
+                        Toast.makeText(HSPassenger.this, "Manage Unit", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this,AdminManageUnitScreen.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     default:
