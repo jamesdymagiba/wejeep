@@ -24,7 +24,7 @@ import java.util.Map;
 public class AdminAddUnitScreen extends AppCompatActivity {
     private ArrayList<UnitModel> unitList;
     private UnitAdapter unitAdapter;
-    private EditText etVehicleModel, etPlateNumber, etDateAdded;
+    private EditText etVehicleModel, etPlateNumber,etUnitNumber, etDateAdded;
     private Button btnAddUnit, btnBack;
     private FirebaseFirestore db;
 
@@ -43,6 +43,7 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         // Reference UI elements
         etVehicleModel = findViewById(R.id.etVehicleModel);
         etPlateNumber = findViewById(R.id.etPlateNumber);
+        etUnitNumber = findViewById(R.id.etUnitNumber);
         etDateAdded = findViewById(R.id.etUnitDateAdded);
         btnAddUnit = findViewById(R.id.btnAddUnit);
         btnBack = findViewById(R.id.btnBack);
@@ -85,9 +86,10 @@ public class AdminAddUnitScreen extends AppCompatActivity {
     private void addUnitToFirestore() {
         String unitVehicleModel = etVehicleModel.getText().toString().trim();
         String unitPlateNumber = etPlateNumber.getText().toString().trim();
+        String unitNumber = etUnitNumber.getText().toString().trim();
         String dateAdded = etDateAdded.getText().toString().trim();
 
-        if (unitVehicleModel.isEmpty() || unitPlateNumber.isEmpty() || dateAdded.isEmpty()) {
+        if (unitVehicleModel.isEmpty() || unitPlateNumber.isEmpty() || dateAdded.isEmpty() || unitNumber.isEmpty()) {
             Toast.makeText(AdminAddUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -96,6 +98,7 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         Map<String, Object> unit = new HashMap<>();
         unit.put("vehicleModel", unitVehicleModel);
         unit.put("plateNumber", unitPlateNumber);
+        unit.put("unitNumber", unitNumber);
         unit.put("dateAdded", dateAdded);
 
         // Add a new document in the "drivers" collection
@@ -104,7 +107,7 @@ public class AdminAddUnitScreen extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentReference docRef = task.getResult();
-                        UnitModel newUnit = new UnitModel(unitVehicleModel, unitPlateNumber, dateAdded, docRef.getId());
+                        UnitModel newUnit = new UnitModel(unitVehicleModel, unitPlateNumber,unitNumber, dateAdded, docRef.getId());
                         unitList.add(newUnit); // Add the new driver to your list
                         unitAdapter.notifyItemInserted(unitList.size() - 1); // Notify the adapter
                         Toast.makeText(AdminAddUnitScreen.this, "Unit added successfully", Toast.LENGTH_SHORT).show();

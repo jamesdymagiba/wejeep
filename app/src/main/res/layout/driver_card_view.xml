@@ -59,13 +59,13 @@
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:hint="Contact Here"
                     android:id="@+id/tvDriverContact"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="Contact Here"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 

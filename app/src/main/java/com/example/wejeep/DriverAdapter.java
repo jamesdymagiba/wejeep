@@ -77,8 +77,12 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
             db.collection("drivers").document(driverId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
+                        // Remove the unit from the list
                         driverList.remove(position);
+                        // Notify the adapter about the removed item
                         notifyItemRemoved(position);
+                        // Notify about item change in case of position changes
+                        notifyItemRangeChanged(position, driverList.size());
                         Toast.makeText(context, "Driver deleted", Toast.LENGTH_SHORT).show();
                     })
                     .addOnFailureListener(e -> {

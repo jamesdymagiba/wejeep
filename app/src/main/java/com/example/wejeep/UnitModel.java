@@ -3,19 +3,19 @@ package com.example.wejeep;
 
 
 public class UnitModel {
-    private String vehicleunit; // Field for the document ID
-    private String platenumber;
+    private String vehicleModel;
+    private String plateNumber;
     private String documentId;
     private String dateAdded;
+    private String unitNumber;
 
-    public UnitModel() {
-
-    }
+    public UnitModel() {}
 
     // Default constructor needed for Firestore
-    public UnitModel(String unitVehicleModel, String unitPlateNumber, String dateAdded, String id) {
-        this.vehicleunit = vehicleunit;
-        this.platenumber = platenumber;
+    public UnitModel(String vehicleModel, String plateNumber, String dateAdded, String unitNumber, String documentId) {
+        this.vehicleModel = vehicleModel;
+        this.plateNumber = plateNumber;
+        this.unitNumber = unitNumber;
         this.dateAdded = dateAdded;
         this.documentId = documentId;
     }
@@ -30,26 +30,26 @@ public class UnitModel {
         this.documentId = documentId;
     }
 
-    public String getVehicleunit() {
-        return vehicleunit;
+    public String getvehicleModel() {
+        return vehicleModel;
     }
 
-    public void setVehicleunit(String vehicleunit) { this.vehicleunit = vehicleunit; }
+    public void setvehicleModel(String vehicleModel) { this.vehicleModel = vehicleModel; }
 
-    public String getPlatenumber() {
-        return platenumber;
+    public String getplateNumber() {
+        return plateNumber;
     }
 
-    public void setPlatenumber(String platenumber) {
-        this.platenumber = platenumber;
+    public void setplateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
     }
+    public String getunitNumber() {return unitNumber; }
+    public void setunitNumber(String unitNumber) {this.unitNumber = unitNumber;}
 
-    public String getDateAdded() {
-        return dateAdded;
+    public String getDateAdded() { return dateAdded;
     }
 
     public void setDateAdded(String dateAdded) {
         this.dateAdded = dateAdded;
     }
 }
-

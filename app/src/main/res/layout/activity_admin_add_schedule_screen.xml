@@ -47,15 +47,16 @@
         android:id="@+id/textView29"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/from_day"
+        android:layout_marginTop="8dp"
         android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/from_day"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/editTextText2"
+        app:layout_constraintBottom_toTopOf="@+id/etfromday"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.154"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.09" />
 
     <TextView
         android:id="@+id/textView30"
@@ -100,12 +101,14 @@
         app:layout_constraintVertical_bias="0.757" />
 
     <EditText
-        android:id="@+id/editTextText2"
+        android:id="@+id/etfromday"
         android:layout_width="wrap_content"
         android:layout_height="48sp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
         android:hint="Monday"
+        android:focusable="false"
+        android:clickable="false"
         android:inputType="text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
@@ -116,12 +119,14 @@
         app:layout_constraintVertical_bias="0.111" />
 
     <EditText
-        android:id="@+id/editTextText3"
+        android:id="@+id/ettoday"
         android:layout_width="wrap_content"
         android:layout_height="48sp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
         android:hint="Tuesday"
+        android:focusable="false"
+        android:clickable="false"
         android:inputType="text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
@@ -132,13 +137,15 @@
         app:layout_constraintVertical_bias="0.388" />
 
     <EditText
-        android:id="@+id/editTextText4"
+        android:id="@+id/etfromtime"
         android:layout_width="wrap_content"
         android:layout_height="48sp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
         android:hint="7 AM"
-        android:inputType="text"
+        android:clickable="false"
+        android:focusable="false"
+        android:inputType="time|datetime"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
@@ -148,12 +155,14 @@
         app:layout_constraintVertical_bias="0.645" />
 
     <EditText
-        android:id="@+id/editTextText5"
+        android:id="@+id/ettotime"
         android:layout_width="wrap_content"
         android:layout_height="48sp"
         android:ems="10"
-        android:inputType="text"
+        android:inputType="time|datetime"
         android:hint="7 PM"
+        android:focusable="false"
+        android:clickable="false"
         android:textAlignment="center"
         android:background="@drawable/rounded_edit_text"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
@@ -177,6 +186,22 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.639" />
+        app:layout_constraintVertical_bias="0.475" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/back"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnConfirm"
+        app:layout_constraintVertical_bias="0.252" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

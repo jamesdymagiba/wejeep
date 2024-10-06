@@ -88,6 +88,17 @@ public class AdminManageDriver extends AppCompatActivity {
                         startActivity(new Intent(AdminManageDriver.this, AdminManageDriver.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmManageUnitHSP:
+                        Toast.makeText(AdminManageDriver.this, "Manage Driver", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminManageDriver.this, AdminManageUnitScreen.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.itmManageScheduleHSP:
+                        Toast.makeText(AdminManageDriver.this, "Manage Schedule", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminManageDriver.this,AdminManageScheduleScreen.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+
                     default:
                         return false;
                 }

@@ -90,6 +90,8 @@ public class AdminManageUnitScreen extends AppCompatActivity {
                         return true;
                     case R.id.itmManageUnitHSP:
                          Toast.makeText(AdminManageUnitScreen.this, "Manage Units", Toast.LENGTH_SHORT).show();
+                         startActivity(new Intent(AdminManageUnitScreen.this, AdminManageUnitScreen.class));
+                         drawerLayout.closeDrawer(GravityCompat.START);
                          return true;
                     default:
                         return false;

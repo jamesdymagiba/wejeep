@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardBackgroundColor="@color/backgroundColor"
@@ -26,37 +25,31 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:text="@string/vehicle_model"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/tvVehicleModel"
-                    android:layout_width="84dp"
+                    android:id="@+id/tvFromDay"
+                    android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Vehicle Model"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="16sp" />
+
                 <TextView
-                    android:text="Unit No."
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:layout_width="51dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
                 <TextView
-                    android:id="@+id/tvUnitNumber"
-                    android:hint="Unit No."
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:id="@+id/tvToDay"
+                    android:layout_width="132dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -65,48 +58,35 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tvFromTime"
+                    android:layout_width="65dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/plate_number"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="16sp" />
 
                 <TextView
-                    android:hint="Plate Number"
-                    android:id="@+id/tvPlateNumber"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
+                    android:layout_width="51dp"
+                    android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:text="-"
+                    android:textAlignment="center"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvToTime"
+                    android:layout_width="132dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:text="@string/driverdateadded"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:hint="Date Added Here"
-                    android:id="@+id/tvDateAdded"
-                    android:textColor="@color/black"
-                    android:textSize="12sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 

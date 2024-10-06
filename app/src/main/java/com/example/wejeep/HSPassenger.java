@@ -85,14 +85,6 @@ public class HSPassenger extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
 
-        Button buttonP = findViewById(R.id.practicebtn);
-
-        buttonP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(HSPassenger.this, AdminAddUnitScreen.class));
-            }
-        });
 
         locationTimerHandler = new Handler(Looper.getMainLooper());
 
@@ -138,6 +130,11 @@ public class HSPassenger extends AppCompatActivity {
                     case R.id.itmManageUnitHSP:
                         Toast.makeText(HSPassenger.this, "Manage Unit", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this,AdminManageUnitScreen.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.itmManageScheduleHSP:
+                        Toast.makeText(HSPassenger.this, "Manage Schedule", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this,AdminManageScheduleScreen.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     default:

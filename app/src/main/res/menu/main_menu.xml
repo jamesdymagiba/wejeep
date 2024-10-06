@@ -46,6 +46,11 @@
             android:id="@+id/itmManageUnitHSP"
             android:icon="@drawable/manageunit_icon"
             android:title="Manage Unit" />
+        <item
+            android:id="@+id/itmManageScheduleHSP"
+            android:icon="@drawable/editschedule_logo"
+            android:title="Manage Schedule"
+            />
     </group>
 
 </menu>
