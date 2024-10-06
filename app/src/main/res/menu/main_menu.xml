@@ -51,6 +51,11 @@
             android:icon="@drawable/editschedule_logo"
             android:title="Manage Schedule"
             />
+        <item
+            android:id="@+id/itmAssignScheduleHSP"
+            android:icon="@drawable/assign_logo"
+            android:title="Assign Schedule"
+            />
     </group>
 
 </menu>

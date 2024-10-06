@@ -9,7 +9,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AdminEditUnitScreen extends AppCompatActivity {
 
-    private EditText etvehicleModel, etplateNumber, etDateAdded;
+    private EditText etvehicleModel, etplateNumber, etDateAdded,  etunitNumber;
     private Button btnApplyChanges, btnBack;
     private FirebaseFirestore db;
     private String documentId; // To store the document ID
@@ -23,21 +23,24 @@ public class AdminEditUnitScreen extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         // Reference UI elements
-        etvehicleModel = findViewById(R.id.etVehicleModel);
+        etvehicleModel = findViewById(R.id.etvehicleModel);
         etplateNumber = findViewById(R.id.etPlateNumber);
         etDateAdded = findViewById(R.id.etDateAdded);
+        etunitNumber = findViewById(R.id.etUnitNumber);
         btnApplyChanges = findViewById(R.id.btnConfirm);
         btnBack = findViewById(R.id.btnBack);
 
         // Get driver data from Intent
         documentId = getIntent().getStringExtra("documentId");
         String vehicleModel = getIntent().getStringExtra("vehicleModel");
+        String unitNumber = getIntent().getStringExtra("unitNumber");
         String plateNumber = getIntent().getStringExtra("plateNumber");
         String dateAdded = getIntent().getStringExtra("dateAdded");
 
         // Pre-fill the EditTexts with received data
         etvehicleModel.setText(vehicleModel);
         etplateNumber.setText(plateNumber);
+        etunitNumber.setText(unitNumber);
         etDateAdded.setText(dateAdded);
 
         // Handle Apply Changes button click
@@ -54,6 +57,7 @@ public class AdminEditUnitScreen extends AppCompatActivity {
     private void applyChanges() {
         String updatedvehicleModel = etvehicleModel.getText().toString().trim();
         String updatedplateNumber = etplateNumber.getText().toString().trim();
+        String updatedunitNumber = etunitNumber.getText().toString().trim();
         String updatedDateAdded = etDateAdded.getText().toString().trim();
 
         if (updatedvehicleModel.isEmpty() || updatedplateNumber.isEmpty() || updatedDateAdded.isEmpty()) {
@@ -65,7 +69,7 @@ public class AdminEditUnitScreen extends AppCompatActivity {
         db.collection("units").document(documentId)
                 .update("vehicleModel", updatedvehicleModel,
                         "plateNumber", updatedplateNumber,
-                        "dateAdded", updatedDateAdded)
+                        "dateAdded", updatedDateAdded, "unitNumber" , updatedunitNumber)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AdminEditUnitScreen.this, "Unit updated successfully", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);

@@ -55,28 +55,21 @@ public class AdminEditSchedule extends AppCompatActivity {
                 // Array of days of the week
                 String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-                // Boolean array for initial selected state (all false)
-                boolean[] selectedDays = new boolean[daysOfWeek.length];
+                // Variable to keep track of the selected day (default -1, no day selected)
+                final int[] selectedDay = {-1};
 
-                // List to keep track of selected days
-                ArrayList<String> selectedDaysList = new ArrayList<>();
-
-                // Create the MultiChoiceDialog
+                // Create the SingleChoiceDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminEditSchedule.this);
-                builder.setTitle("Select Days of the Week")
-                        .setMultiChoiceItems(daysOfWeek, selectedDays, (dialog, which, isChecked) -> {
-                            if (isChecked) {
-                                // Add selected day to the list
-                                selectedDaysList.add(daysOfWeek[which]);
-                            } else {
-                                // Remove unselected day from the list
-                                selectedDaysList.remove(daysOfWeek[which]);
-                            }
+                builder.setTitle("Select Day of the Week")
+                        .setSingleChoiceItems(daysOfWeek, selectedDay[0], (dialog, which) -> {
+                            // Update selected day
+                            selectedDay[0] = which;
                         })
                         .setPositiveButton("OK", (dialog, which) -> {
-                            // Join the selected days into a comma-separated string
-                            String selectedDaysString = String.join(", ", selectedDaysList);
-                            etFromDay.setText(selectedDaysString);
+                            if (selectedDay[0] != -1) {
+                                // Set the selected day in the EditText
+                                etFromDay.setText(daysOfWeek[selectedDay[0]]);
+                            }
                         })
                         .setNegativeButton("Cancel", null);
 
@@ -86,34 +79,28 @@ public class AdminEditSchedule extends AppCompatActivity {
         });
 
 
+
         etToDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Array of days of the week
                 String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-                // Boolean array for initial selected state (all false)
-                boolean[] selectedDays = new boolean[daysOfWeek.length];
+                // Variable to keep track of the selected day (default -1, no day selected)
+                final int[] selectedDay = {-1};
 
-                // List to keep track of selected days
-                ArrayList<String> selectedDaysList = new ArrayList<>();
-
-                // Create the MultiChoiceDialog
+                // Create the SingleChoiceDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminEditSchedule.this);
-                builder.setTitle("Select Days of the Week")
-                        .setMultiChoiceItems(daysOfWeek, selectedDays, (dialog, which, isChecked) -> {
-                            if (isChecked) {
-                                // Add selected day to the list
-                                selectedDaysList.add(daysOfWeek[which]);
-                            } else {
-                                // Remove unselected day from the list
-                                selectedDaysList.remove(daysOfWeek[which]);
-                            }
+                builder.setTitle("Select Day of the Week")
+                        .setSingleChoiceItems(daysOfWeek, selectedDay[0], (dialog, which) -> {
+                            // Update selected day
+                            selectedDay[0] = which;
                         })
                         .setPositiveButton("OK", (dialog, which) -> {
-                            // Join the selected days into a comma-separated string
-                            String selectedDaysString = String.join(", ", selectedDaysList);
-                            etToDay.setText(selectedDaysString);
+                            if (selectedDay[0] != -1) {
+                                // Set the selected day in the EditText
+                                etToDay.setText(daysOfWeek[selectedDay[0]]);
+                            }
                         })
                         .setNegativeButton("Cancel", null);
 

@@ -41,7 +41,7 @@ public class UnitAdapter extends RecyclerView.Adapter<UnitAdapter.UnitViewHolder
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), AdminEditUnitScreen.class);
             intent.putExtra("documentId", unit.getDocumentId()); // Pass the document ID
-            intent.putExtra("vehicleUnit", unit.getvehicleModel()); // Pass vehicle unit
+            intent.putExtra("vehicleModel", unit.getvehicleModel()); // Pass vehicle unit
             intent.putExtra("plateNumber", unit.getplateNumber()); // Pass platenumber
             intent.putExtra("unitNumber", unit.getunitNumber());
             intent.putExtra("dateAdded", unit.getDateAdded()); // Pass date added

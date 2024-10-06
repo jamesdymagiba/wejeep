@@ -45,7 +45,7 @@
             android:background="@drawable/round_btn_blue"
             android:fontFamily="@font/londrina_solid_regular"
             android:textColor="@color/white"
-            android:text="@string/add_driver"
+            android:text="@string/add_schedule"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="50dp" />

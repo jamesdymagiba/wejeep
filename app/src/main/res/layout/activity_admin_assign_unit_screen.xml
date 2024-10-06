@@ -26,7 +26,7 @@
         app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
-        app:layout_constraintVertical_bias="0.491"
+        app:layout_constraintVertical_bias="0.488"
         app:srcCompat="@drawable/rectangle_white_bg"
         tools:ignore="MissingConstraints" />
 
@@ -42,17 +42,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/toolbar_1"
         app:layout_constraintTop_toTopOf="@+id/toolbar_1" />
-
-    <TextView
-        android:id="@+id/textView36"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
-        android:layout_marginBottom="325dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
