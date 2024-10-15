@@ -42,6 +42,10 @@
             android:id="@+id/itmManageDriverHSP"
             android:icon="@drawable/managedriver_icon"
             android:title="Manage Driver" />
+        <item
+            android:id="@+id/itmManagePAOHSP"
+            android:icon="@drawable/pao_icon"
+            android:title="Manage PAO" />
     </group>
     <group
         android:checkableBehavior="single"

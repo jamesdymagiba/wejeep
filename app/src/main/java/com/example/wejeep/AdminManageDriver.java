@@ -88,6 +88,11 @@ public class AdminManageDriver extends AppCompatActivity {
                         startActivity(new Intent(AdminManageDriver.this, AdminManageDriver.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmManagePAOHSP:
+                        Toast.makeText(AdminManageDriver.this, "Manage PAO", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminManageDriver.this, AdminManagePAO.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }

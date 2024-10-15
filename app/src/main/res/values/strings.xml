@@ -36,6 +36,12 @@
     <string name="delete_button_description">delete button</string>
     <string name="edit_driver">Edit Driver</string>
     <string name="forget_password">Forget Password</string>
+    <string name="manage_pao">Add PAO</string>
+    <string name="add_pao">Add PAO</string>
+    <string name="sign_up_for_pao">Sign up for PAO</string>
+    <string name="sign_up_pao">Sign Up</string>
+    <string name="name_pao">Name :</string>
+    <string name="email_pao">Email :</string>
 
 
 </resources>
