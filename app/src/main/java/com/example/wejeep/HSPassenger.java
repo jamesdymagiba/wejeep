@@ -119,6 +119,11 @@ public class HSPassenger extends AppCompatActivity {
                         startActivity(new Intent(HSPassenger.this, PPassenger.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmAdminDashboardHSP:
+                        Toast.makeText(HSPassenger.this, "Admin Dashboard", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(HSPassenger.this, AdminDashboard.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     case R.id.itmManageDriverHSP:
                         Toast.makeText(HSPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, AdminManageDriver.class));
@@ -475,8 +480,6 @@ public class HSPassenger extends AppCompatActivity {
             menu.setGroupVisible(R.id.passenger, true);
             menu.setGroupVisible(R.id.pao, true);
         } else if ("admin".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-            menu.setGroupVisible(R.id.pao, true);
             menu.setGroupVisible(R.id.admin, true);
         }
     }
