@@ -93,6 +93,7 @@ public class AdminManageDriver extends AppCompatActivity {
                 }
             }
         });
+
         FirebaseAuth auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
@@ -116,6 +117,7 @@ public class AdminManageDriver extends AppCompatActivity {
             }
         }
     }
+
     // Method to fetch driver data from Firestore
     private void fetchDriversFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

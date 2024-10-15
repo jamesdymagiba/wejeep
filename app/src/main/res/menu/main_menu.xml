@@ -16,10 +16,6 @@
             android:id="@+id/itmProfileHSP"
             android:icon="@drawable/account_circle"
             android:title="Profile" />
-        <item
-            android:id="@+id/itmSignoutHSP"
-            android:icon="@drawable/logout"
-            android:title="Sign out" />
     </group>
     <group
         android:checkableBehavior="single"
@@ -39,9 +35,22 @@
             android:title="Admin"
             android:icon="@drawable/admin_icon" />
         <item
+            android:id="@+id/itmAdminDashboardHSP"
+            android:icon="@drawable/dashboard_icon"
+            android:title="Admin Dashboard" />
+        <item
             android:id="@+id/itmManageDriverHSP"
             android:icon="@drawable/managedriver_icon"
             android:title="Manage Driver" />
     </group>
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/allUser">
+        <item
+            android:id="@+id/itmSignoutHSP"
+            android:icon="@drawable/logout"
+            android:title="Sign out" />
+    </group>
+
 
 </menu>
