@@ -39,6 +39,7 @@ public class AdminEditDriver extends AppCompatActivity {
         etDriverName.setText(driverName);
         etDriverContact.setText(driverContact);
         etDateAdded.setText(dateAdded);
+        etDateAdded.setEnabled(false);
 
         // Handle Apply Changes button click
         btnApplyChanges.setOnClickListener(v -> {
