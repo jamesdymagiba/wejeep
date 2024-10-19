@@ -2,6 +2,7 @@ package com.example.wejeep;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
     @Override
     public void onBindViewHolder(@NonNull ScheduleViewHolder holder, int position) {
         ScheduleModel schedule = scheduleList.get(position);
+        Log.d("AdapterBinding", "Binding Schedule at position: " + position); // debug check of binding is working
         holder.tvFromDay.setText(schedule.getFromDay());
         holder.tvToDay.setText(schedule.getToDay());
         holder.tvFromTime.setText(schedule.getFromTime());

@@ -27,6 +27,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
 public class AdminManageActiveUnitList extends AppCompatActivity {
+    private NavigationManager navigationManager;
+    private MenuVisibilityManager menuVisibilityManager;
     private DrawerLayout drawerLayout;
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
@@ -64,16 +66,20 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignList = new ArrayList<>();
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        navigationManager = new NavigationManager(this);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        // Initialize MenuVisibilityManager with the NavigationView
+        Menu menu = navigationView.getMenu();
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        menuVisibilityManager.fetchUserRole(menu);
 
         //Initialize Drawer for menu
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
-        // Fetch data from Firestore and populate the RecyclerView
-        fetchScheduleFromFirestore();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
