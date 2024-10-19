@@ -27,18 +27,33 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:text="@string/drivername"
+                    android:text="@string/vehicle_model"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/tvDriverName"
-                    android:hint="Name Here"
+                    android:id="@+id/tvVehicleModel"
+                    android:layout_width="84dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="Vehicle Model"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="12sp" />
+                <TextView
+                    android:text="Unit No."
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:id="@+id/tvUnitNumber"
+                    android:hint="Unit No."
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -51,21 +66,21 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:text="@string/drivercontactnumber"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="@string/plate_number"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:hint="Plate Number"
+                    android:id="@+id/tvPlateNumber"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-
-                <TextView
-                    android:id="@+id/tvDriverContact"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Contact Here"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
 
             </LinearLayout>
 
@@ -77,7 +92,7 @@
                 <TextView
                     android:text="@string/driverdateadded"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
@@ -86,7 +101,7 @@
                     android:hint="Date Added Here"
                     android:id="@+id/tvDateAdded"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
+                    android:textSize="12sp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>

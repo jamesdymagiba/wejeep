@@ -1,0 +1,62 @@
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarAdminManageActiveUnitList"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blueTextColor"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <TextView
+                android:id="@+id/custom_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/londrina_solid_regular"
+                android:text="@string/manage_active_unit_list_s"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/item_assign"
+            android:layout_width="400dp"
+            android:layout_height="710dp"
+            android:layout_above="@id/btnAssignUnit"
+            android:layout_below="@id/toolbarAdminManageActiveUnitList"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="34dp"
+            android:scrollbars="vertical" />
+
+        <Button
+            android:id="@+id/btnAssignUnit"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:background="@drawable/round_btn_blue"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textColor="@color/white"
+            android:text="@string/assign_unit"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="50dp" />
+    </RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/main_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

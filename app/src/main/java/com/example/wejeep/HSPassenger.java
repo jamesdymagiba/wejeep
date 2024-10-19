@@ -1,6 +1,7 @@
 package com.example.wejeep;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -87,6 +88,7 @@ public class HSPassenger extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
+
 
         locationTimerHandler = new Handler(Looper.getMainLooper());
 

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AdminEditUnitScreen">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar_1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/blueTextColor"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.utils.widget.ImageFilterView
+        android:id="@+id/imgview_1"
+        android:layout_width="370dp"
+        android:layout_height="370dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.362"
+        app:srcCompat="@drawable/rectangle_white_bg"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/edit_unit"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintEnd_toEndOf="@+id/toolbar_1"
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/btnConfirm"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/confirm"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.421" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="220dp"
+        android:layout_height="50dp"
+        android:background="@drawable/round_btn_blue"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/back"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnConfirm"
+        app:layout_constraintVertical_bias="0.257"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/textView19"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="44dp"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/unit_no"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/et_8"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.151"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.775" />
+
+    <TextView
+        android:id="@+id/textView20"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/vehicle_model"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.163"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toBottomOf="@+id/etUnitNumber"
+        app:layout_constraintVertical_bias="0.736" />
+
+    <EditText
+        android:id="@+id/etUnitNumber"
+        android:layout_width="100dp"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/_01"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.188"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.223"
+        android:importantForAutofill="no" />
+
+    <EditText
+        android:id="@+id/etvehicleModel"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/hd505"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.288"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.453" />
+
+    <EditText
+        android:id="@+id/etPlateNumber"
+        android:layout_width="130dp"
+        android:layout_height="48dp"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/abc_123"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.686" />
+
+    <EditText
+        android:id="@+id/etDateAdded"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="date"
+        android:background="@drawable/rounded_edit_text"
+        android:ems="10"
+        android:hint="@string/abc_123"
+        android:importantForAutofill="no"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.306"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.926" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="Plate No."
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.577" />
+
+    <TextView
+        android:id="@+id/textView22"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="Date Added"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.17"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.784" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
