@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,6 +55,9 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignList = new ArrayList<>();
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
+
+        fetchScheduleFromFirestore();
+
         // Initialize navigationManager and navigationView for menuVisibilityManager
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -103,7 +107,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
     // Method to fetch driver data from Firestore
     private void fetchScheduleFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("schedules").get().addOnCompleteListener(task -> {
+        db.collection("assigns").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     AssignModel assign = document.toObject(AssignModel.class);
