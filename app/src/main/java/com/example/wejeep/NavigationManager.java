@@ -46,7 +46,7 @@ public class NavigationManager {
                 showToast("Manage Driver");
                 startActivity(AdminManageDriver.class);
                 return true;
-            default:
+            default: //dito ko lalagay
                 return false;
         }
     }
