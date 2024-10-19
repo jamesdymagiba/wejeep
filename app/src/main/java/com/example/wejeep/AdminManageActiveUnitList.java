@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -26,6 +27,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 
 public class AdminManageActiveUnitList extends AppCompatActivity {
+    private NavigationManager navigationManager;
+    private MenuVisibilityManager menuVisibilityManager;
     private DrawerLayout drawerLayout;
     private RecyclerView recyclerView;
     private ArrayList<AssignModel> assignList;
@@ -51,61 +54,27 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignList = new ArrayList<>();
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        navigationManager = new NavigationManager(this);
+        NavigationView navigationView = findViewById(R.id.nav_view);
+
+        // Initialize MenuVisibilityManager with the NavigationView
+        Menu menu = navigationView.getMenu();
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        menuVisibilityManager.fetchUserRole(menu);
 
         //Initialize Drawer for menu
         drawerLayout = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        // Fetch data from Firestore and populate the RecyclerView
-        fetchScheduleFromFirestore();
-
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.itmHomeHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Home", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, HSPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmSignoutHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Signout", Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, MainActivity.class));
-                        finish();
-                        return true;
-                    case R.id.itmProfileHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Profile", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, PPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManageDriverHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Manage Driver", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, AdminManageDriver.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManageUnitHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Manage Units", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, AdminManageUnitScreen.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManageScheduleHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Manage Schedule", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this,AdminManageScheduleScreen.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmAssignScheduleHSP:
-                        Toast.makeText(AdminManageActiveUnitList.this, "Assign Schedule", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(AdminManageActiveUnitList.this, AdminManageActiveUnitList.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
-                }
+                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return handled;
             }
         });
         FirebaseAuth auth = FirebaseAuth.getInstance();
