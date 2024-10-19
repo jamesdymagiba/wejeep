@@ -20,7 +20,7 @@ public class Login extends AppCompatActivity {
     private AuthManager authManager;
     private GoogleSignInHelper googleSignInHelper;
     private TextInputEditText etEmailLI, etPasswordLI;
-    private Button btnLoginLI, btnGoogleLI;
+    private Button btnLoginLI, btnGoogleLI, btnForgetLI;
     private ProgressBarHandler progressBarHandler;
     private boolean valid = true;
     private static final int RC_SIGN_IN = 9001;
@@ -40,6 +40,7 @@ public class Login extends AppCompatActivity {
         etPasswordLI = findViewById(R.id.etPasswordLI);
         btnLoginLI = findViewById(R.id.btnLoginLI);
         btnGoogleLI = findViewById(R.id.btnGoogleLI);
+        btnForgetLI = findViewById(R.id.btnForgetLI);
 
         Toolbar toolbar2 = findViewById(R.id.toolbar2);
         setSupportActionBar(toolbar2);
@@ -61,6 +62,23 @@ public class Login extends AppCompatActivity {
         btnGoogleLI.setOnClickListener(v -> {
             progressBarHandler.showProgressBar();
             googleSignInHelper.signIn();
+        });
+        btnForgetLI.setOnClickListener(v -> {
+            String email = etEmailLI.getText().toString().trim();
+            if (email.isEmpty()) {
+                Toast.makeText(Login.this, "Please enter your email to reset the password.", Toast.LENGTH_SHORT).show();
+            } else {
+                progressBarHandler.showProgressBar();
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                        .addOnCompleteListener(task -> {
+                            progressBarHandler.hideProgressBar();
+                            if (task.isSuccessful()) {
+                                Toast.makeText(Login.this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
         });
     }
 

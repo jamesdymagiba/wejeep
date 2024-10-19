@@ -1,5 +1,6 @@
 package com.example.wejeep;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -45,10 +46,9 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
             ((AdminManageDriver) holder.itemView.getContext()).startActivityForResult(intent, 100); // Start for result with a request code
         });
 
-
         // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {
-            deleteDriver(driver.getDocumentId(), position, holder.itemView.getContext()); // Pass context
+            showDeleteConfirmationDialog(driver.getDocumentId(), position, holder.itemView.getContext()); // Show confirmation dialog
         });
     }
 
@@ -69,6 +69,18 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
+    }
+
+    // Method to show a confirmation dialog before deleting
+    private void showDeleteConfirmationDialog(String driverId, int position, Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle("Delete Driver")
+                .setMessage("Are you sure you want to delete this driver?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    deleteDriver(driverId, position, context); // Proceed with delete
+                })
+                .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
+                .show();
     }
 
     // Method to delete driver from Firestore and update RecyclerView

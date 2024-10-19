@@ -16,9 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AdminAddDriver extends AppCompatActivity {
@@ -52,23 +54,10 @@ public class AdminAddDriver extends AppCompatActivity {
             startActivity(new Intent(AdminAddDriver.this, AdminManageDriver.class));
         });
 
-        // Handle date picker for "Date Added"
-        etDateAdded.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-                DatePickerDialog datePickerDialog = new DatePickerDialog(AdminAddDriver.this,
-                        (view, selectedYear, selectedMonth, selectedDay) -> {
-                            String date = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-                            etDateAdded.setText(date);
-                        }, year, month, day);
-                datePickerDialog.show();
-            }
-        });
+        // Set today's date in etDateAdded
+        String todayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+        etDateAdded.setText(todayDate);
+        etDateAdded.setEnabled(false); // Disable editing of the date field
 
         // Handle Add Driver button click
         btnAddDriver.setOnClickListener(new View.OnClickListener() {
@@ -105,6 +94,7 @@ public class AdminAddDriver extends AppCompatActivity {
                         driverList.add(newDriver); // Add the new driver to your list
                         driverAdapter.notifyItemInserted(driverList.size() - 1); // Notify the adapter
                         Toast.makeText(AdminAddDriver.this, "Driver added successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminAddDriver.this, AdminManageDriver.class));
                     } else {
                         Toast.makeText(AdminAddDriver.this, "Error adding driver: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }

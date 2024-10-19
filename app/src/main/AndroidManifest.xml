@@ -42,6 +42,9 @@
             android:exported="false" />
         <activity
             android:name=".AdminManageUnitScreen"
+            android:exported="false"/>
+        <activity
+            android:name=".AdminDashboard"
             android:exported="false" />
         <activity
             android:name=".AdminEditDriver"
