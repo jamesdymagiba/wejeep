@@ -34,6 +34,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import org.w3c.dom.Text;
 
 public class PPassenger extends AppCompatActivity {
+    private NavigationManager navigationManager;
+    private MenuVisibilityManager menuVisibilityManager;
     private FirebaseAuth auth;
     private FirebaseUser user;
     DrawerLayout drawerLayout;
@@ -53,9 +55,18 @@ public class PPassenger extends AppCompatActivity {
             startActivity(new Intent(PPassenger.this, EPPassenger.class));
         });
 
-        drawerLayout = findViewById(R.id.drawer_layout);
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        navigationManager = new NavigationManager(this);
         navigationView = findViewById(R.id.nav_view);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
+
+        // Initialize MenuVisibilityManager with the NavigationView
+        Menu menu = navigationView.getMenu();
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        menuVisibilityManager.fetchUserRole(menu);
+
+        //Initialize Drawer for menu
+        drawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
@@ -65,32 +76,9 @@ public class PPassenger extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.itmHomeHSP:
-                        Toast.makeText(PPassenger.this, "Home", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(PPassenger.this, HSPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmSignoutHSP:
-                        Toast.makeText(PPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(PPassenger.this, MainActivity.class));
-                        finish();
-                        return true;
-                    case R.id.itmProfileHSP:
-                        Toast.makeText(PPassenger.this, "Profile", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(PPassenger.this, PPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManageDriverHSP:
-                        Toast.makeText(PPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(PPassenger.this, AdminManageDriver.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
-                }
+                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return handled;
             }
         });
 
@@ -141,30 +129,8 @@ public class PPassenger extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String userRole = documentSnapshot.getString("role");
-                        setMenuVisibility(userRole);
                     }
                 })
                 .addOnFailureListener(e -> Log.w("PPassenger", "Error fetching user role", e));
-    }
-
-    private void setMenuVisibility(String userRole) {
-        Menu menu = navigationView.getMenu();
-
-        // Hide all groups first
-        menu.setGroupVisible(R.id.passenger, false);
-        menu.setGroupVisible(R.id.pao, false);
-        menu.setGroupVisible(R.id.admin, false);
-
-        // Show the relevant group based on the user's role
-        if ("passenger".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-        } else if ("pao".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-            menu.setGroupVisible(R.id.pao, true);
-        } else if ("admin".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-            menu.setGroupVisible(R.id.pao, true);
-            menu.setGroupVisible(R.id.admin, true);
-        }
     }
 }
