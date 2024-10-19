@@ -28,8 +28,8 @@
 
                 <TextView
                     android:id="@+id/tvFromDay"
-                    android:layout_width="65dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="75dp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
@@ -61,8 +61,8 @@
 
                 <TextView
                     android:id="@+id/tvFromTime"
-                    android:layout_width="65dp"
-                    android:layout_height="wrap_content"
+                    android:layout_width="75dp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:textColor="@color/black"
                     android:textSize="16sp" />

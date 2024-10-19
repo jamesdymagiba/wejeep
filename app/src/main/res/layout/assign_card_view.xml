@@ -11,13 +11,13 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="75dp">
+        android:layout_height="100dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="293dp"
+            android:layout_height="match_parent"
             android:layout_alignParentStart="true"
-            android:layout_marginEnd="16dp"
+            android:layout_marginEnd="3dp"
             android:layout_toStartOf="@+id/btnContainer"
             android:orientation="vertical">
 
@@ -27,27 +27,10 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/vehicle_model"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:id="@+id/tvVehicleModel"
-                    android:layout_width="84dp"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Vehicle Model"
-                    android:textColor="@color/black"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:text="Unit No."
+                    android:text="@string/unit_no"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -56,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Unit No."
+                    android:hint="@string/_01"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -68,7 +51,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/plate_number"
@@ -80,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Plate Number"
+                    android:hint="ABC-123"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
@@ -92,22 +75,21 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="70dp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/driverdateadded"
+                    android:text="@string/driver"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvDateAdded"
+                    android:id="@+id/tvDriverName"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:hint="Date Added Here"
+                    android:hint="John Doe"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
-
 
 
             </LinearLayout>
@@ -115,23 +97,112 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"/>
+                android:orientation="horizontal">
 
-            <TextView
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="Conductor:"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvConductorName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="John Smith"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/londrina_solid_regular"
-                android:hint="Date Added Here"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:orientation="horizontal" >
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="Schedule:"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
 
-            <TextView
+                <TextView
+                    android:id="@+id/tvFromDay"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="Tuesday"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:textAlignment="center"
+                    android:text="-"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/tvToDay"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="Monday"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+
+
+
+            </LinearLayout>
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/londrina_solid_regular"
-                android:hint="Date Added Here"
-                android:textColor="@color/black"
-                android:textSize="12sp" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="Time:"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvFromTime"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="12:00"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:textAlignment="center"
+                    android:text="-"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"/>
+
+                <TextView
+                    android:id="@+id/tvToTime"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:hint="12:30"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"/>
+
+
+            </LinearLayout>
 
 
         </LinearLayout>

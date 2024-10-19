@@ -12,7 +12,36 @@
           "package_name": "com.example.wejeep"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "117155658476-09s5n3qag7paqi5152vrtjipma5sged8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wejeep",
+            "certificate_hash": "7a58116e51b14dad39edddf304331f0b7b1c55e8"
+          }
+        },
+        {
+          "client_id": "117155658476-d6eil3jt8u3t4qbm1lcrblfoapunsnqu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wejeep",
+            "certificate_hash": "fe18ec26b61e135a70509188ddff323f2dc9a6b4"
+          }
+        },
+        {
+          "client_id": "117155658476-ebce1ni61uptgbq3dsa1b4q2hr2lajqg.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wejeep",
+            "certificate_hash": "50b3bcca1d0e33489219728353137972ea9cb655"
+          }
+        },
+        {
+          "client_id": "117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCa97JoTnvU6Tsd0Aj5Dyrlk0b3VZWR-Io"
@@ -20,7 +49,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -93,6 +93,16 @@ public class AdminManageUnitScreen extends AppCompatActivity {
                          startActivity(new Intent(AdminManageUnitScreen.this, AdminManageUnitScreen.class));
                          drawerLayout.closeDrawer(GravityCompat.START);
                          return true;
+                    case R.id.itmManageScheduleHSP:
+                        Toast.makeText(AdminManageUnitScreen.this, "Manage Schedule", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminManageUnitScreen.this,AdminManageScheduleScreen.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
+                    case R.id.itmAssignScheduleHSP:
+                        Toast.makeText(AdminManageUnitScreen.this, "Assign Schedule", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminManageUnitScreen.this, AdminManageActiveUnitList.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }

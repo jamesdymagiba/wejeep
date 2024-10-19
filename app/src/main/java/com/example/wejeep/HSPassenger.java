@@ -140,7 +140,7 @@ public class HSPassenger extends AppCompatActivity {
                     case R.id.itmAssignScheduleHSP:
                         Toast.makeText(HSPassenger.this, "Assign Schedule", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(HSPassenger.this, AdminManageActiveUnitList.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
+                             drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
                     default:
                         return false;

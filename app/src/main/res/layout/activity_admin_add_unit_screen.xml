@@ -68,8 +68,8 @@
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/imgview_1"
-        android:layout_width="370dp"
-        android:layout_height="370dp"
+        android:layout_width="339dp"
+        android:layout_height="372dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.487"
@@ -88,10 +88,10 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.139"
+        app:layout_constraintHorizontal_bias="0.081"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.048"
+        app:layout_constraintVertical_bias="0.045"
         tools:ignore="MissingConstraints" />
 
     <TextView
@@ -103,10 +103,10 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.142"
+        app:layout_constraintHorizontal_bias="0.082"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.546" />
+        app:layout_constraintVertical_bias="0.521" />
 
     <TextView
         android:id="@+id/textView17"
@@ -117,10 +117,10 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.147"
+        app:layout_constraintHorizontal_bias="0.089"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.294"
+        app:layout_constraintVertical_bias="0.281"
         tools:ignore="MissingConstraints" />
 
     <TextView
@@ -132,62 +132,62 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.149"
+        app:layout_constraintHorizontal_bias="0.085"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.798" />
+        app:layout_constraintVertical_bias="0.774" />
 
     <EditText
         android:id="@+id/etUnitNumber"
-        android:layout_width="100dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
-        android:hint="@string/_01"
-        android:textAlignment="center"
+        android:hint="@string/enter_unit_number"
         android:importantForAutofill="no"
         android:inputType="number"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.17"
+        app:layout_constraintHorizontal_bias="0.258"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.127"
+        app:layout_constraintVertical_bias="0.132"
         tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/etVehicleModel"
-        android:layout_width="130dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
+        android:hint="@string/enter_vehicle_model"
+        android:importantForAutofill="no"
         android:inputType="text"
-        android:hint="@string/hd505"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.191"
+        app:layout_constraintHorizontal_bias="0.258"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.4"
-        tools:ignore="MissingConstraints"
-        android:importantForAutofill="no" />
+        app:layout_constraintVertical_bias="0.385"
+        tools:ignore="MissingConstraints" />
 
     <EditText
         android:id="@+id/etPlateNumber"
-        android:layout_width="130dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
+        android:hint="@string/enter_plate_number"
         android:importantForAutofill="no"
-        android:hint="@string/abc_123"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.191"
+        app:layout_constraintHorizontal_bias="0.258"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.673"
+        app:layout_constraintVertical_bias="0.648"
         tools:ignore="MissingConstraints" />
 
     <EditText
@@ -195,17 +195,17 @@
         android:layout_width="130dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
-        android:hint="Select Date"
-        android:ems="10"
         android:clickable="false"
+        android:ems="10"
         android:focusable="false"
+        android:hint="Select Date"
         android:importantForAutofill="no"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.191"
+        app:layout_constraintHorizontal_bias="0.172"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.956" />
+        app:layout_constraintVertical_bias="0.935" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
