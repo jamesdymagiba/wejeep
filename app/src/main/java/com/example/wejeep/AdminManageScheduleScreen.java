@@ -71,6 +71,7 @@ public class AdminManageScheduleScreen extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+        fetchScheduleFromFirestore();
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -111,6 +112,7 @@ public class AdminManageScheduleScreen extends AppCompatActivity {
                     ScheduleModel schedule = document.toObject(ScheduleModel.class);
                     schedule.setDocumentId(document.getId()); // Set the document ID
                     scheduleList.add(schedule);
+                    Log.d("FirestoreData", "Fetched Schedule: " + schedule.getDocumentId()); //DEBUG THE FETCHED SCHEDULE DATA
                 }
                 scheduleAdapter.notifyDataSetChanged(); // Update the RecyclerView with data
             } else {

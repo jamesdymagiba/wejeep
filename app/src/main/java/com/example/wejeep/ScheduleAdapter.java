@@ -31,6 +31,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
     @Override
     public void onBindViewHolder(@NonNull ScheduleViewHolder holder, int position) {
         ScheduleModel schedule = scheduleList.get(position);
+        Log.d("AdapterBinding", "Binding Schedule at position: " + position); // debug check of binding is working
         holder.tvFromDay.setText(schedule.getFromDay());
         holder.tvToDay.setText(schedule.getToDay());
         holder.tvFromTime.setText(schedule.getFromTime());
