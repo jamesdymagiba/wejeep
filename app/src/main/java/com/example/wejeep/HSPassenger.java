@@ -134,6 +134,11 @@ public class HSPassenger extends AppCompatActivity {
                         startActivity(new Intent(HSPassenger.this, AdminManagePAO.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmScheduleHSP:
+                        finish(); // Avoid launching the same activity
+                        startActivity(new Intent(HSPassenger.this, Schedule.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }

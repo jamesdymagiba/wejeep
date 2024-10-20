@@ -42,6 +42,13 @@
     <string name="sign_up_pao">Sign Up</string>
     <string name="name_pao">Name :</string>
     <string name="email_pao">Email :</string>
+    <string name="weekly_schedule">Weekly Schedule</string>
+    <string name="assign_day">Day :</string>
+    <string name="assign_time">Time :</string>
+    <string name="vechicle_model">Vechicle Model :</string>
+    <string name="plate_no">Plate No. :</string>
+    <string name="driver">Driver :</string>
+    <string name="admin_dashboard">Admin Dashboard</string>
 
 
 </resources>

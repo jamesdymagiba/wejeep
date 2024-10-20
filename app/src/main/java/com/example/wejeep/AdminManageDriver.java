@@ -93,6 +93,11 @@ public class AdminManageDriver extends AppCompatActivity {
                         startActivity(new Intent(AdminManageDriver.this, AdminManagePAO.class));
                         drawerLayout.closeDrawer(GravityCompat.START);
                         return true;
+                    case R.id.itmScheduleHSP:
+                        finish(); // Avoid launching the same activity
+                        startActivity(new Intent(AdminManageDriver.this, Schedule.class));
+                        drawerLayout.closeDrawer(GravityCompat.START);
+                        return true;
                     default:
                         return false;
                 }
@@ -139,6 +144,8 @@ public class AdminManageDriver extends AppCompatActivity {
             }
         });
     }
+
+
 
     @Override //override code to notify succesful editing of driver and refresh the list
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
