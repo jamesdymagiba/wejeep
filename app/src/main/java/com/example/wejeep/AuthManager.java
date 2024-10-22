@@ -142,12 +142,13 @@ public class AuthManager {
                     if (task.isSuccessful()) {
                         if (!task.getResult().exists()) {
                             // User doesn't exist, create a new profile
-                            UserProfile userProfile = new UserProfile(name, email, role);
+                            String profilePicture = "";
+                            UserProfile userProfile = new UserProfile(name, email, role, profilePicture);
                             db.collection("users").document(user.getUid())
                                     .set(userProfile)
                                     .addOnSuccessListener(aVoid -> {
                                         Log.d("AuthManager", "User profile added.");
-                                        Toast.makeText(context, "Please check your email for verification.", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(context, "Sign up Successfully. Please check your email for verification.", Toast.LENGTH_SHORT).show();
                                         // Start login activity after user profile is added
                                         Intent intent = new Intent(context, Login.class);
                                         context.startActivity(intent);
@@ -178,15 +179,17 @@ public class AuthManager {
         private String name;
         private String email;
         private String role;
+        private String profilePicture;
 
         public UserProfile() {
             // Default constructor required for Firestore serialization
         }
 
-        public UserProfile(String name, String email, String role) {
+        public UserProfile(String name, String email, String role, String profilePicture) {
             this.name = name;
             this.email = email;
             this.role = role;
+            this.profilePicture = profilePicture;
         }
 
         public String getName() {
@@ -212,6 +215,10 @@ public class AuthManager {
         public void setRole(String role) {
             this.role = role;
         }
+
+        public String getProfilePicture() {return profilePicture;}
+
+        public void setProfilePicture(String profilePicture) {this.profilePicture = profilePicture;}
     }
     public void checkIfUserExists(String email, final UserCheckCallback callback) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

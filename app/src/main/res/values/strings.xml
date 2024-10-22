@@ -78,6 +78,7 @@
     <string name="enter_unit_number">Enter Unit Number</string>
     <string name="forget_password">Forget Password</string>
     <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="profile_picture">Profile Picture</string>
 
 
 </resources>
