@@ -93,7 +93,6 @@ public class PPassenger extends AppCompatActivity {
         } else {
             // User is logged in, update UI with user information
             updateUserUI();
-            fetchUserRoleAndSetMenuVisibility(); // New method to fetch user role and set visibility
         }
     }
 
@@ -119,18 +118,5 @@ public class PPassenger extends AppCompatActivity {
                     .apply(RequestOptions.circleCropTransform())
                     .into(ivProfilePictureHSP);
         }
-    }
-
-    private void   fetchUserRoleAndSetMenuVisibility() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = user.getUid();
-
-        db.collection("users").document(userId).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String userRole = documentSnapshot.getString("role");
-                    }
-                })
-                .addOnFailureListener(e -> Log.w("PPassenger", "Error fetching user role", e));
     }
 }

@@ -31,7 +31,7 @@ public class GoogleSignInHelper {
         db = FirebaseFirestore.getInstance(); // Initialize Firestore
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id)) // Ensure this is your client ID
+                .requestIdToken(activity.getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
@@ -67,8 +67,8 @@ public class GoogleSignInHelper {
             if (task.isSuccessful()) {
                 FirebaseUser user = mAuth.getCurrentUser();
                 if (user != null) {
-                    storeUserInFirestore(user);
-                    callback.onSignInSuccess(user);
+                    // Fetch user role and redirect accordingly
+                    checkUserRoleAndRedirect(user, callback);
                 } else {
                     callback.onSignInFailure(new Exception("FirebaseUser is null"));
                 }
@@ -77,6 +77,37 @@ public class GoogleSignInHelper {
             }
         });
     }
+
+    private void checkUserRoleAndRedirect(FirebaseUser user, final SignInCallback callback) {
+        String userId = user.getUid();
+
+        // Fetch the user's role from Firestore
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                // Get the user's role from Firestore
+                String role = task.getResult().getString("role");
+
+                if ("admin".equals(role)) {
+                    // If user is an admin, redirect to AdminDashboard
+                    Intent adminIntent = new Intent(activity, AdminDashboard.class);
+                    activity.startActivity(adminIntent);
+                    activity.finish();
+                } else {
+                    // Default redirection to HSPassenger for other users
+                    Intent passengerIntent = new Intent(activity, HSPassenger.class);
+                    activity.startActivity(passengerIntent);
+                    activity.finish();
+                }
+
+                callback.onSignInSuccess(user);
+            } else {
+                storeUserInFirestore(user);
+                Intent intent = new Intent(activity, HSPassenger.class); // Default redirection after first sign-in
+                activity.startActivity(intent);
+            }
+        });
+    }
+
     private void storeUserInFirestore(FirebaseUser user) {
         String userId = user.getUid();
         String email = user.getEmail();
