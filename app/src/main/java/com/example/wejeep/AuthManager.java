@@ -14,6 +14,8 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AuthManager {
@@ -54,12 +56,37 @@ public class AuthManager {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null && user.isEmailVerified()) {
-                                Toast.makeText(context, "Login successful.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(context, HSPassenger.class);
-                                context.startActivity(intent);
-                                if (context instanceof AppCompatActivity) {
-                                    ((AppCompatActivity) context).finish();
-                                }
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                DocumentReference userRef = db.collection("users").document(user.getUid());
+                                userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            DocumentSnapshot document = task.getResult();
+                                            if (document.exists()) {
+                                                String role = document.getString("role");
+                                                if (role != null && role.equals("admin")) {
+                                                    // If the user is an admin, redirect to AdminDashboard
+                                                    Toast.makeText(context, "Login successful as an admin.", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(context, AdminDashboard.class);
+                                                    context.startActivity(intent);
+                                                } else {
+                                                    // If the user is not an admin, redirect to HSPassenger
+                                                    Toast.makeText(context, "Login successful.", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(context, HSPassenger.class);
+                                                    context.startActivity(intent);
+                                                }
+                                                if (context instanceof AppCompatActivity) {
+                                                    ((AppCompatActivity) context).finish();
+                                                }
+                                            } else {
+                                                Toast.makeText(context, "User data not found.", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            Toast.makeText(context, "Failed to fetch user role.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                             } else if (user != null) {
                                 Toast.makeText(context, "Please verify your email address.", Toast.LENGTH_SHORT).show();
                             } else {
@@ -71,6 +98,7 @@ public class AuthManager {
                     }
                 });
     }
+
 
     private void sendVerificationEmail(FirebaseUser user, String name) {
         user.sendEmailVerification()
