@@ -61,6 +61,10 @@ public class HSPassenger extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseUser user;
+    private NavigationManager navigationManager;
+    private MenuVisibilityManager menuVisibilityManager;
+    private Menu menu;
+
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
@@ -71,14 +75,14 @@ public class HSPassenger extends AppCompatActivity {
     private LocationCallback locationCallback;
     private Handler locationTimerHandler;
     private Runnable locationTimerRunnable;
-    @Override
+    //Obsolete code
+    /**@Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
-
         MenuCompat.setGroupDividerEnabled(menu, true);
-
         return true;
     }
+     **/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,62 +92,31 @@ public class HSPassenger extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarHSP);
 
-
-        drawerLayout = findViewById(R.id.drawer_layout);
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        navigationManager = new NavigationManager(this);
         navigationView = findViewById(R.id.nav_view);
+
+        // Initialize MenuVisibilityManager with the NavigationView
+        Menu menu = navigationView.getMenu();
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        menuVisibilityManager.fetchUserRole(menu);
+
+        // Initialize drawer for menu
+        drawerLayout = findViewById(R.id.drawer_layout);
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
         Drawable drawable = drawerToggle.getDrawerArrowDrawable();
         drawable.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_ATOP);
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.itmHomeHSP:
-                        Toast.makeText(HSPassenger.this, "Home", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HSPassenger.this, HSPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmSignoutHSP:
-                        Toast.makeText(HSPassenger.this, "Signout", Toast.LENGTH_SHORT).show();
-                        removeUserLocationFromFirestore();
-                        FirebaseAuth.getInstance().signOut();
-                        startActivity(new Intent(HSPassenger.this, MainActivity.class));
-                        finish();
-                        return true;
-                    case R.id.itmProfileHSP:
-                        Toast.makeText(HSPassenger.this, "Profile", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HSPassenger.this, PPassenger.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmAdminDashboardHSP:
-                        Toast.makeText(HSPassenger.this, "Admin Dashboard", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HSPassenger.this, AdminDashboard.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManageDriverHSP:
-                        Toast.makeText(HSPassenger.this, "Manage Driver", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HSPassenger.this, AdminManageDriver.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmManagePAOHSP:
-                        Toast.makeText(HSPassenger.this, "Manage PAO", Toast.LENGTH_SHORT).show();
-                        startActivity(new Intent(HSPassenger.this, AdminManagePAO.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    case R.id.itmScheduleHSP:
-                        finish(); // Avoid launching the same activity
-                        startActivity(new Intent(HSPassenger.this, Schedule.class));
-                        drawerLayout.closeDrawer(GravityCompat.START);
-                        return true;
-                    default:
-                        return false;
+
+             navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                    boolean handled = navigationManager.handleNavigationItemSelected(item);
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return handled;
                 }
-            }
-        });
+            });
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
@@ -450,7 +423,6 @@ public class HSPassenger extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String userRole = documentSnapshot.getString("role");
-                        setMenuVisibility(userRole);
                         updateCurrentUserMarker(userRole);  // Update the current user's marker based on role
                     }
                 })
@@ -472,25 +444,5 @@ public class HSPassenger extends AppCompatActivity {
             mapView.getOverlays().add(locationMarker);
         }
         mapView.invalidate();  // Refresh the map
-    }
-
-
-    private void setMenuVisibility(String userRole) {
-        Menu menu = navigationView.getMenu();
-
-        // Hide all groups first
-        menu.setGroupVisible(R.id.passenger, false);
-        menu.setGroupVisible(R.id.pao, false);
-        menu.setGroupVisible(R.id.admin, false);
-
-        // Show the relevant group based on the user's role
-        if ("passenger".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-        } else if ("pao".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-            menu.setGroupVisible(R.id.pao, true);
-        } else if ("admin".equals(userRole)) {
-            menu.setGroupVisible(R.id.admin, true);
-        }
     }
 }
