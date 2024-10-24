@@ -79,6 +79,14 @@
     <string name="forget_password">Forget Password</string>
     <string name="admin_dashboard">Admin Dashboard</string>
     <string name="profile_picture">Profile Picture</string>
+    <string name="add_pao">Add Pao</string>
+    <string name="weekly_schedule">Weekly Schedule</string>
+    <string name="sign_up_for_pao">Sign up for PAO</string>
+    <string name="sign_up_pao">Sign up PAO</string>
+    <string name="name_pao">Name :</string>
+    <string name="email_pao">Email :</string>
+    <string name="back_pao">Back</string>
+    <string name="date_added_pao">Date Added :</string>
 
 
 </resources>

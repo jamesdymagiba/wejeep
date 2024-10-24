@@ -16,7 +16,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,6 +28,8 @@ public class Schedule extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private TextView tvDay, tvTime, tvModel, tvPlate, tvDriver;
+    private NavigationManager navigationManager;
+    private MenuVisibilityManager menuVisibilityManager;
     private static final String TAG = "ScheduleActivity";
 
     @Override
@@ -49,6 +50,9 @@ public class Schedule extends AppCompatActivity {
 
         // Initialize the toolbar
         Toolbar toolbar = findViewById(R.id.toolbarSchedule);
+
+
+        // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
 
@@ -57,8 +61,14 @@ public class Schedule extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        // Set up NavigationView item selection listener
-        navigationView.setNavigationItemSelectedListener(item -> handleNavigationItemSelected(item));
+        // Set up NavigationManager and MenuVisibilityManager
+        navigationManager = new NavigationManager(this);
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        navigationView.setNavigationItemSelectedListener(item -> {
+            boolean handled = navigationManager.handleNavigationItemSelected(item);
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return handled;
+        });
 
         // Check user authentication and set the profile info
         checkUserAuthentication();
@@ -68,8 +78,9 @@ public class Schedule extends AppCompatActivity {
     }
 
     private void fetchScheduleData() {
+        // Adjust document ID to dynamically retrieve schedule if needed
         db.collection("assigns")
-                .document("crm12yeZau2ZAewOia55")
+                .document("crm12yeZau2ZAewOia55") // Replace with actual document ID or retrieve dynamically
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
@@ -94,81 +105,7 @@ public class Schedule extends AppCompatActivity {
                 });
     }
 
-    private void fetchUserRole() {
-        // Get the current user
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-            String userId = user.getUid();
-
-            // Fetch the user's role from Firestore
-            db.collection("users").document(userId).get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String userRole = documentSnapshot.getString("role");
-                            setMenuVisibility(userRole);
-                        }
-                    })
-                    .addOnFailureListener(e -> Log.e(TAG, "Error fetching user role", e));
-        } else {
-            Log.e(TAG, "User is not authenticated");
-        }
-    }
-
-    private void setMenuVisibility(String userRole) {
-        Menu menu = navigationView.getMenu();
-
-        // Hide all groups first
-        menu.setGroupVisible(R.id.passenger, false);
-        menu.setGroupVisible(R.id.pao, false);
-        menu.setGroupVisible(R.id.admin, false);
-
-        // Show the relevant group based on the user's role
-        if ("passenger".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-        } else if ("pao".equals(userRole)) {
-            menu.setGroupVisible(R.id.passenger, true);
-            menu.setGroupVisible(R.id.pao, true);
-        } else if ("admin".equals(userRole)) {
-            menu.setGroupVisible(R.id.admin, true);
-        }
-    }
-
-    private boolean handleNavigationItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.itmHomeHSP:
-                startActivity(new Intent(Schedule.this, HSPassenger.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            case R.id.itmSignoutHSP:
-                FirebaseAuth.getInstance().signOut();
-                startActivity(new Intent(Schedule.this, MainActivity.class));
-                finish();
-                return true;
-            case R.id.itmProfileHSP:
-                startActivity(new Intent(Schedule.this, PPassenger.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            case R.id.itmManageDriverHSP:
-                startActivity(new Intent(Schedule.this, AdminManageDriver.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            case R.id.itmManagePAOHSP:
-                startActivity(new Intent(Schedule.this, AdminManagePAO.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            case R.id.itmScheduleHSP:
-                finish();  // Avoid launching the same activity
-                startActivity(new Intent(Schedule.this, Schedule.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-            default:
-                return false;
-        }
-    }
-
     private void checkUserAuthentication() {
-        auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
@@ -189,7 +126,9 @@ public class Schedule extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
-            fetchUserRole();  // Fetch user role to set menu visibility
+
+            // Fetch the user's role to update menu visibility
+            menuVisibilityManager.fetchUserRole(navigationView.getMenu());
         }
     }
 

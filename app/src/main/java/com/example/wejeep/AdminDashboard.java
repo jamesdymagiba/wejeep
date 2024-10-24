@@ -32,6 +32,7 @@ public class AdminDashboard extends AppCompatActivity {
         setContentView(R.layout.activity_admin_dashboard);
 
         Toolbar toolbar = findViewById(R.id.toolbarAdminDashboard);
+
         // Initialize navigationManager and navigationView for menuVisibilityManager
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -41,17 +42,17 @@ public class AdminDashboard extends AppCompatActivity {
         menuVisibilityManager = new MenuVisibilityManager(this);
         menuVisibilityManager.fetchUserRole(menu);
 
-        //Initialize Drawer for menu
+        // Initialize Drawer for menu
         drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        drawerToggle.syncState(); // Sync state after the listener is added
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 boolean handled = navigationManager.handleNavigationItemSelected(item);
-                drawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selection
                 return handled;
             }
         });
@@ -70,12 +71,16 @@ public class AdminDashboard extends AppCompatActivity {
             ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
             TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
 
-            tvNameHSP.setText(user.getDisplayName());
+            // Set user name and profile picture
+            tvNameHSP.setText(user.getDisplayName() != null ? user.getDisplayName() : "User"); // Handle null display name
             if (user.getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(user.getPhotoUrl())
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
+            } else {
+                // Set a placeholder image if there's no profile picture
+                ivProfilePictureHSP.setImageResource(R.drawable.placeholder_image); // Replace with your placeholder image
             }
         }
     }

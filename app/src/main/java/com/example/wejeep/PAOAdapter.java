@@ -37,7 +37,7 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
         PAOModel pao = paoList.get(position);
         holder.tvPaoName.setText(pao.getName());
         holder.tvPaoEmail.setText(pao.getEmail());
-
+        holder.tvDateAdded.setText(pao.getDateAdded()); // Set the date added
         // Set up the delete button click listener
         holder.btnDelete.setOnClickListener(v -> {
             showDeleteConfirmationDialog(pao.getDocumentId(), position, holder.itemView.getContext());
@@ -82,13 +82,14 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
     }
 
     static class PAOViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPaoName, tvPaoEmail;
+        TextView tvPaoName, tvPaoEmail, tvDateAdded; // Added dateTextView
         Button btnDelete;
 
         PAOViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPaoName = itemView.findViewById(R.id.tvPaoName);
             tvPaoEmail = itemView.findViewById(R.id.tvPaoEmail);
+            tvDateAdded = itemView.findViewById(R.id.tvDateAdded); // Initialize dateTextView
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

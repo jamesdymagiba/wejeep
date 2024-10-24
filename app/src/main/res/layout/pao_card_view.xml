@@ -48,24 +48,53 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal">
-                <TextView
-                    android:text="@string/email_pao"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                android:orientation="vertical">
 
-                <TextView
-                    android:hint="Email Here"
-                    android:id="@+id/tvPaoEmail"
-                    android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/londrina_solid_regular"
+                <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:text="@string/email_pao"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/londrina_solid_regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/tvPaoEmail"
+                        android:hint="Email Here"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/londrina_solid_regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:text="@string/date_added_pao"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/londrina_solid_regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/tvDateAdded"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="PAO Date Added"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/londrina_solid_regular"
+                        android:textColor="@color/black" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
@@ -76,9 +105,7 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            >
-
+            android:layout_centerVertical="true">
 
             <Button
                 android:id="@+id/btnDelete"
@@ -88,5 +115,4 @@
                 android:background="@drawable/delete_icon"/>
         </LinearLayout>
     </RelativeLayout>
-
 </androidx.cardview.widget.CardView>
