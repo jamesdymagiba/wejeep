@@ -107,7 +107,7 @@
         android:background="@drawable/rounded_edit_text"
         android:clickable="false"
         android:focusable="false"
-        android:hint="Select Date"
+        android:hint="Date Today"
         android:inputType="phone"
         app:layout_constraintBottom_toTopOf="@+id/btnAddDriver"
         app:layout_constraintEnd_toEndOf="@+id/btnAddDriver"

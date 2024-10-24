@@ -17,17 +17,32 @@
         android:theme="@style/Theme.WeJeep"
         tools:targetApi="31">
         <activity
-            android:name=".pages"
+            android:name=".AdminEditAssignedUnitScreen"
             android:exported="false" />
         <activity
-            android:name=".Schedule"
+            android:name=".AdminAssignUnitScreen"
             android:exported="false" />
         <activity
-            android:name=".SignUpForPAO"
+            android:name=".AdminManageActiveUnitList"
             android:exported="false" />
         <activity
-            android:name=".AdminManagePAO"
+            android:name=".AdminEditSchedule"
             android:exported="false" />
+        <activity
+            android:name=".AdminAddScheduleScreen"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageScheduleScreen"
+            android:exported="false" />
+        <activity
+            android:name=".AdminEditUnitScreen"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddUnitScreen"
+            android:exported="false" />
+        <activity
+            android:name=".AdminManageUnitScreen"
+            android:exported="false"/>
         <activity
             android:name=".AdminDashboard"
             android:exported="false" />
