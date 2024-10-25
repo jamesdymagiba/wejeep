@@ -14,17 +14,41 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
+    private FirebaseFirestore db;
     @Override
     public void onStart() {
         super.onStart();
-        // If the user is already signed in, redirect to the HSPassenger activity
+        // If the user is already signed in, check their role and redirect accordingly
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null && user.isEmailVerified()) {
-            startActivity(new Intent(getApplicationContext(), HSPassenger.class));
-            finish();
+            checkUserRoleAndRedirect(user);
         }
+    }
+    private void checkUserRoleAndRedirect(FirebaseUser user) {
+        String userId = user.getUid();
+        db = FirebaseFirestore.getInstance();
+
+        // Fetch the user's role from Firestore
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                String role = task.getResult().getString("role");
+                if ("admin".equals(role)) {
+                    // If user is an admin, redirect to AdminDashboard
+                    startActivity(new Intent(getApplicationContext(), AdminDashboard.class));
+                } else {
+                    // Default redirection to HSPassenger for other users
+                    startActivity(new Intent(getApplicationContext(), HSPassenger.class));
+                }
+                finish(); // Close MainActivity after redirecting
+            } else {
+                // Handle the case where the user role does not exist or an error occurred
+                startActivity(new Intent(getApplicationContext(), HSPassenger.class)); // Redirect to HSPassenger by default
+                finish(); // Close MainActivity
+            }
+        });
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

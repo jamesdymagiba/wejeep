@@ -95,11 +95,10 @@ public class Login extends AppCompatActivity {
                             // Check if the user is registered
                             authManager.checkIfUserExists(user.getEmail(), exists -> {
                                 if (exists) {
-                                    startActivity(new Intent(getApplicationContext(), HSPassenger.class));
+                                    finish();
                                 } else {
                                     Toast.makeText(Login.this, "User not found.", Toast.LENGTH_SHORT).show();
                                 }
-                                finish();
                             });
                         }
                     }

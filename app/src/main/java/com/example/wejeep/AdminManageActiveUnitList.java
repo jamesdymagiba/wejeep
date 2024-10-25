@@ -59,6 +59,11 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
 
+
+        fetchDriverFromFirestore();
+
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        //jamesdyandwelberinbranch
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
