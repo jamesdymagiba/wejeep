@@ -33,8 +33,8 @@
             android:layout_height="710dp"
             android:layout_above="@id/btnAssignUnit"
             android:layout_below="@id/toolbarAdminManageActiveUnitList"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="34dp"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="32dp"
             android:scrollbars="vertical" />
 
         <Button

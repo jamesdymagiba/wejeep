@@ -8,6 +8,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,8 +31,6 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
     private DrawerLayout drawerLayout;
-    private NavigationManager navigationManager;
-    private MenuVisibilityManager menuVisibilityManager;
     NavigationView navigationView;
     private RecyclerView recyclerView;
     private ArrayList<AssignModel> assignList;
@@ -45,14 +44,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarAdminManageActiveUnitList);
 
-        // Initialize navigationManager and navigationView for menuVisibilityManager
-        navigationManager = new NavigationManager(this);
-        navigationView = findViewById(R.id.nav_view);
 
-        // Initialize MenuVisibilityManager with the NavigationView
-        Menu menu = navigationView.getMenu();
-        menuVisibilityManager = new MenuVisibilityManager(this);
-        menuVisibilityManager.fetchUserRole(menu);
 
         btnAssignUnit = findViewById(R.id.btnAssignUnit);
         btnAssignUnit.setOnClickListener(view -> {
@@ -66,7 +58,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignList = new ArrayList<>();
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
-        // Initialize navigationManager and navigationView for menuVisibilityManager
+
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -80,6 +72,8 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+        fetchDriverFromFirestore();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -113,14 +107,15 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         }
     }
     // Method to fetch driver data from Firestore
-    private void fetchScheduleFromFirestore() {
+    private void fetchDriverFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("schedules").get().addOnCompleteListener(task -> {
+        db.collection("assigns").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 for (QueryDocumentSnapshot document : task.getResult()) {
                     AssignModel assign = document.toObject(AssignModel.class);
                     assign.setDocumentId(document.getId()); // Set the document ID
                     assignList.add(assign);
+                    Log.d("adminassign","assignedList,"+assignList);
                 }
                 assignAdapter.notifyDataSetChanged(); // Update the RecyclerView with data
             } else {
@@ -135,7 +130,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         if (requestCode == 100 && resultCode == RESULT_OK) {
             // Refresh the driver list
             assignList.clear(); // Clear the current list
-            fetchScheduleFromFirestore(); // Fetch updated data
+            fetchDriverFromFirestore(); // Fetch updated data
         }
     }
 

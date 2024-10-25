@@ -2,6 +2,7 @@ package com.example.wejeep;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,9 +36,9 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
         holder.tvToDay.setText(assign.getToDay());
         holder.tvFromTime.setText(assign.getFromTime());
         holder.tvToTime.setText(assign.getToTime());
-        holder.tvUnitNumber.setText(assign.getUnitNumber());
+        holder.tvunitnumber.setText(assign.getunitnumber());
         holder.tvDriverName.setText(assign.getDriver());
-        holder.tvPlateNumber.setText(assign.getPlateNumber());
+        holder.tvplatenumber.setText(assign.getplatenumber());
         // If the conductor field is in use in the future, uncomment the line below
         // holder.tvConductorName.setText(assign.getConductor())
     // Edit button logic
@@ -48,9 +49,9 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
             intent.putExtra("toDay", assign.getToDay());
             intent.putExtra("fromTime", assign.getFromTime());
             intent.putExtra("toTime", assign.getToTime());
-            intent.putExtra("unitNumber", assign.getUnitNumber());
+            intent.putExtra("unitnumber", assign.getunitnumber());
             intent.putExtra("driverName", assign.getDriver());
-            intent.putExtra("plateNumber", assign.getPlateNumber());
+            intent.putExtra("platenumber", assign.getplatenumber());
             ((AdminManageActiveUnitList) holder.itemView.getContext()).startActivityForResult(intent, 100);
         });
 
@@ -64,7 +65,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
     }
 
     public class AssignViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFromDay, tvToDay, tvFromTime, tvToTime, tvUnitNumber, tvDriverName, tvConductorName, tvPlateNumber;
+        TextView tvFromDay, tvToDay, tvFromTime, tvToTime, tvunitnumber, tvDriverName, tvConductorName, tvplatenumber;
         Button btnEdit, btnDelete;
 
         public AssignViewHolder(@NonNull View itemView) {
@@ -75,10 +76,10 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
             tvToDay = itemView.findViewById(R.id.tvToDay);
             tvFromTime = itemView.findViewById(R.id.tvFromTime);
             tvToTime = itemView.findViewById(R.id.tvToTime);
-            tvUnitNumber = itemView.findViewById(R.id.tvUnitNumber);
+            tvunitnumber = itemView.findViewById(R.id.tvunitnumber);
             tvDriverName = itemView.findViewById(R.id.tvDriverName);
             tvConductorName = itemView.findViewById(R.id.tvConductorName);
-            tvPlateNumber = itemView.findViewById(R.id.tvPlateNumber);
+            tvplatenumber = itemView.findViewById(R.id.tvplatenumber);
 
             // Initialize Buttons
             btnEdit = itemView.findViewById(R.id.btnEdit);
