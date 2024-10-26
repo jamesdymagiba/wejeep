@@ -146,6 +146,11 @@ public class EPPassenger extends AppCompatActivity {
             DocumentReference userRef = db.collection("users").document(currentUser.getUid());
             // Update the name if changed
             if (isNameChanged) {
+                // Validate name
+                if (newName.length() <2 || !newName.matches("[a-zA-Z ]+")) {
+                    Toast.makeText(this, "Name must be at least 2 characters and contain only letters", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 userRef.update("name", newName);
                 // Also update the display name in Firebase Authentication
                 currentUser.updateProfile(new UserProfileChangeRequest.Builder()
@@ -159,9 +164,12 @@ public class EPPassenger extends AppCompatActivity {
                 });
             }
 
-            // Update the password if changed
+            // Update the password only if it's changed
             if (isPasswordChanged) {
-                // Update password in Firebase Authentication
+                if (newPassword.length() < 8) {
+                    Toast.makeText(this, "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 currentUser.updatePassword(newPassword).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("EPPassenger", "Password updated in Firebase Authentication.");
