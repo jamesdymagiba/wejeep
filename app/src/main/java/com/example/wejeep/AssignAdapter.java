@@ -1,8 +1,8 @@
 package com.example.wejeep;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,27 +28,27 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.assign_card_view, parent, false);
         return new AssignViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(@NonNull AssignViewHolder holder, int position) {
         AssignModel assign = assignList.get(position);
 
-        holder.tvFromDay.setText(assign.getFromDay());
-        holder.tvToDay.setText(assign.getToDay());
-        holder.tvFromTime.setText(assign.getFromTime());
-        holder.tvToTime.setText(assign.getToTime());
+        holder.tvFromDay.setText(assign.getFromday());
+        holder.tvToDay.setText(assign.getToday());
+        holder.tvFromTime.setText(assign.getFromtime());
+        holder.tvToTime.setText(assign.getTotime());
         holder.tvunitnumber.setText(assign.getunitnumber());
         holder.tvDriverName.setText(assign.getDriver());
         holder.tvplatenumber.setText(assign.getplatenumber());
-        // If the conductor field is in use in the future, uncomment the line below
-        // holder.tvConductorName.setText(assign.getConductor())
-    // Edit button logic
+        holder.tvConductorName.setText(assign.getConductor());
+        // Edit button logic
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), AdminEditAssignedUnitScreen.class);
             intent.putExtra("documentId", assign.getDocumentId());
-            intent.putExtra("fromDay", assign.getFromDay());
-            intent.putExtra("toDay", assign.getToDay());
-            intent.putExtra("fromTime", assign.getFromTime());
-            intent.putExtra("toTime", assign.getToTime());
+            intent.putExtra("Fromday", assign.getFromday());
+            intent.putExtra("Today", assign.getToday());
+            intent.putExtra("Fromtime", assign.getFromtime());
+            intent.putExtra("Totime", assign.getTotime());
             intent.putExtra("unitnumber", assign.getunitnumber());
             intent.putExtra("driverName", assign.getDriver());
             intent.putExtra("platenumber", assign.getplatenumber());
@@ -56,7 +56,9 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
         });
 
         // Delete button logic
-        holder.btnDelete.setOnClickListener(v -> deleteAssign(position, holder.itemView.getContext()));
+        holder.btnDelete.setOnClickListener(v -> {
+            showDeleteConfirmationDialog(assign.getDocumentId(), position, holder.itemView.getContext()); // Show confirmation dialog
+        });
     }
 
     @Override
@@ -87,23 +89,35 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
         }
     }
 
-    // Method to remove a card from the RecyclerView and Firestore
-    private void deleteAssign(int position, Context context) {
-        AssignModel assign = assignList.get(position);
-
-        // Remove the item from Firestore
-        db.collection("assign") // Replace with your actual Firestore collection name
-                .document(assign.getDocumentId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    // Remove the item from the list
-                    assignList.remove(position);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, assignList.size());
-                    Toast.makeText(context, "Card removed", Toast.LENGTH_SHORT).show();
+    private void showDeleteConfirmationDialog(String assignId, int position, Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle("Delete Assigned")
+                .setMessage("Are you sure you want to delete this assigned?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    deleteAssign(assignId, position, context); // Proceed with delete
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "Error removing card", Toast.LENGTH_SHORT).show();
-                });
+                .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
+                .show();
     }
+
+    // Method to remove a card from the RecyclerView and Firestore
+    private void deleteAssign(String assignId, int position, Context context) {
+        AssignModel assign = assignList.get(position);
+        if (assignId != null) {
+            // Remove the item from Firestore
+            db.collection("assigns").document(assign.getDocumentId())
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Remove the item from the list
+                        assignList.remove(position);
+                        notifyItemRemoved(position);
+                        notifyItemRangeChanged(position, assignList.size());
+                        Toast.makeText(context, "Assigned removed", Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(context, "Error removing Assigned", Toast.LENGTH_SHORT).show();
+                    });
+        }
+    }
+
 }
