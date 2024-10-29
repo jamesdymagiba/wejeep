@@ -1,5 +1,6 @@
 package com.example.wejeep;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -51,7 +52,7 @@ public class UnitAdapter extends RecyclerView.Adapter<UnitAdapter.UnitViewHolder
 
         // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {
-            deleteUnit(unit.getDocumentId(), position, holder.itemView.getContext()); // Pass context
+            showDeleteConfirmationDialog(unit.getDocumentId(), position, holder.itemView.getContext()); // Show confirmation dialog
         });
     }
 
@@ -74,6 +75,43 @@ public class UnitAdapter extends RecyclerView.Adapter<UnitAdapter.UnitViewHolder
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }
+    private void showDeleteConfirmationDialog(String unitId, int position, Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle("Delete Unit")
+                .setMessage("Are you sure you want to delete this unit?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    // Second confirmation dialog
+                    new AlertDialog.Builder(context)
+                            .setTitle("Confirm Deletion")
+                            .setMessage("Sure kaba tanginamo?")
+                            .setPositiveButton("Yes", (secondDialog, secondWhich) -> {
+                                // Third confirmation dialog
+                                new AlertDialog.Builder(context)
+                                        .setTitle("Final Confirmation")
+                                        .setMessage("balaka walang balikan to gago")
+                                        .setPositiveButton("Yes", (thirdDialog, thirdWhich) -> {
+                                            // Fourth and ultimate confirmation dialog
+                                            new AlertDialog.Builder(context)
+                                                    .setTitle("Last Warning")
+                                                    .setMessage("WAAAAAAAAAAAAAAAGGGG!")
+                                                    .setPositiveButton("Yes", (fourthDialog, fourthWhich) -> {
+                                                        deleteUnit(unitId, position, context); // Proceed with delete
+                                                    })
+                                                    .setNegativeButton("No", null) // Dismiss if "No" is clicked
+                                                    .show();
+                                        })
+                                        .setNegativeButton("No", null) // Dismiss if "No" is clicked
+                                        .show();
+                            })
+                            .setNegativeButton("No", null) // Dismiss if "No" is clicked
+                            .show();
+                })
+                .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
+                .show();
+    }
+
+
+
 
     // Method to delete driver from Firestore and update RecyclerView
     private void deleteUnit(String unitId, int position, Context context) {

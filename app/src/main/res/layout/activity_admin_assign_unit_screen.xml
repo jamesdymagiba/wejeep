@@ -153,18 +153,6 @@
         app:layout_constraintVertical_bias="1.0" />
 
     <Spinner
-        android:id="@+id/spinnerFromtime"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.164"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.964" />
-
-    <Spinner
         android:id="@+id/spinnerFromday"
         android:layout_width="125dp"
         android:layout_height="45dp"
@@ -187,18 +175,6 @@
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.789" />
-
-    <Spinner
-        android:id="@+id/spinnerTotime"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.693"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.967" />
 
     <Spinner
         android:id="@+id/spinnerUnitnumber"
@@ -231,12 +207,10 @@
         android:fontFamily="@font/londrina_solid_regular"
         android:text="To Time:"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/spinnerTotime"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintTop_toTopOf="@+id/imgview_1" />
 
     <TextView
         android:id="@+id/textView23"
