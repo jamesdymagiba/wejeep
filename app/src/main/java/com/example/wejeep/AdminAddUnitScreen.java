@@ -16,15 +16,17 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class AdminAddUnitScreen extends AppCompatActivity {
     private ArrayList<UnitModel> unitList;
     private UnitAdapter unitAdapter;
-    private EditText etVehicleModel, etPlateNumber,etUnitNumber, etDateAdded;
+    private EditText etVehicleModel, etPlateNumber, etUnitNumber, etDateAdded;
     private Button btnAddUnit, btnBack;
     private FirebaseFirestore db;
 
@@ -36,9 +38,9 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
 
-        // Initialize driverList and driverAdapter
-        unitList = new ArrayList<>(); // Initialize the list here
-        unitAdapter = new UnitAdapter(unitList); // Pass the list to the adapter
+        // Initialize unitList and unitAdapter
+        unitList = new ArrayList<>();
+        unitAdapter = new UnitAdapter(unitList);
 
         // Reference UI elements
         etVehicleModel = findViewById(R.id.etVehicleModel);
@@ -54,33 +56,13 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         });
 
         // Handle date picker for "Date Added"
-        etDateAdded.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
+        // Set today's date in etDateAdded
+        String todayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
+        etDateAdded.setText(todayDate);
+        etDateAdded.setEnabled(false); // Disable editing of the date field
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(AdminAddUnitScreen.this,
-                        (view, selectedYear, selectedMonth, selectedDay) -> {
-                            String date = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
-                            etDateAdded.setText(date);
-                        }, year, month, day);
-                datePickerDialog.show();
-            }
-        });
-
-        // Handle Add Driver button click
-        btnAddUnit.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) { addUnitToFirestore();
-
-                startActivity(new Intent(AdminAddUnitScreen.this,AdminManageUnitScreen.class));
-            }
-
-        });
+        // Handle Add Unit button click
+        btnAddUnit.setOnClickListener(v -> addUnitToFirestore());
     }
 
     private void addUnitToFirestore() {
@@ -89,32 +71,49 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         String unitNumber = etUnitNumber.getText().toString().trim();
         String dateAdded = etDateAdded.getText().toString().trim();
 
+        // Validate fields
         if (unitVehicleModel.isEmpty() || unitPlateNumber.isEmpty() || dateAdded.isEmpty() || unitNumber.isEmpty()) {
             Toast.makeText(AdminAddUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Create a driver object
+        // Regex for unit number: only 2-digit numbers (00-99)
+        String unitNumberPattern = "^[0-9]{2}$";
+        if (!unitNumber.matches(unitNumberPattern)) {
+            etUnitNumber.setError("Unit number must be a 2-digit number (e.g., '01', '99')");
+            return;
+        }
+
+        // Regex for plate number format "ABC 1234"
+        String plateNumberPattern = "^[A-Z]{3} [0-9]{4}$";
+        if (!unitPlateNumber.matches(plateNumberPattern)) {
+            etPlateNumber.setError("Invalid plate number format. Use 'ABC 1234'");
+            return;
+        }
+
+        // Create a unit object
         Map<String, Object> unit = new HashMap<>();
         unit.put("vehicleModel", unitVehicleModel);
         unit.put("plateNumber", unitPlateNumber);
         unit.put("unitNumber", unitNumber);
         unit.put("dateAdded", dateAdded);
 
-        // Add a new document in the "drivers" collection
+        // Add a new document in the "units" collection
         db.collection("units")
                 .add(unit)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentReference docRef = task.getResult();
-                        UnitModel newUnit = new UnitModel(unitVehicleModel, unitPlateNumber,unitNumber, dateAdded, docRef.getId());
-                        unitList.add(newUnit); // Add the new driver to your list
-                        unitAdapter.notifyItemInserted(unitList.size() - 1); // Notify the adapter
+                        UnitModel newUnit = new UnitModel(unitVehicleModel, unitPlateNumber, unitNumber, dateAdded, docRef.getId());
+                        unitList.add(newUnit);
+                        unitAdapter.notifyItemInserted(unitList.size() - 1);
                         Toast.makeText(AdminAddUnitScreen.this, "Unit added successfully", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(AdminAddUnitScreen.this, AdminManageUnitScreen.class));
                     } else {
                         Toast.makeText(AdminAddUnitScreen.this, "Error adding unit: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
 
 }

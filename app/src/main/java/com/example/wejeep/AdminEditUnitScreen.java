@@ -60,10 +60,25 @@ public class AdminEditUnitScreen extends AppCompatActivity {
         String updatedunitNumber = etunitNumber.getText().toString().trim();
         String updatedDateAdded = etDateAdded.getText().toString().trim();
 
-        if (updatedvehicleModel.isEmpty() || updatedplateNumber.isEmpty() || updatedDateAdded.isEmpty()) {
+        if (updatedvehicleModel.isEmpty() || updatedplateNumber.isEmpty() || updatedunitNumber.isEmpty() || updatedDateAdded.isEmpty()) {
             Toast.makeText(AdminEditUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Regex for unit number: only 2-digit numbers (00-99)
+        String unitNumberPattern = "^[0-9]{2}$";
+        if (!updatedunitNumber.matches(unitNumberPattern)) {
+            etunitNumber.setError("Unit number must be a 2-digit number (e.g., '01', '99')");
+            return;
+        }
+
+        // Regex for plate number format "ABC 1234"
+        String plateNumberPattern = "^[A-Z]{3} [0-9]{4}$";
+        if (!updatedplateNumber.matches(plateNumberPattern)) {
+            etplateNumber.setError("Invalid plate number format. Use 'ABC 1234'");
+            return;
+        }
+
 
         // Update the driver document in Firestore
         db.collection("units").document(documentId)
