@@ -29,12 +29,12 @@ public class AuthManager {
         this.context = context;
     }
 
-    public void signUpUser(String email, String password, String name, final ProgressBarHandler progressBarHandler) {
+    public void signUpUser(String email, String password, String name, final CustomLoadingDialog customLoadingDialog) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
+                        customLoadingDialog.hideLoadingScreen();
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
@@ -47,12 +47,12 @@ public class AuthManager {
                 });
     }
 
-    public void signInUser(String email, String password, final ProgressBarHandler progressBarHandler) {
+    public void signInUser(String email, String password, final CustomLoadingDialog customLoadingDialog) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
+                        customLoadingDialog.hideLoadingScreen();
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null && user.isEmailVerified()) {
