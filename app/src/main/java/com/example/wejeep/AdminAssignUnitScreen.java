@@ -46,7 +46,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
     private ArrayList<String> platenumberList = new ArrayList<>();
     private ArrayList<String> driverList = new ArrayList<>();
     private ArrayAdapter<String> fromtimeAdapter, totimeAdapter, fromdayAdapter, todayAdapter, driverAdapter, conductorAdapter, platenumberAdapter, unitnumberAdapter;
-    private Button btnConfrim, btnBack;
+    private Button btnConfirm, btnBack;
     private String selectedDriver, selectedPlatenumber,selectedFromday,selectedToday,selectedFromtime,selectedTotime,selectedConductor,selectedUnitnumber;
 
     @Override
@@ -108,6 +108,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         fetchDriver();
         fetchUnits();
         fetchPlatenumber();
+        fetchConductor();
 
         spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -207,7 +208,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 if (selectedDriver != null && !selectedDriver.isEmpty() &&
                         selectedPlatenumber != null && !selectedPlatenumber.isEmpty() &&
                         selectedUnitnumber != null && !selectedUnitnumber.isEmpty() &&
-                        //selectedConductor != null && !selectedConductor.isEmpty() &&
+                        selectedConductor != null && !selectedConductor.isEmpty() &&
                         selectedFromday != null && !selectedFromday.isEmpty() &&
                         selectedToday != null && !selectedToday.isEmpty() &&
                         selectedFromtime != null && !selectedFromtime.isEmpty() &&
@@ -218,7 +219,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                     assignData.put("unitnumber", selectedUnitnumber);
                     assignData.put("platenumber", selectedPlatenumber);
                     assignData.put("driver", selectedDriver);
-                    //assignData.put("conductor", selectedConductor);
+                    assignData.put("conductor", selectedConductor);
                     assignData.put("fromday", selectedFromday);
                     assignData.put("today", selectedToday);
                     assignData.put("fromtime", selectedFromtime);
@@ -359,7 +360,26 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 });
     }
 
+    private void fetchConductor() {
+        db.collection("users")
+                .whereEqualTo("role", "pao")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        conductorList.clear(); // Clear previous data to avoid duplicates
 
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String conductorName = document.getString("name");
+                            if (conductorName != null) {
+                                conductorList.add(conductorName); // Add the conductor's name to the list
+                            }
+                        }
+                        conductorAdapter.notifyDataSetChanged(); // Notify the adapter to update the spinner
+                    } else {
+                        Toast.makeText(AdminAssignUnitScreen.this, "Failed to fetch conductors", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
 
 }

@@ -31,6 +31,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
     private DrawerLayout drawerLayout;
+    NavigationView navigationView;
     private RecyclerView recyclerView;
     private ArrayList<AssignModel> assignList;
     private AssignAdapter assignAdapter;
@@ -42,6 +43,8 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         setContentView(R.layout.activity_admin_manage_active_unit_list);
 
         Toolbar toolbar = findViewById(R.id.toolbarAdminManageActiveUnitList);
+
+
 
         btnAssignUnit = findViewById(R.id.btnAssignUnit);
         btnAssignUnit.setOnClickListener(view -> {
@@ -56,9 +59,11 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
 
-        fetchScheduleFromFirestore();
+
+        fetchDriverFromFirestore();
 
         // Initialize navigationManager and navigationView for menuVisibilityManager
+        //jamesdyandwelberinbranch
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
 
@@ -72,6 +77,8 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+        fetchDriverFromFirestore();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -105,7 +112,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         }
     }
     // Method to fetch driver data from Firestore
-    private void fetchScheduleFromFirestore() {
+    private void fetchDriverFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("assigns").get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -113,6 +120,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
                     AssignModel assign = document.toObject(AssignModel.class);
                     assign.setDocumentId(document.getId()); // Set the document ID
                     assignList.add(assign);
+                    Log.d("adminassign","assignedList,"+assignList);
                 }
                 assignAdapter.notifyDataSetChanged(); // Update the RecyclerView with data
             } else {
@@ -127,7 +135,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         if (requestCode == 100 && resultCode == RESULT_OK) {
             // Refresh the driver list
             assignList.clear(); // Clear the current list
-            fetchScheduleFromFirestore(); // Fetch updated data
+            fetchDriverFromFirestore(); // Fetch updated data
         }
     }
 

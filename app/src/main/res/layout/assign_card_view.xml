@@ -35,7 +35,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvUnitNumber"
+                    android:id="@+id/tvunitnumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
@@ -59,7 +59,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvPlateNumber"
+                    android:id="@+id/tvplatenumber"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"

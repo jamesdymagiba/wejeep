@@ -1,14 +1,14 @@
 package com.example.wejeep;
 
 public class AssignModel {
-    private String unitNumber;
-    private String plateNumber;
+    private String unitnumber;
+    private String platenumber;
     private String driver;
-    //private String conductor;
-    private String fromDay;
-    private String toDay;
-    private String fromTime;
-    private String toTime;
+    private String conductor;
+    private String Fromday;
+    private String Today;
+    private String Fromtime;
+    private String Totime;
     private String documentId;
 
     public AssignModel() {
@@ -16,15 +16,15 @@ public class AssignModel {
     }
 
     // Required empty constructor for Firebase Firestore
-    public AssignModel(String conductor,String driver, String unitNumber, String plateNumber, String fromDay, String toDay, String fromTime, String toTime , String documentId) {
-        this.unitNumber = unitNumber;
-        this.plateNumber = plateNumber;
+    public AssignModel(String conductor,String driver, String unitnumber, String platenumber, String Fromday, String Today, String Fromtime, String Totime , String documentId) {
+        this.unitnumber = unitnumber;
+        this.platenumber = platenumber;
         this.driver = driver;
-        //this.conductor = conductor;
-        this.fromDay = fromDay;
-        this.toDay = toDay;
-        this.fromTime = fromTime;
-        this.toTime = toTime;
+        this.conductor = conductor;
+        this.Fromday = Fromday;
+        this.Today = Today;
+        this.Fromtime = Fromtime;
+        this.Totime = Totime;
         this.documentId = documentId;
     }
 
@@ -32,20 +32,25 @@ public class AssignModel {
 
     public String getDocumentId() {return documentId;}
     public void setDocumentId(String documentId) { this.documentId = documentId;}
-    public String getPlateNumber() {return plateNumber;}
-    public void setPlateNumber(String plateNumber) {this.plateNumber = plateNumber;}
-    public String getFromDay() { return fromDay;}
-    public void setFromDay(String fromDay) {this.fromDay = fromDay;}
-    public String getToDay() {return toDay;}
-    public void setToDay(String toDay) {this.toDay = toDay;}
-    public String getToTime() {return toTime;}
-    public void setFromTime(String fromTime) {this.fromTime = fromTime;}
-    public String getFromTime() {return fromTime;}
-    public void setToTime(String toTime) {this.toTime = toTime;}
-    public String getUnitNumber() {return unitNumber;}
-    public void setUnitNumber(String unitNumber) {this.unitNumber = unitNumber;}
-    //public String getConductor() {return conductor;}
-    //public void setConductor(String conductor) {this.conductor = conductor;}
+    public String getplatenumber() {return platenumber;}
+    public void setplatenumber(String platenumber) {this.platenumber = platenumber;}
+
+
+    public String getFromday() { return Fromday;}
+    public void setFromday(String Fromday) {this.Fromday = Fromday;}
+    public String getToday() {return Today;}
+    public void setToday(String Today) {this.Today = Today;}
+    public String getTotime() {return Totime;}
+    public void setTotime(String Totime) {this.Totime = Totime;}
+    public String getFromtime() {return Fromtime;}
+    public void setFromtime(String Fromtime) {this.Fromtime = Fromtime;}
+
+
+    public String getunitnumber() {return unitnumber;}
+    public void setunitnumber(String unitnumber) {this.unitnumber = unitnumber;}
+
+    public String getConductor() {return conductor;}
+    public void setConductor(String conductor) {this.conductor = conductor;}
     public String getDriver() {return driver;}
     public void setDriver(String driver) {this.driver = driver;}
 }

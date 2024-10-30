@@ -18,9 +18,7 @@ public class DriverAdapter extends RecyclerView.Adapter<DriverAdapter.DriverView
     private ArrayList<DriverModel> driverList;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    public DriverAdapter(ArrayList<DriverModel> driverList) {
-        this.driverList = driverList;
-    }
+    public DriverAdapter(ArrayList<DriverModel> driverList) { this.driverList = driverList;}
 
     @NonNull
     @Override

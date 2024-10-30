@@ -1,5 +1,6 @@
 package com.example.wejeep;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -51,7 +52,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
 
         // Delete button logic
         holder.btnDelete.setOnClickListener(v -> {
-            deleteSchedule(schedule.getDocumentId(), position, holder.itemView.getContext()); // Pass context
+            showDeleteConfirmationDialog(schedule.getDocumentId(), position, holder.itemView.getContext()); // Show confirmation dialog
         });
     }
 
@@ -73,6 +74,17 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
+    }
+
+    private void showDeleteConfirmationDialog(String scheduleId, int position, Context context) {
+        new AlertDialog.Builder(context)
+                .setTitle("Delete Schedule")
+                .setMessage("Are you sure you want to delete this schedule?")
+                .setPositiveButton("Yes", (dialog, which) -> {
+                    deleteSchedule(scheduleId, position, context); // Proceed with delete
+                })
+                .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
+                .show();
     }
 
     // Method to delete driver from Firestore and update RecyclerView
