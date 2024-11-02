@@ -81,8 +81,8 @@ public class AdminManagePAO extends AppCompatActivity {
             return handled;
         });
 
-        // Check user authentication
-        checkUserAuthentication(navigationView);
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
         // Load PAOs from Firestore
         loadPAOsFromFirestore();
@@ -95,35 +95,6 @@ public class AdminManagePAO extends AppCompatActivity {
         paoAdapter = new PAOAdapter(paoList, db);
         recyclerViewPAO.setAdapter(paoAdapter);
     }
-
-    private void checkUserAuthentication(NavigationView navigationView) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName() != null ? user.getDisplayName() : "User"); // Handle null display name
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            } else {
-                // Set a placeholder image if there's no profile picture
-                ivProfilePictureHSP.setImageResource(R.drawable.placeholder_image); // Replace with your placeholder image
-            }
-        }
-    }
-
     private void loadPAOsFromFirestore() {
         db.collection("users")
                 .whereEqualTo("role", "pao")

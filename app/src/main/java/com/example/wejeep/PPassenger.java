@@ -42,11 +42,14 @@ public class PPassenger extends AppCompatActivity {
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
     Button btnEditProfilePP;
-
+    private static final String TAG = "PPassenger";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ppassenger);
+
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
         btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
@@ -82,41 +85,40 @@ public class PPassenger extends AppCompatActivity {
             }
         });
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            updateUserUI();
-        }
+        updateUserProfileUI();
     }
+    private void updateUserProfileUI() {
+        String userId = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    private void updateUserUI() {
-        View headerView = navigationView.getHeaderView(0);
-        ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-        ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                String name = task.getResult().getString("name");
+                String profilePicture = task.getResult().getString("profilePicture");
 
-        Glide.with(this)
-                .load(user.getPhotoUrl())
-                .apply(RequestOptions.circleCropTransform())
-                .into(ivProfilePicturePP);
+                ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+                TextView tvNamePP = findViewById(R.id.tvNamePP);
 
-        TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-        TextView tvNamePP = findViewById(R.id.tvNamePP);
+                // Set the name from Firestore
+                tvNamePP.setText(name);
 
-        tvNamePP.setText(user.getDisplayName());
-        tvNameHSP.setText(user.getDisplayName());
-
-        if (user.getPhotoUrl() != null) {
-            Glide.with(this)
-                    .load(user.getPhotoUrl())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(ivProfilePictureHSP);
-        }
+                // Load the profile picture from Firestore or use a placeholder if it doesn't exist
+                if (profilePicture != null && !profilePicture.isEmpty()) {
+                    Glide.with(this)
+                            .load(profilePicture)
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(ivProfilePicturePP);
+                } else {
+                    // Optionally set a placeholder image if no profile picture exists
+                    ivProfilePicturePP.setImageResource(R.drawable.placeholder_image);
+                }
+            } else {
+                Toast.makeText(this, "Error fetching user information", Toast.LENGTH_SHORT).show();
+                Log.w(TAG, "Error fetching user information from Firestore", task.getException());
+            }
+        });
     }
 }

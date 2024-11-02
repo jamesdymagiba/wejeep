@@ -89,6 +89,8 @@ public class HSPassenger extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
         locationTimerHandler = new Handler(Looper.getMainLooper());
 
@@ -120,29 +122,11 @@ public class HSPassenger extends AppCompatActivity {
                 }
             });
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
+        //Check user's role and update the marker icon
+        fetchUserRole();
 
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
-            fetchUserRole();
-        }
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         // Initialize the Map
@@ -335,7 +319,6 @@ public class HSPassenger extends AppCompatActivity {
         }
         mapView.invalidate();
     }
-
     private void centerMapOnUserLocation(GeoPoint geoPoint) {
         mapView.getController().setCenter(geoPoint);
         mapView.getController().setZoom(19.0); // Set your desired zoom level

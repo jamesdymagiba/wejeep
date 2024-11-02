@@ -46,11 +46,12 @@ public class Login extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         btnLoginLI.setOnClickListener(view -> {
-            customLoadingDialog.showLoadingScreen();
+
             String email = String.valueOf(etEmailLI.getText());
             String password = String.valueOf(etPasswordLI.getText());
 
             if (validateInputs()) {
+                customLoadingDialog.showLoadingScreen();
                 authManager.signInUser(email, password, customLoadingDialog);
             } else {
                 customLoadingDialog.hideLoadingScreen();
@@ -73,7 +74,7 @@ public class Login extends AppCompatActivity {
                             if (task.isSuccessful()) {
                                 Toast.makeText(Login.this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Login.this, "Error occurred. Please try again.", Toast.LENGTH_SHORT).show();
                             }
                         });
             }
