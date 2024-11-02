@@ -301,7 +301,7 @@ public class HSPassenger extends AppCompatActivity {
                                                     otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
                                                 }
 
-                                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+                                                //otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon)); removed because admin will not be tracked anymore
 
                                                 // Add the marker to the map
                                                 mapView.getOverlays().add(otherUserMarker);
@@ -433,7 +433,7 @@ public class HSPassenger extends AppCompatActivity {
     private void updateCurrentUserMarker(String userRole) {
         // Set marker icon based on the logged-in user's role
         if ("passenger".equals(userRole)) {
-            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.self_marker_icon));
         } else if ("pao".equals(userRole)) {
             locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
         } else {
