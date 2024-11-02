@@ -32,6 +32,7 @@ public class AdminDashboard extends AppCompatActivity {
         setContentView(R.layout.activity_admin_dashboard);
 
         Toolbar toolbar = findViewById(R.id.toolbarAdminDashboard);
+
         // Initialize navigationManager and navigationView for menuVisibilityManager
         navigationManager = new NavigationManager(this);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -41,42 +42,22 @@ public class AdminDashboard extends AppCompatActivity {
         menuVisibilityManager = new MenuVisibilityManager(this);
         menuVisibilityManager.fetchUserRole(menu);
 
-        //Initialize Drawer for menu
+        // Initialize Drawer for menu
         drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
-        drawerToggle.syncState();
+        drawerToggle.syncState(); // Sync state after the listener is added
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 boolean handled = navigationManager.handleNavigationItemSelected(item);
-                drawerLayout.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selection
                 return handled;
             }
         });
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
-        }
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
     }
 }

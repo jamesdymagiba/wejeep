@@ -1,0 +1,190 @@
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Toolbar for the Schedule Activity -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarSchedule"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/blueTextColor"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+            <TextView
+                android:id="@+id/custom_toolbar_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/londrina_solid_regular"
+                android:text="Schedule"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </androidx.appcompat.widget.Toolbar>
+
+        <TextView
+            android:id="@+id/weekly"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbarSchedule"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="@string/weekly_schedule"
+            android:textColor="@color/blueTextColor"
+            android:textSize="40sp" />
+
+        <TextView
+            android:id="@+id/assign_day_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/weekly"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Day"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+        <!-- Assigned Day TextView -->
+        <TextView
+            android:id="@+id/tvday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/assign_day_label"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:hint="Assigned Day" />
+
+        <TextView
+            android:id="@+id/assign_time_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvday"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Time"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+        <!-- Assigned Time TextView -->
+        <TextView
+            android:id="@+id/tvtime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/assign_time_label"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:hint="Assigned Time" />
+
+        <TextView
+            android:id="@+id/assign_vehicle_model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvtime"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Vehicle Model"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+        <!-- Assigned Vehicle Model TextView -->
+        <TextView
+            android:id="@+id/tvmodel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/assign_vehicle_model"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:hint="Assigned Vehicle Model" />
+
+        <TextView
+            android:id="@+id/assign_plate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvmodel"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Plate No"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+        <!-- Assigned Plate No. TextView -->
+        <TextView
+            android:id="@+id/tvplate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/assign_plate"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:hint="Assigned Plate No." />
+
+        <TextView
+            android:id="@+id/assign_driver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvplate"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="30dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Driver"
+            android:textColor="@color/black"
+            android:textSize="25sp" />
+
+        <!-- Assigned Driver TextView -->
+        <TextView
+            android:id="@+id/tvdriver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/assign_driver"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:textAlignment="center"
+            android:gravity="center"
+            android:hint="Assigned Driver" />
+
+    </RelativeLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:headerLayout="@layout/header"
+        app:menu="@menu/main_menu" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

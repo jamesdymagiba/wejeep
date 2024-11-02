@@ -41,6 +41,15 @@
             android:name=".AdminAddUnitScreen"
             android:exported="false" />
         <activity
+            android:name=".AdminManagePAO"
+            android:exported="false" />
+        <activity
+            android:name=".SignUpForPAO"
+            android:exported="false" />
+        <activity
+        android:name=".Schedule"
+        android:exported="false" />
+        <activity
             android:name=".AdminManageUnitScreen"
             android:exported="false"/>
         <activity

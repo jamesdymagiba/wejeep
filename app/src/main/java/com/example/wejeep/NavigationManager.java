@@ -46,6 +46,10 @@ public class NavigationManager {
                 showToast("Manage Driver");
                 startActivity(AdminManageDriver.class);
                 return true;
+            case R.id.itmManagePAOHSP:
+                showToast("Manage PAO");
+                startActivity(AdminManagePAO.class);
+                return true;
             case R.id.itmManageUnitHSP:
                 showToast("Manage Unit");
                 startActivity(AdminManageUnitScreen.class);
@@ -57,6 +61,10 @@ public class NavigationManager {
             case R.id.itmAssignScheduleHSP:
                 showToast("Assign Schedule");
                 startActivity(AdminManageActiveUnitList.class);
+                return true;
+            case R.id.itmScheduleHSP:
+                showToast("Schedule");
+                startActivity(Schedule.class);
                 return true;
             default:
                 return false;

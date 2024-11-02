@@ -43,6 +43,10 @@
             android:icon="@drawable/managedriver_icon"
             android:title="Manage Driver" />
         <item
+            android:id="@+id/itmManagePAOHSP"
+            android:icon="@drawable/pao_icon"
+            android:title="Manage PAO" />
+        <item
             android:id="@+id/itmManageUnitHSP"
             android:icon="@drawable/manageunit_icon"
             android:title="Manage Unit" />
