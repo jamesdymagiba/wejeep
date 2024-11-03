@@ -6,6 +6,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -13,10 +15,16 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActiveModernJeeps extends AppCompatActivity {
     private NavigationManager navigationManager;
@@ -26,6 +34,9 @@ public class ActiveModernJeeps extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
+    private RecyclerView recyclerView;
+    private ActiveModernJeepAdapter adapter;
+    private List<ActiveModernJeepModel> activeModernJeepList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,5 +76,45 @@ public class ActiveModernJeeps extends AppCompatActivity {
         });
         //Add profile picture and name from firestore in header
         UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
+
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.item_activeModernJeep);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize the list
+        activeModernJeepList = new ArrayList<>();
+
+        // Set up the adapter
+        adapter = new ActiveModernJeepAdapter(activeModernJeepList);
+        recyclerView.setAdapter(adapter);
+
+        // Fetch data from Firestore
+        fetchActiveModernJeepData();
+    }
+
+    private void fetchActiveModernJeepData() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("assigns").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String unitNumber = document.getString("unitnumber");
+                            String vehicleModel = document.getString("vehicleModel");
+                            String driverName = document.getString("driver"); // Driver's name
+                            String paoName = document.getString("conductor");    // PAO's name
+                            String plateNumber = document.getString("platenumber");
+                            String documentId = document.getId();
+
+                            // Create the model object
+                            ActiveModernJeepModel jeepModel = new ActiveModernJeepModel(unitNumber, vehicleModel, driverName, paoName, plateNumber, documentId);
+                            activeModernJeepList.add(jeepModel);
+                        }
+                        // Notify the adapter that data has changed
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        // Handle the error
+                        Toast.makeText(ActiveModernJeeps.this, "Error getting active modern jeeps.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
