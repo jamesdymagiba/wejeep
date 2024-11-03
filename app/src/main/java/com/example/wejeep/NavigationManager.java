@@ -38,6 +38,10 @@ public class NavigationManager {
                 showToast("Profile");
                 startActivity(PPassenger.class);
                 return true;
+            case R.id.itmActiveModernJeepHSP:
+                showToast("Active Modern Jeep/s");
+                startActivity(ActiveModernJeeps.class);
+                return true;
             case R.id.itmAdminDashboardHSP:
                 showToast("Admin Dashboard");
                 startActivity(AdminDashboard.class);
