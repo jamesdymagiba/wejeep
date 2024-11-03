@@ -9,7 +9,7 @@
             android:icon="@drawable/home_logo"
             android:title="Home" />
         <item
-            android:id="@+id/itmActiveJeepHSP"
+            android:id="@+id/itmActiveModernJeepHSP"
             android:icon="@drawable/bus_logo"
             android:title="Active Modern Jeep/s" />
         <item
