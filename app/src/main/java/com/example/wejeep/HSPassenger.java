@@ -116,7 +116,7 @@ public class HSPassenger extends AppCompatActivity {
              navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    boolean handled = navigationManager.handleNavigationItemSelected(item);
+                    boolean handled = navigationManager.handleNavigationItemSelected(item, HSPassenger.this);
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return handled;
                 }
@@ -429,5 +429,13 @@ public class HSPassenger extends AppCompatActivity {
             mapView.getOverlays().add(locationMarker);
         }
         mapView.invalidate();  // Refresh the map
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
+        }
     }
 }

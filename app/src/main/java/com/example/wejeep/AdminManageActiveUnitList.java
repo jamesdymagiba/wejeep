@@ -83,7 +83,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, AdminManageActiveUnitList.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
@@ -124,7 +124,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            BackPressHandler.handleBackPress(this);
         }
     }
 }

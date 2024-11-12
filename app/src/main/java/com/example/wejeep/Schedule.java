@@ -65,7 +65,7 @@ public class Schedule extends AppCompatActivity {
         navigationManager = new NavigationManager(this);
         menuVisibilityManager = new MenuVisibilityManager(this);
         navigationView.setNavigationItemSelectedListener(item -> {
-            boolean handled = navigationManager.handleNavigationItemSelected(item);
+            boolean handled = navigationManager.handleNavigationItemSelected(item, Schedule.this);
             drawerLayout.closeDrawer(GravityCompat.START);
             return handled;
         });
@@ -137,7 +137,7 @@ public class Schedule extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            BackPressHandler.handleBackPress(this);
         }
     }
 }

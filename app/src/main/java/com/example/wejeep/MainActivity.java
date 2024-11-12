@@ -76,4 +76,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    @Override
+    public void onBackPressed() {
+        BackPressHandler.handleBackPress(this);
+    }
 }

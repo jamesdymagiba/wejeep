@@ -257,6 +257,7 @@ public class EPPassenger extends AppCompatActivity {
         if (pendingUpdates <= 0) {
             Toast.makeText(this, "Changes applied", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(EPPassenger.this, PPassenger.class));
+            finish();
         }
     }
 

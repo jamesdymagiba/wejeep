@@ -51,7 +51,7 @@ public class AdminDashboard extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, AdminDashboard.this);
                 drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selection
                 return handled;
             }
@@ -59,5 +59,13 @@ public class AdminDashboard extends AppCompatActivity {
 
         //Add profile picture and name from firestore in header
         UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
+        }
     }
 }

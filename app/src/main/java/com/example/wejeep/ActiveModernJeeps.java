@@ -69,7 +69,7 @@ public class ActiveModernJeeps extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, ActiveModernJeeps.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
@@ -116,5 +116,13 @@ public class ActiveModernJeeps extends AppCompatActivity {
                         Toast.makeText(ActiveModernJeeps.this, "Error getting active modern jeeps.", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
+        }
     }
 }
