@@ -162,6 +162,8 @@ public class EPPassenger extends AppCompatActivity {
                         Log.d("EPPassenger", "Display name updated in Firebase Authentication.");
                     } else {
                         Log.e("EPPassenger", "Error updating display name in Firebase Authentication: ", task.getException());
+                        Toast.makeText(EPPassenger.this, "Name update failed please login again", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     }
                     pendingUpdates.getAndDecrement(); // Decrement counter
                     checkForCompletion(pendingUpdates.get()); // Check if all updates are done
@@ -180,6 +182,8 @@ public class EPPassenger extends AppCompatActivity {
                         Log.d("EPPassenger", "Password updated in Firebase Authentication.");
                     } else {
                         Log.e("EPPassenger", "Error updating password in Firebase Authentication: ", task.getException());
+                        Toast.makeText(EPPassenger.this, "Password update failed please login again", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     }
                     pendingUpdates.getAndDecrement(); // Decrement counter
                     checkForCompletion(pendingUpdates.get()); // Check if all updates are done
@@ -196,7 +200,9 @@ public class EPPassenger extends AppCompatActivity {
             // Check if all updates are done
             checkForCompletion(pendingUpdates.get()); // Initial check
         } else {
-            Toast.makeText(this, "No authenticated user found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No authenticated user found or Password has been changed. Please Login Again", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(EPPassenger.this, Login.class));
+            finish();
         }
     }
 
@@ -219,6 +225,7 @@ public class EPPassenger extends AppCompatActivity {
                                             customLoadingDialog.hideLoadingScreen();
                                         } else {
                                             Toast.makeText(EPPassenger.this, "Error updating profile picture", Toast.LENGTH_SHORT).show();
+                                            customLoadingDialog.hideLoadingScreen();
                                         }
                                         pendingUpdates.getAndDecrement(); // Decrement counter
                                         checkForCompletion(pendingUpdates.get()); // Initial check
@@ -228,6 +235,7 @@ public class EPPassenger extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         Log.e("EPPassenger", "Error uploading profile picture: ", e);
                         Toast.makeText(EPPassenger.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     });
         } else {
             Log.e("EPPassenger", "Image URI is null.");
