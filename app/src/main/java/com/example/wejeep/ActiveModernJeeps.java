@@ -1,39 +1,32 @@
 package com.example.wejeep;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import org.w3c.dom.Text;
+import java.util.ArrayList;
+import java.util.List;
 
-public class PPassenger extends AppCompatActivity {
+public class ActiveModernJeeps extends AppCompatActivity {
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
     private FirebaseAuth auth;
@@ -41,23 +34,19 @@ public class PPassenger extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    Button btnEditProfilePP;
-    private static final String TAG = "PPassenger";
+    private RecyclerView recyclerView;
+    private ActiveModernJeepAdapter adapter;
+    private List<ActiveModernJeepModel> activeModernJeepList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ppassenger);
+        setContentView(R.layout.activity_active_modern_jeeps);
 
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        Toolbar toolbar = findViewById(R.id.toolbarPP);
-        btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
-
-        btnEditProfilePP.setOnClickListener(view -> {
-            startActivity(new Intent(PPassenger.this, EPPassenger.class));
-        });
+        Toolbar toolbar = findViewById(R.id.toolbarAMJ);
 
         // Initialize navigationManager and navigationView for menuVisibilityManager
         navigationManager = new NavigationManager(this);
@@ -80,54 +69,53 @@ public class PPassenger extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item, PPassenger.this);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, ActiveModernJeeps.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
         });
-
         //Add profile picture and name from firestore in header
         UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
-        updateUserProfileUI();
+        // Initialize RecyclerView
+        recyclerView = findViewById(R.id.item_activeModernJeep);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Initialize the list
+        activeModernJeepList = new ArrayList<>();
+
+        // Set up the adapter
+        adapter = new ActiveModernJeepAdapter(activeModernJeepList);
+        recyclerView.setAdapter(adapter);
+
+        // Fetch data from Firestore
+        fetchActiveModernJeepData();
     }
 
-    private void updateUserProfileUI() {
-        if (user != null) {
-            String userId = user.getUid();
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private void fetchActiveModernJeepData() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("assigns").get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String unitNumber = document.getString("unitnumber");
+                            String vehicleModel = document.getString("vehicleModel");
+                            String driverName = document.getString("driver"); // Driver's name
+                            String paoName = document.getString("conductor");    // PAO's name
+                            String plateNumber = document.getString("platenumber");
+                            String documentId = document.getId();
 
-            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
-                if (task.isSuccessful() && task.getResult() != null) {
-                    String name = task.getResult().getString("name");
-                    String profilePicture = task.getResult().getString("profilePicture");
-
-                    ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
-                    TextView tvNamePP = findViewById(R.id.tvNamePP);
-
-                    // Set the name from Firestore
-                    tvNamePP.setText(name);
-
-                    // Load the profile picture from Firestore or use a placeholder if it doesn't exist
-                    if (profilePicture != null && !profilePicture.isEmpty()) {
-                        Glide.with(this)
-                                .load(profilePicture)
-                                .apply(RequestOptions.circleCropTransform())
-                                .into(ivProfilePicturePP);
+                            // Create the model object
+                            ActiveModernJeepModel jeepModel = new ActiveModernJeepModel(unitNumber, vehicleModel, driverName, paoName, plateNumber, documentId);
+                            activeModernJeepList.add(jeepModel);
+                        }
+                        // Notify the adapter that data has changed
+                        adapter.notifyDataSetChanged();
                     } else {
-                        ivProfilePicturePP.setImageResource(R.drawable.placeholder_image);
+                        // Handle the error
+                        Toast.makeText(ActiveModernJeeps.this, "Error getting active modern jeeps.", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(this, "Error fetching user information", Toast.LENGTH_SHORT).show();
-                    Log.w(TAG, "Error fetching user information from Firestore", task.getException());
-                }
-            });
-        } else {
-            // Handle the case when the user is not logged in
-            Toast.makeText(this, "User is not logged in. Redirecting to login screen.", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(PPassenger.this, Login.class));
-            finish(); // Finish the current activity to prevent further access
-        }
+                });
     }
     @Override
     public void onBackPressed() {

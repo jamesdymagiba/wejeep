@@ -29,30 +29,53 @@ public class AuthManager {
         this.context = context;
     }
 
-    public void signUpUser(String email, String password, String name, final ProgressBarHandler progressBarHandler) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                sendVerificationEmail(user, name);
-                            }
-                        } else {
-                            Toast.makeText(context, "Sign up failed.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    private long lastSignUpTime = 0;
+    private static final long DEBOUNCE_DELAY = 2000; // 2 seconds debounce delay
+
+    public void signUpUser(String email, String password, String name, final CustomLoadingDialog customLoadingDialog) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSignUpTime < DEBOUNCE_DELAY) {
+            Toast.makeText(context, "Please wait before signing up again.", Toast.LENGTH_SHORT).show();
+            customLoadingDialog.hideLoadingScreen();
+            return; // Exit if called within the debounce delay
+        }
+        lastSignUpTime = currentTime; // Update last sign-up time
+
+        checkIfUserExists(email, new UserCheckCallback() {
+            @Override
+            public void onUserCheck(boolean exists) {
+                if (exists) {
+                    customLoadingDialog.hideLoadingScreen();
+                    Toast.makeText(context, "User already exists.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Proceed with user sign up if the user does not exist
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    customLoadingDialog.hideLoadingScreen();
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        if (user != null) {
+                                            sendVerificationEmail(user, name);
+                                        }
+                                    } else {
+                                        Toast.makeText(context, "Sign up failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 
-    public void signInUser(String email, String password, final ProgressBarHandler progressBarHandler) {
+
+    public void signInUser(String email, String password, final CustomLoadingDialog customLoadingDialog) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
+                        customLoadingDialog.hideLoadingScreen();
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null && user.isEmailVerified()) {

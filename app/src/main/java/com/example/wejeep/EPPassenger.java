@@ -1,8 +1,6 @@
 package com.example.wejeep;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
@@ -22,13 +18,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.io.ByteArrayOutputStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EPPassenger extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
+    private CustomLoadingDialog customLoadingDialog;
     Button btnBackEPP, btnApplyChangesEPP;
     ImageView ivProfilePicturePP;
     TextInputEditText etNewNameEPP, etNewPasswordEPP;
@@ -51,6 +47,8 @@ public class EPPassenger extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eppassenger);
+
+        customLoadingDialog = new CustomLoadingDialog(this);
 
         btnBackEPP = findViewById(R.id.btnBackEPP);
         btnApplyChangesEPP = findViewById(R.id.btnApplyChangesEPP);
@@ -127,7 +125,7 @@ public class EPPassenger extends AppCompatActivity {
             isProfilePictureUpdated = true; // Mark as updated
         }
     }
-
+    AtomicInteger pendingUpdates = new AtomicInteger(); // Counter for pending updates
     private void applyChanges() {
         String newName = etNewNameEPP.getText().toString().trim();
         String newPassword = etNewPasswordEPP.getText().toString().trim();
@@ -144,6 +142,9 @@ public class EPPassenger extends AppCompatActivity {
 
         if (currentUser != null) {
             DocumentReference userRef = db.collection("users").document(currentUser.getUid());
+
+
+
             // Update the name if changed
             if (isNameChanged) {
                 // Validate name
@@ -151,6 +152,7 @@ public class EPPassenger extends AppCompatActivity {
                     Toast.makeText(this, "Name must be at least 2 characters and contain only letters", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                pendingUpdates.getAndIncrement(); // Increment counter
                 userRef.update("name", newName);
                 // Also update the display name in Firebase Authentication
                 currentUser.updateProfile(new UserProfileChangeRequest.Builder()
@@ -160,7 +162,11 @@ public class EPPassenger extends AppCompatActivity {
                         Log.d("EPPassenger", "Display name updated in Firebase Authentication.");
                     } else {
                         Log.e("EPPassenger", "Error updating display name in Firebase Authentication: ", task.getException());
+                        Toast.makeText(EPPassenger.this, "Name update failed please login again", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     }
+                    pendingUpdates.getAndDecrement(); // Decrement counter
+                    checkForCompletion(pendingUpdates.get()); // Check if all updates are done
                 });
             }
 
@@ -170,31 +176,39 @@ public class EPPassenger extends AppCompatActivity {
                     Toast.makeText(this, "Password must be at least 8 characters long", Toast.LENGTH_SHORT).show();
                     return;
                 }
+                pendingUpdates.getAndIncrement(); // Increment counter
                 currentUser.updatePassword(newPassword).addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("EPPassenger", "Password updated in Firebase Authentication.");
                     } else {
                         Log.e("EPPassenger", "Error updating password in Firebase Authentication: ", task.getException());
+                        Toast.makeText(EPPassenger.this, "Password update failed please login again", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     }
+                    pendingUpdates.getAndDecrement(); // Decrement counter
+                    checkForCompletion(pendingUpdates.get()); // Check if all updates are done
                 });
             }
 
             // Update the profile picture if changed
             if (isProfilePictureChanged) {
                 uploadProfilePicture(); // Upload the image to Firebase Storage
+                customLoadingDialog.showLoadingScreen();
             } else {
                 loadCurrentUserData(); // Reload user data if no picture change
             }
-
-            Toast.makeText(this, "Changes applied", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(EPPassenger.this, PPassenger.class));
+            // Check if all updates are done
+            checkForCompletion(pendingUpdates.get()); // Initial check
         } else {
-            Toast.makeText(this, "No authenticated user found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "No authenticated user found or Password has been changed. Please Login Again", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(EPPassenger.this, Login.class));
+            finish();
         }
     }
 
     private void uploadProfilePicture() {
         if (imageUri != null) {
+            pendingUpdates.getAndIncrement(); // Increment counter
             StorageReference fileReference = storageReference.child(currentUser.getUid() + ".jpg");
             fileReference.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> {
@@ -208,15 +222,20 @@ public class EPPassenger extends AppCompatActivity {
                                         if (task.isSuccessful()) {
                                             // Update the profile picture in Firebase Authentication
                                             updateFirebaseAuthProfilePicture(profilePictureUrl);
+                                            customLoadingDialog.hideLoadingScreen();
                                         } else {
                                             Toast.makeText(EPPassenger.this, "Error updating profile picture", Toast.LENGTH_SHORT).show();
+                                            customLoadingDialog.hideLoadingScreen();
                                         }
+                                        pendingUpdates.getAndDecrement(); // Decrement counter
+                                        checkForCompletion(pendingUpdates.get()); // Initial check
                                     });
                         });
                     })
                     .addOnFailureListener(e -> {
                         Log.e("EPPassenger", "Error uploading profile picture: ", e);
                         Toast.makeText(EPPassenger.this, "Upload failed", Toast.LENGTH_SHORT).show();
+                        customLoadingDialog.hideLoadingScreen();
                     });
         } else {
             Log.e("EPPassenger", "Image URI is null.");
@@ -225,19 +244,29 @@ public class EPPassenger extends AppCompatActivity {
     }
 
     private void updateFirebaseAuthProfilePicture(String profilePictureUrl) {
+        pendingUpdates.getAndIncrement(); // Increment counter
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setPhotoUri(Uri.parse(profilePictureUrl))
                 .build();
-
         currentUser.updateProfile(profileUpdates)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(EPPassenger.this, "Profile picture updated", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(EPPassenger.this, "Profile picture updated", Toast.LENGTH_SHORT).show();  removed toast, replaced with changes applied
                         loadCurrentUserData(); // Reload user data to reflect changes
                     } else {
                         Log.e("EPPassenger", "Error updating profile picture in Firebase Authentication: ", task.getException());
                     }
+                    pendingUpdates.getAndDecrement(); // Decrement counter
+                    checkForCompletion(pendingUpdates.get()); // Initial check
                 });
+    }
+    // Method to check if all updates are completed
+    private void checkForCompletion(int pendingUpdates) {
+        if (pendingUpdates <= 0) {
+            Toast.makeText(this, "Changes applied", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(EPPassenger.this, PPassenger.class));
+            finish();
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package com.example.wejeep;
 
 import static androidx.fragment.app.FragmentManager.TAG;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -17,54 +18,59 @@ public class NavigationManager {
     private Context context;
     private FirebaseUser user;
     private FirebaseAuth auth;
+
     public NavigationManager(Context context) {
         this.context = context;
     }
 
-    public boolean handleNavigationItemSelected(@NonNull MenuItem item) {
+    public boolean handleNavigationItemSelected(@NonNull MenuItem item, Activity currentActivity) {
         int id = item.getItemId();
         switch (id) {
             case R.id.itmHomeHSP:
                 showToast("Home");
-                startActivity(HSPassenger.class);
+                finishAndStartActivity(currentActivity, HSPassenger.class);
                 return true;
             case R.id.itmSignoutHSP:
                 showToast("Signout");
                 removeUserLocationFromFirestore();
                 FirebaseAuth.getInstance().signOut();
-                startActivity(MainActivity.class);
+                finishAndStartActivity(currentActivity, MainActivity.class);
                 return true;
             case R.id.itmProfileHSP:
                 showToast("Profile");
-                startActivity(PPassenger.class);
+                finishAndStartActivity(currentActivity, PPassenger.class);
+                return true;
+            case R.id.itmActiveModernJeepHSP:
+                showToast("Active Modern Jeep/s");
+                finishAndStartActivity(currentActivity, ActiveModernJeeps.class);
                 return true;
             case R.id.itmAdminDashboardHSP:
                 showToast("Admin Dashboard");
-                startActivity(AdminDashboard.class);
+                finishAndStartActivity(currentActivity, AdminDashboard.class);
                 return true;
             case R.id.itmManageDriverHSP:
                 showToast("Manage Driver");
-                startActivity(AdminManageDriver.class);
+                finishAndStartActivity(currentActivity, AdminManageDriver.class);
                 return true;
             case R.id.itmManagePAOHSP:
                 showToast("Manage PAO");
-                startActivity(AdminManagePAO.class);
+                finishAndStartActivity(currentActivity, AdminManagePAO.class);
                 return true;
             case R.id.itmManageUnitHSP:
                 showToast("Manage Unit");
-                startActivity(AdminManageUnitScreen.class);
+                finishAndStartActivity(currentActivity, AdminManageUnitScreen.class);
                 return true;
             case R.id.itmManageScheduleHSP:
                 showToast("Manage Schedule");
-                startActivity(AdminManageScheduleScreen.class);
+                finishAndStartActivity(currentActivity, AdminManageScheduleScreen.class);
                 return true;
             case R.id.itmAssignScheduleHSP:
                 showToast("Assign Schedule");
-                startActivity(AdminManageActiveUnitList.class);
+                finishAndStartActivity(currentActivity, AdminManageActiveUnitList.class);
                 return true;
             case R.id.itmScheduleHSP:
                 showToast("Schedule");
-                startActivity(Schedule.class);
+                finishAndStartActivity(currentActivity, Schedule.class);
                 return true;
             default:
                 return false;
@@ -75,8 +81,12 @@ public class NavigationManager {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
-    private void startActivity(Class<?> cls) {
-        Intent intent = new Intent(context, cls);
+    private void finishAndStartActivity(Activity currentActivity, Class<?> targetActivity) {
+        // Finish the current activity
+        currentActivity.finish();
+        // Start the new activity
+        Intent intent = new Intent(context, targetActivity);
+        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         context.startActivity(intent);
     }
 
@@ -86,7 +96,7 @@ public class NavigationManager {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
         db.collection("locations").document(userId).delete()
-                .addOnSuccessListener(aVoid -> Log.d("SUCESS", "Location removed on sign out"))
+                .addOnSuccessListener(aVoid -> Log.d("SUCCESS", "Location removed on sign out"))
                 .addOnFailureListener(e -> Log.w("ERROR", "Error removing location on sign out", e));
     }
 }

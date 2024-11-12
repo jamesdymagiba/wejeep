@@ -89,6 +89,8 @@ public class HSPassenger extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hspassenger);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
 
         locationTimerHandler = new Handler(Looper.getMainLooper());
 
@@ -114,35 +116,17 @@ public class HSPassenger extends AppCompatActivity {
              navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    boolean handled = navigationManager.handleNavigationItemSelected(item);
+                    boolean handled = navigationManager.handleNavigationItemSelected(item, HSPassenger.this);
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return handled;
                 }
             });
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
+        //Check user's role and update the marker icon
+        fetchUserRole();
 
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
-            fetchUserRole();
-        }
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         // Initialize the Map
@@ -301,7 +285,7 @@ public class HSPassenger extends AppCompatActivity {
                                                     otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
                                                 }
 
-                                                otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+                                                //otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon)); removed because admin will not be tracked anymore
 
                                                 // Add the marker to the map
                                                 mapView.getOverlays().add(otherUserMarker);
@@ -335,7 +319,6 @@ public class HSPassenger extends AppCompatActivity {
         }
         mapView.invalidate();
     }
-
     private void centerMapOnUserLocation(GeoPoint geoPoint) {
         mapView.getController().setCenter(geoPoint);
         mapView.getController().setZoom(19.0); // Set your desired zoom level
@@ -433,7 +416,7 @@ public class HSPassenger extends AppCompatActivity {
     private void updateCurrentUserMarker(String userRole) {
         // Set marker icon based on the logged-in user's role
         if ("passenger".equals(userRole)) {
-            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.self_marker_icon));
         } else if ("pao".equals(userRole)) {
             locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
         } else {
@@ -446,5 +429,13 @@ public class HSPassenger extends AppCompatActivity {
             mapView.getOverlays().add(locationMarker);
         }
         mapView.invalidate();  // Refresh the map
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
+        }
     }
 }

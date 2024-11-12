@@ -64,7 +64,7 @@ public class Schedule extends AppCompatActivity {
         navigationManager = new NavigationManager(this);
         menuVisibilityManager = new MenuVisibilityManager(this);
         navigationView.setNavigationItemSelectedListener(item -> {
-            boolean handled = navigationManager.handleNavigationItemSelected(item);
+            boolean handled = navigationManager.handleNavigationItemSelected(item, Schedule.this);
             drawerLayout.closeDrawer(GravityCompat.START);
             return handled;
         });
@@ -77,7 +77,9 @@ public class Schedule extends AppCompatActivity {
     }
 
     private void fetchScheduleData() {
+
         FirebaseUser user = auth.getCurrentUser();
+    // Adjust document ID to dynamically retrieve schedule if needed
 
         if (user != null) {
             String conductorName = user.getDisplayName(); // Get the current user's display name
@@ -153,7 +155,7 @@ public class Schedule extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            BackPressHandler.handleBackPress(this);
         }
     }
 }

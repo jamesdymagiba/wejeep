@@ -51,37 +51,21 @@ public class AdminDashboard extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, AdminDashboard.this);
                 drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selection
                 return handled;
             }
         });
 
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            // Set user name and profile picture
-            tvNameHSP.setText(user.getDisplayName() != null ? user.getDisplayName() : "User"); // Handle null display name
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            } else {
-                // Set a placeholder image if there's no profile picture
-                ivProfilePictureHSP.setImageResource(R.drawable.placeholder_image); // Replace with your placeholder image
-            }
+            BackPressHandler.handleBackPress(this);
         }
     }
 }

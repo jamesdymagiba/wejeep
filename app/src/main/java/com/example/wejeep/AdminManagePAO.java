@@ -75,13 +75,13 @@ public class AdminManagePAO extends AppCompatActivity {
         drawerToggle.syncState();
 
         navigationView.setNavigationItemSelectedListener(item -> {
-            boolean handled = navigationManager.handleNavigationItemSelected(item);
+            boolean handled = navigationManager.handleNavigationItemSelected(item, AdminManagePAO.this);
             drawerLayout.closeDrawer(GravityCompat.START); // Close the drawer after selection
             return handled;
         });
 
-        // Check user authentication
-        checkUserAuthentication(navigationView);
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
         // Load PAOs from Firestore
         loadPAOsFromFirestore();
@@ -121,6 +121,7 @@ public class AdminManagePAO extends AppCompatActivity {
 
     }
 
+
     private void loadPAOsFromFirestore() {
         db.collection("users")
                 .whereEqualTo("role", "pao")
@@ -157,7 +158,7 @@ public class AdminManagePAO extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            BackPressHandler.handleBackPress(this);
         }
     }
 }
