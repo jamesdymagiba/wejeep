@@ -43,6 +43,7 @@ public class PPassenger extends AppCompatActivity {
     ActionBarDrawerToggle drawerToggle;
     Button btnEditProfilePP;
     private static final String TAG = "PPassenger";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +80,7 @@ public class PPassenger extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, PPassenger.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
@@ -90,35 +91,50 @@ public class PPassenger extends AppCompatActivity {
 
         updateUserProfileUI();
     }
+
     private void updateUserProfileUI() {
-        String userId = user.getUid();
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        if (user != null) {
+            String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                String name = task.getResult().getString("name");
-                String profilePicture = task.getResult().getString("profilePicture");
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    String name = task.getResult().getString("name");
+                    String profilePicture = task.getResult().getString("profilePicture");
 
-                ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
-                TextView tvNamePP = findViewById(R.id.tvNamePP);
+                    ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+                    TextView tvNamePP = findViewById(R.id.tvNamePP);
 
-                // Set the name from Firestore
-                tvNamePP.setText(name);
+                    // Set the name from Firestore
+                    tvNamePP.setText(name);
 
-                // Load the profile picture from Firestore or use a placeholder if it doesn't exist
-                if (profilePicture != null && !profilePicture.isEmpty()) {
-                    Glide.with(this)
-                            .load(profilePicture)
-                            .apply(RequestOptions.circleCropTransform())
-                            .into(ivProfilePicturePP);
+                    // Load the profile picture from Firestore or use a placeholder if it doesn't exist
+                    if (profilePicture != null && !profilePicture.isEmpty()) {
+                        Glide.with(this)
+                                .load(profilePicture)
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(ivProfilePicturePP);
+                    } else {
+                        ivProfilePicturePP.setImageResource(R.drawable.placeholder_image);
+                    }
                 } else {
-                    // Optionally set a placeholder image if no profile picture exists
-                    ivProfilePicturePP.setImageResource(R.drawable.placeholder_image);
+                    Toast.makeText(this, "Error fetching user information", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "Error fetching user information from Firestore", task.getException());
                 }
-            } else {
-                Toast.makeText(this, "Error fetching user information", Toast.LENGTH_SHORT).show();
-                Log.w(TAG, "Error fetching user information from Firestore", task.getException());
-            }
-        });
+            });
+        } else {
+            // Handle the case when the user is not logged in
+            Toast.makeText(this, "User is not logged in. Redirecting to login screen.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(PPassenger.this, Login.class));
+            finish(); // Finish the current activity to prevent further access
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
+        }
     }
 }
