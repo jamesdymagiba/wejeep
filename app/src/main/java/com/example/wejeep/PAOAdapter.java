@@ -17,12 +17,11 @@ import java.util.List;
 public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
 
     private List<PAOModel> paoList;
-    private FirebaseFirestore db; // Initialize Firestore instance
+    private FirebaseFirestore db;
 
-    // Constructor to accept Firestore instance
     public PAOAdapter(List<PAOModel> paoList, FirebaseFirestore db) {
         this.paoList = paoList;
-        this.db = db; // Set Firestore instance
+        this.db = db;
     }
 
     @NonNull
@@ -37,39 +36,49 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
         PAOModel pao = paoList.get(position);
         holder.tvPaoName.setText(pao.getName());
         holder.tvPaoEmail.setText(pao.getEmail());
-        holder.tvDateAdded.setText(pao.getDateAdded()); // Set the date added
-        // Set up the delete button click listener
-        holder.btnDelete.setOnClickListener(v -> {
-            showDeleteConfirmationDialog(pao.getDocumentId(), position, holder.itemView.getContext());
-        });
+        holder.tvDateAdded.setText(pao.getDateAdded());
+
+        holder.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog(pao, position, holder.btnDelete, holder.itemView.getContext()));
     }
 
-    // Method to show a confirmation dialog before deleting
-    private void showDeleteConfirmationDialog(String paoId, int position, Context context) {
+    private void showDeleteConfirmationDialog(PAOModel pao, int position, Button btnDelete, Context context) {
         new AlertDialog.Builder(context)
                 .setTitle("Delete PAO")
                 .setMessage("Are you sure you want to delete this PAO?")
-                .setPositiveButton("Yes", (dialog, which) -> {
-                    deletePAO(paoId, position, context); // Proceed with delete after confirmation
-                })
-                .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
+                .setPositiveButton("Yes", (dialog, which) -> deletePAO(pao, position, btnDelete, context))
+                .setNegativeButton("No", null)
                 .show();
     }
 
-    // Method to delete PAO from Firestore and update RecyclerView
-    private void deletePAO(String paoId, int position, Context context) {
+    private void deletePAO(PAOModel pao, int position, Button btnDelete, Context context) {
+        String paoId = pao.getDocumentId();  // Get the document ID from the PAO model
         if (paoId != null) {
-            // Remove the item from the Firestore database
-            db.collection("users").document(paoId) // Use document ID to reference the specific PAO
+            // Temporarily disable the button to prevent multiple clicks
+            btnDelete.setEnabled(false);
+
+            // Show a Toast indicating that deletion is in progress
+            Toast.makeText(context, "Deleting PAO...", Toast.LENGTH_SHORT).show();
+
+            // Proceed to delete the PAO from Firestore
+            db.collection("users").document(paoId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-                        // Remove the item from the list
+                        // Notify the user of success
+                        Toast.makeText(context, "PAO DELETED ", Toast.LENGTH_SHORT).show();
+                        // Remove the item from the local list
                         paoList.remove(position);
-                        notifyItemRemoved(position); // Notify the adapter of the removed item
-                        Toast.makeText(context, "PAO deleted successfully", Toast.LENGTH_SHORT).show();
+                        notifyItemRemoved(position);
                     })
                     .addOnFailureListener(e -> {
+                        // Handle failure
                         Toast.makeText(context, "Error deleting PAO: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        // Optionally re-add the item to the list in case of failure
+                        paoList.add(position, pao); // Re-add the PAO model
+                        notifyItemInserted(position);
+                    })
+                    .addOnCompleteListener(task -> {
+                        // Re-enable the button after the operation completes
+                        btnDelete.setEnabled(true);
                     });
         } else {
             Toast.makeText(context, "PAO ID is null", Toast.LENGTH_SHORT).show();
@@ -82,14 +91,14 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
     }
 
     static class PAOViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPaoName, tvPaoEmail, tvDateAdded; // Added dateTextView
+        TextView tvPaoName, tvPaoEmail, tvDateAdded;
         Button btnDelete;
 
         PAOViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPaoName = itemView.findViewById(R.id.tvPaoName);
             tvPaoEmail = itemView.findViewById(R.id.tvPaoEmail);
-            tvDateAdded = itemView.findViewById(R.id.tvDateAdded); // Initialize dateTextView
+            tvDateAdded = itemView.findViewById(R.id.tvDateAdded);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

@@ -1,11 +1,5 @@
-package com.example.wejeep;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+package com.example.wejeep;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +10,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +44,7 @@ public class AdminManagePAO extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_manage_pao);
 
-        Toolbar toolbar = findViewById(R.id.toolbarAdminManagesPao);
+        Toolbar toolbar = findViewById(R.id.toolbarAdminManagePao);
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
@@ -117,11 +116,9 @@ public class AdminManagePAO extends AppCompatActivity {
                         .load(user.getPhotoUrl())
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
-            } else {
-                // Set a placeholder image if there's no profile picture
-                ivProfilePictureHSP.setImageResource(R.drawable.placeholder_image); // Replace with your placeholder image
             }
         }
+
     }
 
     private void loadPAOsFromFirestore() {
@@ -135,7 +132,7 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
-                            String dateAdded = document.getString("dateAdded"); // Retrieve date added
+                            String dateAdded = document.getString("dateAdded");
                             if (name != null && email != null && dateAdded != null) {  // Check for null values
                                 paoList.add(new PAOModel(name, email, documentId, dateAdded));  // Include date added
                             }

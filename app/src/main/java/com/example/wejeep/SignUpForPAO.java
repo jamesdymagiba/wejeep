@@ -1,15 +1,16 @@
 package com.example.wejeep;
 
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -21,84 +22,82 @@ public class SignUpForPAO extends AppCompatActivity {
     private TextInputEditText etEmail, etName, etPassword;
     private Button btnSignPao, btnGooglePao, btnBack;
     private ProgressBar pbSignUp;
-    private GoogleSignInHelperForPAO googleSignInHelperForPAO;
-    private FirebaseAuth AuthForPAO;
     private FirebaseFirestore db;
+    private GoogleSignInHelperForPAO googleSignInHelper;
+    private AuthForPAO authForPAO;  // Instance of AuthForPAO
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up_for_pao);
 
-        // Initialize Firebase Auth and Firestore
-        AuthForPAO = FirebaseAuth.getInstance();
+        // Initialize Firestore
         db = FirebaseFirestore.getInstance();
-        googleSignInHelperForPAO = new GoogleSignInHelperForPAO(this);
 
         // Initialize the views
         etEmail = findViewById(R.id.etEmailSU);
         etName = findViewById(R.id.etNameSU);
         etPassword = findViewById(R.id.etPasswordSU);
         btnSignPao = findViewById(R.id.btnSignPao);
-        btnGooglePao = findViewById(R.id.btnGooglePao);
         pbSignUp = findViewById(R.id.pbSU);
         btnBack = findViewById(R.id.btnNewAction);
+        btnGooglePao = findViewById(R.id.btnGooglePao);  // Button for Google Sign-In
+
+        // Initialize Google Sign-In helper
+        googleSignInHelper = new GoogleSignInHelperForPAO(this);
+
+        // Initialize AuthForPAO
+        authForPAO = new AuthForPAO();
 
         // Set up button click listeners
-        btnSignPao.setOnClickListener(v -> signUpUser());
-        btnGooglePao.setOnClickListener(v -> {
-            pbSignUp.setVisibility(View.VISIBLE); // Show progress bar
-            googleSignInHelperForPAO.signIn();
-        });
+        btnSignPao.setOnClickListener(v -> signUpPAO());
+        btnGooglePao.setOnClickListener(v -> googleSignInHelper.signIn());  // Call Google sign-in when button is clicked
         btnBack.setOnClickListener(v -> navigateBack());
     }
 
-    private void signUpUser() {
+    private void signUpPAO() {
         // Show progress bar while processing
         pbSignUp.setVisibility(View.VISIBLE);
 
         // Get user input
         String email = etEmail.getText().toString().trim();
         String name = etName.getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
+        String password = etPassword.getText().toString().trim();  // Retrieve password
 
         // Validate input
-        if (validateInput(email, name, password)) {
-            AuthForPAO.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = AuthForPAO.getCurrentUser();
-                            if (user != null) {
-                                // Get the current date in the desired format
-                                String dateAdded = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
-
-                                // Create and save user object in Firestore with the date added
-                                UserModel newUser = new UserModel(email, name, "pao", dateAdded);
-                                saveUserToFirestore(user, newUser);
-                                sendVerificationEmail(user); // Send verification email
-                            }
-                        } else {
-                            pbSignUp.setVisibility(View.GONE);
-                            Toast.makeText(SignUpForPAO.this, "Sign-up-PAO failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-        } else {
+        String validationError = validateInput(email, name);
+        if (validationError != null) {
             pbSignUp.setVisibility(View.GONE);
-            Toast.makeText(SignUpForPAO.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpForPAO.this, validationError, Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Call AuthForPAO to sign up the user and send the verification email
+        authForPAO.signUpWithEmailPassword(email, password, this, new AuthForPAO.SignUpCallback() {
+            @Override
+            public void onSignUpSuccess(String email) {
+                // After successful sign-up, save user data to Firestore
+                String dateAdded = new SimpleDateFormat("MMMM dd yyyy", Locale.getDefault()).format(new Date());
+                UserModel newUser = new UserModel(email, name, "pao", dateAdded);
+                savePAOToFirestore(newUser);
+                pbSignUp.setVisibility(View.GONE);
+                Toast.makeText(SignUpForPAO.this, "Registration successful.", Toast.LENGTH_LONG).show();
+                finish();  // Close SignUpForPAO activity
+            }
+
+            @Override
+            public void onSignUpFailure(String error) {
+                pbSignUp.setVisibility(View.GONE);
+                Toast.makeText(SignUpForPAO.this, "Error: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // Method to save user data to Firestore
-    private void saveUserToFirestore(FirebaseUser user, UserModel newUser) {
-        db.collection("users").document(user.getUid())
-                .set(newUser)
-                .addOnSuccessListener(aVoid -> {
-                    pbSignUp.setVisibility(View.GONE);
-                    Toast.makeText(SignUpForPAO.this, "PAO registered successfully! Please verify your email.", Toast.LENGTH_SHORT).show();
-                    // Optional: You can also navigate to another activity here
-                    Intent intent = new Intent();
-                    setResult(RESULT_OK, intent); // Set result to OK
-                    finish(); // Finish the activity
+    private void savePAOToFirestore(UserModel newUser) {
+        db.collection("users")
+                .add(newUser)  // Automatically generates a new document ID
+                .addOnSuccessListener(documentReference -> {
+                    // Do nothing here as email verification is already handled
                 })
                 .addOnFailureListener(e -> {
                     pbSignUp.setVisibility(View.GONE);
@@ -106,64 +105,57 @@ public class SignUpForPAO extends AppCompatActivity {
                 });
     }
 
-    // Method to send verification email
-    private void sendVerificationEmail(FirebaseUser user) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(SignUpForPAO.this, "Verification email sent to " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(SignUpForPAO.this, "Failed to send verification email: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+    private String validateInput(String email, String name) {
+        if (email.isEmpty()) {
+            return "Email cannot be empty";
+        }
+        if (name.isEmpty()) {
+            return "Name cannot be empty";
+        }
+        return null; // All inputs are valid
+    }
+
+    private void navigateBack() {
+        Intent intent = new Intent(SignUpForPAO.this, AdminManagePAO.class); // Navigate to AdminManagePAO
+        startActivity(intent); // Start the AdminManagePAO activity
+        finish(); // Close the current activity
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        googleSignInHelperForPAO.handleSignInResult(requestCode, resultCode, data, new GoogleSignInHelperForPAO.SignInCallback() {
+        googleSignInHelper.handleSignInResult(requestCode, resultCode, data, new GoogleSignInHelperForPAO.SignInCallback() {
             @Override
-            public void onSignInSuccess(FirebaseUser user) {
-                pbSignUp.setVisibility(View.GONE); // Hide progress bar
-                Toast.makeText(SignUpForPAO.this, "Sign-in-PAO successful: " + user.getEmail(), Toast.LENGTH_SHORT).show();
+            public void onSignInSuccess(GoogleSignInAccount account) {
+                String email = account.getEmail();
+                String name = account.getDisplayName();
+                String dateAdded = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault()).format(new Date());
 
-                // Create a new user and save it in Firestore
-                String dateAdded = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(new Date());
-                UserModel newUser = new UserModel(user.getEmail(), user.getDisplayName(), "pao", dateAdded);
-                saveUserToFirestore(user, newUser); // Save user details to Firestore
+                // Create PAO user data from Google account
+                UserModel newUser = new UserModel(email, name, "pao", dateAdded);
+                savePAOToFirestore(newUser);
             }
 
             @Override
             public void onSignInFailure(Exception e) {
-                pbSignUp.setVisibility(View.GONE); // Hide progress bar
-                Toast.makeText(SignUpForPAO.this, "Sign-in-PAO failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(SignUpForPAO.this, "Google Sign-In failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    // Example input validation method
-    private boolean validateInput(String email, String name, String password) {
-        return !email.isEmpty() && !name.isEmpty() && !password.isEmpty();
-    }
-
-    private void navigateBack() {
-        Intent intent = new Intent(SignUpForPAO.this, AdminManagePAO.class); // Create intent to navigate to AdminManagePAO
-        startActivity(intent); // Start the new activity
-        finish(); // Optionally, close the current activity
-    }
 }
+
 
 class UserModel {
     private String email;
     private String name;
     private String role;
-    private String dateAdded;  // New field for date added
+    private String dateAdded;
 
     public UserModel(String email, String name, String role, String dateAdded) {
         this.email = email;
         this.name = name;
         this.role = role;
-        this.dateAdded = dateAdded; // Initialize the dateAdded field
+        this.dateAdded = dateAdded;
     }
 
     public String getEmail() {
@@ -179,7 +171,7 @@ class UserModel {
     }
 
     public String getDateAdded() {
-        return dateAdded; // Getter for dateAdded
+        return dateAdded;
     }
 }
 

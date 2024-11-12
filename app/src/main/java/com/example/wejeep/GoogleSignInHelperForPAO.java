@@ -2,6 +2,7 @@ package com.example.wejeep;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -10,28 +11,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GoogleSignInHelperForPAO {
 
     private static final String TAG = "GoogleSignInHelperForPAO";
     private GoogleSignInClient mGoogleSignInClient;
-    private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Activity activity;
     private static final int RC_SIGN_IN = 9001;
 
     public GoogleSignInHelperForPAO(Activity activity) {
         this.activity = activity;
-        mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance(); // Initialize Firestore
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(activity.getString(R.string.default_web_client_id)) // Ensure this is your client ID
+                .requestIdToken(activity.getString(R.string.default_web_client_id)) // Your web client ID here
                 .requestEmail()
                 .build();
 
@@ -53,7 +48,7 @@ public class GoogleSignInHelperForPAO {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
                 if (account != null) {
                     String idToken = account.getIdToken();
-                    firebaseAuthWithGoogle(idToken, callback);
+                    storeUserInFirestore(account, idToken, callback);
                 } else {
                     callback.onSignInFailure(new Exception("GoogleSignInAccount is null"));
                 }
@@ -63,51 +58,31 @@ public class GoogleSignInHelperForPAO {
         }
     }
 
-    private void firebaseAuthWithGoogle(String idToken, final SignInCallback callback) {
-        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        mAuth.signInWithCredential(credential).addOnCompleteListener(activity, task -> {
-            if (task.isSuccessful()) {
-                FirebaseUser user = mAuth.getCurrentUser();
-                if (user != null) {
-                    storeUserInFirestore(user);
-                    callback.onSignInSuccess(user);
-                } else {
-                    callback.onSignInFailure(new Exception("FirebaseUser is null"));
-                }
-            } else {
-                callback.onSignInFailure(task.getException());
-            }
-        });
-    }
+    private void storeUserInFirestore(GoogleSignInAccount account, String idToken, final SignInCallback callback) {
+        // Get the user's email, name, and profile picture URL
+        String email = account.getEmail();
+        String name = account.getDisplayName();
+        Uri photoUrl = account.getPhotoUrl() != null ? account.getPhotoUrl() : Uri.EMPTY;
 
-    private void storeUserInFirestore(FirebaseUser user) {
-        String userId = user.getUid();
-        String email = user.getEmail();
-        String name = user.getDisplayName();
-        String profilePicture = (user.getPhotoUrl() != null) ? user.getPhotoUrl().toString() : "";
+        // Create a User object with the data from GoogleSignInAccount
+        User userInfo = new User(email, name, photoUrl.toString(), "pao");
 
         // Check if user already exists in Firestore
-        db.collection("users").document(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                if (!task.getResult().exists()) {
-                    // User doesn't exist, create a new one with role "pao"
-                    String role = "pao";
-                    User userInfo = new User(email, name, profilePicture, role);
-                    db.collection("users").document(userId).set(userInfo)
-                            .addOnSuccessListener(aVoid -> Log.d(TAG, "PAO profile successfully written!"))
-                            .addOnFailureListener(e -> Log.w(TAG, "Error writing PAO profile", e));
-                } else {
-                    // User already exists
-                    Log.d(TAG, "PAO already exists, not overwriting.");
-                }
+        db.collection("users").document(idToken).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && !task.getResult().exists()) {
+                db.collection("users").document(idToken).set(userInfo)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "User profile successfully written!"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error writing user profile", e));
             } else {
-                Log.w(TAG, "Error checking if PAO exists", task.getException());
+                Log.d(TAG, "User already exists, not overwriting.");
             }
+            callback.onSignInSuccess(account);
         });
     }
 
     public interface SignInCallback {
-        void onSignInSuccess(FirebaseUser user);
+        void onSignInSuccess(GoogleSignInAccount account);
+
         void onSignInFailure(Exception e);
     }
 
@@ -118,9 +93,7 @@ public class GoogleSignInHelperForPAO {
         private String profilePicture;
         private String role;
 
-        // No-argument constructor needed for Firestore serialization
-        public User() {
-        }
+        public User() {}
 
         public User(String email, String name, String profilePicture, String role) {
             this.email = email;
@@ -130,36 +103,13 @@ public class GoogleSignInHelperForPAO {
         }
 
         // Getters and Setters
-        public String getEmail() {
-            return email;
-        }
-
-        public void setEmail(String email) {
-            this.email = email;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getProfilePicture() {
-            return profilePicture;
-        }
-
-        public void setProfilePicture(String profilePicture) {
-            this.profilePicture = profilePicture;
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
+        public String getEmail() { return email; }
+        public void setEmail(String email) { this.email = email; }
+        public String getName() { return name; }
+        public void setName(String name) { this.name = name; }
+        public String getProfilePicture() { return profilePicture; }
+        public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
+        public String getRole() { return role; }
+        public void setRole(String role) { this.role = role; }
     }
 }

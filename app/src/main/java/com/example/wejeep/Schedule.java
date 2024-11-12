@@ -1,5 +1,13 @@
 package com.example.wejeep;
 
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -12,14 +20,6 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class Schedule extends AppCompatActivity {
 
@@ -51,7 +51,6 @@ public class Schedule extends AppCompatActivity {
         // Initialize the toolbar
         Toolbar toolbar = findViewById(R.id.toolbarSchedule);
 
-
         // Initialize DrawerLayout and NavigationView
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
@@ -73,36 +72,54 @@ public class Schedule extends AppCompatActivity {
         // Check user authentication and set the profile info
         checkUserAuthentication();
 
-        // Retrieve schedule data from Firestore
+        // Retrieve schedule data from Firestore using the authenticated user's name
         fetchScheduleData();
     }
 
     private void fetchScheduleData() {
-        // Adjust document ID to dynamically retrieve schedule if needed
-        db.collection("assigns")
-                .document("crm12yeZau2ZAewOia55") // Replace with actual document ID or retrieve dynamically
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // Retrieve data and set it to TextViews
-                        String day = documentSnapshot.getString("fromday") + " - " + documentSnapshot.getString("today");
-                        String time = documentSnapshot.getString("fromtime") + " - " + documentSnapshot.getString("totime");
-                        String model = documentSnapshot.getString("unitnumber");
-                        String plate = documentSnapshot.getString("platenumber");
-                        String driver = documentSnapshot.getString("driver");
+        FirebaseUser user = auth.getCurrentUser();
 
-                        // Set the data to TextViews
-                        tvDay.setText(day);
-                        tvTime.setText(time);
-                        tvModel.setText(model);
-                        tvPlate.setText(plate);
-                        tvDriver.setText(driver);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    // Log the error
-                    Log.e(TAG, "Error fetching schedule data", e);
-                });
+        if (user != null) {
+            String conductorName = user.getDisplayName(); // Get the current user's display name
+
+            // Query Firestore collection with a filter by conductor name
+            db.collection("assigns")
+                    .whereEqualTo("conductor", conductorName)  // Query by the conductor field
+                    .get()
+                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            // Assuming only one document is returned, get the first document
+                            com.google.firebase.firestore.DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+
+                            // Retrieve data and set it to TextViews
+                            String day = documentSnapshot.getString("fromday") + " - " + documentSnapshot.getString("today");
+                            String time = documentSnapshot.getString("fromtime") + " - " + documentSnapshot.getString("totime");
+                            String model = documentSnapshot.getString("unitnumber");
+                            String plate = documentSnapshot.getString("platenumber");
+                            String driver = documentSnapshot.getString("driver");
+
+                            // Set the data to TextViews
+                            tvDay.setText(day);
+                            tvTime.setText(time);
+                            tvModel.setText(model);
+                            tvPlate.setText(plate);
+                            tvDriver.setText(driver);
+                        } else {
+                            // Handle case where no schedule is found
+                            Toast.makeText(Schedule.this, "No schedule found for this user.", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        // Log the error and show a message
+                        Log.e(TAG, "Error fetching schedule data", e);
+                        Toast.makeText(Schedule.this, "Error loading schedule. Please try again.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    });
+        } else {
+            // Handle case where user is not authenticated
+            Toast.makeText(Schedule.this, "User not authenticated. Please log in.", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
     private void checkUserAuthentication() {
@@ -126,7 +143,6 @@ public class Schedule extends AppCompatActivity {
                         .apply(RequestOptions.circleCropTransform())
                         .into(ivProfilePictureHSP);
             }
-
             // Fetch the user's role to update menu visibility
             menuVisibilityManager.fetchUserRole(navigationView.getMenu());
         }
