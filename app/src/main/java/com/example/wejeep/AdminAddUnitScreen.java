@@ -1,20 +1,19 @@
 package com.example.wejeep;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -22,13 +21,16 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Collections;
 
 public class AdminAddUnitScreen extends AppCompatActivity {
     private ArrayList<UnitModel> unitList;
     private UnitAdapter unitAdapter;
-    private EditText etVehicleModel, etPlateNumber, etUnitNumber, etDateAdded;
-    private Button btnAddUnit, btnBack;
+    private Spinner spinnerVehicleModel;
+    private EditText etPlateNumber, etUnitNumber, etDateAdded;
+    private Button btnAddUnit, btnBack, btnAddVehicleModel;
     private FirebaseFirestore db;
+    private static final int MAX_UNITS = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,77 +45,124 @@ public class AdminAddUnitScreen extends AppCompatActivity {
         unitAdapter = new UnitAdapter(unitList);
 
         // Reference UI elements
-        etVehicleModel = findViewById(R.id.etVehicleModel);
+        spinnerVehicleModel = findViewById(R.id.spinnerVehicleModel);
         etPlateNumber = findViewById(R.id.etPlateNumber);
         etUnitNumber = findViewById(R.id.etUnitNumber);
         etDateAdded = findViewById(R.id.etUnitDateAdded);
         btnAddUnit = findViewById(R.id.btnAddUnit);
         btnBack = findViewById(R.id.btnBack);
+        btnAddVehicleModel = findViewById(R.id.btnAddVehicleModel);
 
-        // Handle back button click
+        // Set up the back button
         btnBack.setOnClickListener(view -> {
             startActivity(new Intent(AdminAddUnitScreen.this, AdminManageUnitScreen.class));
         });
 
-        // Handle date picker for "Date Added"
+        btnAddVehicleModel.setOnClickListener(view -> {
+            startActivity(new Intent(AdminAddUnitScreen.this, AdminAddVehicleUnit.class));
+        });
+
         // Set today's date in etDateAdded
         String todayDate = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Calendar.getInstance().getTime());
         etDateAdded.setText(todayDate);
         etDateAdded.setEnabled(false); // Disable editing of the date field
 
+        // Set the initial unit number based on the next available value
+        setInitialUnitNumber();
+
+        // Load vehicle models into the spinner
+        loadVehicleModelsIntoSpinner();
+
         // Handle Add Unit button click
         btnAddUnit.setOnClickListener(v -> addUnitToFirestore());
     }
 
+    private void loadVehicleModelsIntoSpinner() {
+        db.collection("vehicles").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ArrayList<String> vehicleModels = new ArrayList<>();
+                for (DocumentSnapshot document : task.getResult()) {
+                    String model = document.getString("vehiclemodel");
+                    if (model != null) {
+                        vehicleModels.add(model);
+                    }
+                }
+
+                // Populate the spinner with vehicle models
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, vehicleModels);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerVehicleModel.setAdapter(adapter);
+
+            } else {
+                Toast.makeText(this, "Failed to load vehicle models.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setInitialUnitNumber() {
+        db.collection("units").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                ArrayList<Integer> existingUnitNumbers = new ArrayList<>();
+
+                for (DocumentSnapshot doc : task.getResult()) {
+                    String unitNumberStr = doc.getString("unitNumber");
+                    if (unitNumberStr != null && unitNumberStr.matches("\\d+")) {
+                        existingUnitNumbers.add(Integer.parseInt(unitNumberStr));
+                    }
+                }
+
+                int nextAvailableNumber = findNextAvailableNumber(existingUnitNumbers);
+                etUnitNumber.setText(String.valueOf(nextAvailableNumber));
+                etUnitNumber.setEnabled(false);
+
+            } else {
+                Toast.makeText(this, "Error retrieving unit numbers.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private int findNextAvailableNumber(ArrayList<Integer> existingUnitNumbers) {
+        Collections.sort(existingUnitNumbers);
+        for (int i = 1; i <= MAX_UNITS; i++) {
+            if (!existingUnitNumbers.contains(i)) {
+                return i;
+            }
+        }
+        return existingUnitNumbers.size() + 1;
+    }
+
     private void addUnitToFirestore() {
-        String unitVehicleModel = etVehicleModel.getText().toString().trim();
+        String unitVehicleModel = spinnerVehicleModel.getSelectedItem() != null ? spinnerVehicleModel.getSelectedItem().toString() : "";
         String unitPlateNumber = etPlateNumber.getText().toString().trim();
         String unitNumber = etUnitNumber.getText().toString().trim();
         String dateAdded = etDateAdded.getText().toString().trim();
 
-        // Validate fields
         if (unitVehicleModel.isEmpty() || unitPlateNumber.isEmpty() || dateAdded.isEmpty() || unitNumber.isEmpty()) {
-            Toast.makeText(AdminAddUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Regex for unit number: only 2-digit numbers (00-99)
-        String unitNumberPattern = "^[0-9]{2}$";
-        if (!unitNumber.matches(unitNumberPattern)) {
-            etUnitNumber.setError("Unit number must be a 2-digit number (e.g., '01', '99')");
-            return;
-        }
-
-        // Regex for plate number format "ABC 1234"
         String plateNumberPattern = "^[A-Z]{3} [0-9]{4}$";
         if (!unitPlateNumber.matches(plateNumberPattern)) {
             etPlateNumber.setError("Invalid plate number format. Use 'ABC 1234'");
             return;
         }
 
-        // Create a unit object
         Map<String, Object> unit = new HashMap<>();
         unit.put("vehicleModel", unitVehicleModel);
         unit.put("plateNumber", unitPlateNumber);
         unit.put("unitNumber", unitNumber);
         unit.put("dateAdded", dateAdded);
 
-        // Add a new document in the "units" collection
         db.collection("units")
                 .add(unit)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        DocumentReference docRef = task.getResult();
-                        UnitModel newUnit = new UnitModel(unitVehicleModel, unitPlateNumber, unitNumber, dateAdded, docRef.getId());
-                        unitList.add(newUnit);
-                        unitAdapter.notifyItemInserted(unitList.size() - 1);
-                        Toast.makeText(AdminAddUnitScreen.this, "Unit added successfully", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Unit added successfully", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(AdminAddUnitScreen.this, AdminManageUnitScreen.class));
                     } else {
-                        Toast.makeText(AdminAddUnitScreen.this, "Error adding unit: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Error adding unit: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
-
-
 }

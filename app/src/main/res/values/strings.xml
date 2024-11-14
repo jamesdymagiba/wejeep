@@ -79,6 +79,7 @@
     <string name="forget_password">Forget Password</string>
     <string name="admin_dashboard">Admin Dashboard</string>
     <string name="profile_picture">Profile Picture</string>
+    <string name="add_vehicle">Add Vehicle</string>
 
 
 </resources>

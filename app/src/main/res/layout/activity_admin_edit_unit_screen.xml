@@ -88,20 +88,21 @@
         android:fontFamily="@font/londrina_solid_regular"
         android:text="@string/unit_no"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/et_8"
+        app:layout_constraintBottom_toTopOf="@+id/etUnitNumber"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
         app:layout_constraintHorizontal_bias="0.151"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.775" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView20"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/vehicle_model"
         android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/vehicle_model"
         android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/etvehicleModel"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
         app:layout_constraintHorizontal_bias="0.163"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
@@ -167,6 +168,7 @@
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
         android:hint="@string/abc_123"
+        android:clickable="false"
         android:importantForAutofill="no"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"

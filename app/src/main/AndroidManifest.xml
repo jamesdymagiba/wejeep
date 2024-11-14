@@ -17,6 +17,9 @@
         android:theme="@style/Theme.WeJeep"
         tools:targetApi="31">
         <activity
+            android:name=".AdminAddVehicleUnit"
+            android:exported="false" />
+        <activity
             android:name=".AdminEditAssignedUnitScreen"
             android:exported="false" />
         <activity
@@ -42,7 +45,7 @@
             android:exported="false" />
         <activity
             android:name=".AdminManageUnitScreen"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".AdminDashboard"
             android:exported="false" />
