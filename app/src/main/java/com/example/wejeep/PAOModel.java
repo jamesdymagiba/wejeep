@@ -1,16 +1,18 @@
 package com.example.wejeep;
 
+import com.google.firebase.Timestamp;
+
 public class PAOModel {
     private String name;
     private String email;
     private String documentId;  // New field for Firestore document ID
-    private String dateAdded; // New field for date added
+    private String createdAt; // New field for date added
 
-    public PAOModel(String name, String email, String documentId, String dateAdded) {
+    public PAOModel(String name, String email, String documentId, Timestamp dateAdded) {
         this.name = name;
         this.email = email;
         this.documentId = documentId;
-        this.dateAdded = dateAdded; // Initialize the dateAdded field
+        this.createdAt = createdAt; // Initialize the dateAdded field
     }
 
     public String getName() {
@@ -26,6 +28,6 @@ public class PAOModel {
     }
 
     public String getDateAdded() {
-        return dateAdded; // Getter for dateAdded
+        return createdAt; // Getter for dateAdded
     }
 }

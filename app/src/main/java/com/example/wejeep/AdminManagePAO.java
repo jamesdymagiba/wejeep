@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -106,9 +107,9 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
-                            String dateAdded = document.getString("dateAdded"); // Retrieve date added
-                            if (name != null && email != null && dateAdded != null) {  // Check for null values
-                                paoList.add(new PAOModel(name, email, documentId, dateAdded));  // Include date added
+                            Timestamp createdAt = document.getTimestamp("createdAt"); // Retrieve date added
+                            if (name != null && email != null && createdAt != null) {  // Check for null values
+                                paoList.add(new PAOModel(name, email, documentId, createdAt));  // Include date added
                             }
                         }
                         paoAdapter.notifyDataSetChanged();  // Notify adapter of data changes
