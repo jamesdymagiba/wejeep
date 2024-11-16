@@ -100,7 +100,7 @@ public class SignUpForPAO extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String idToken = task.getResult().getToken();  // Retrieve the ID token
-                        Log.d("Admin", "Token: "+idToken);
+
                         // Prepare data to send to the Firebase function
                         HashMap<String, Object> data = new HashMap<>();
                         data.put("email", email);
@@ -115,7 +115,18 @@ public class SignUpForPAO extends AppCompatActivity {
                                 .addOnCompleteListener(task1 -> {
                                     customLoadingDialog.hideLoadingScreen();
                                     if (task1.isSuccessful()) {
-                                        Toast.makeText(SignUpForPAO.this, "User created successfully with PAO role", Toast.LENGTH_LONG).show();
+                                        // Send email verification
+                                        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+                                        if (currentUser != null) {
+                                            currentUser.sendEmailVerification()
+                                                    .addOnCompleteListener(verificationTask -> {
+                                                        if (verificationTask.isSuccessful()) {
+                                                            Toast.makeText(SignUpForPAO.this, "User created successfully. A verification email has been sent.", Toast.LENGTH_LONG).show();
+                                                        } else {
+                                                            Toast.makeText(SignUpForPAO.this, "Failed to send verification email: " + verificationTask.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                                        }
+                                                    });
+                                        }
                                     } else {
                                         Toast.makeText(SignUpForPAO.this, "Error creating user: " + task1.getException().getMessage(), Toast.LENGTH_LONG).show();
                                     }
@@ -127,8 +138,6 @@ public class SignUpForPAO extends AppCompatActivity {
                     }
                 });
     }
-
-
 
     private boolean validateInputs(String email, String password, String name) {
         boolean emailValid = isValidEmail(email) && checkField(etEmailSU);
