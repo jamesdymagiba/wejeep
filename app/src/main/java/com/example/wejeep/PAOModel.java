@@ -1,14 +1,12 @@
 package com.example.wejeep;
 
-import com.google.firebase.Timestamp;
-
 public class PAOModel {
     private String name;
     private String email;
     private String documentId;  // New field for Firestore document ID
     private String createdAt; // New field for date added
 
-    public PAOModel(String name, String email, String documentId, Timestamp dateAdded) {
+    public PAOModel(String name, String email, String documentId, String dateAdded) {
         this.name = name;
         this.email = email;
         this.documentId = documentId;

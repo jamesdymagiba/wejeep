@@ -107,9 +107,9 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
-                            Timestamp createdAt = document.getTimestamp("createdAt"); // Retrieve date added
-                            if (name != null && email != null && createdAt != null) {  // Check for null values
-                                paoList.add(new PAOModel(name, email, documentId, createdAt));  // Include date added
+                            String dateadded = document.getString("dateadded"); // Retrieve date added
+                            if (name != null && email != null && dateadded != null) {  // Check for null values
+                                paoList.add(new PAOModel(name, email, documentId, dateadded));  // Include date added
                             }
                         }
                         paoAdapter.notifyDataSetChanged();  // Notify adapter of data changes
