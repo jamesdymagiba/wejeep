@@ -115,18 +115,11 @@ public class SignUpForPAO extends AppCompatActivity {
                                 .addOnCompleteListener(task1 -> {
                                     customLoadingDialog.hideLoadingScreen();
                                     if (task1.isSuccessful()) {
-                                        // Send email verification
-                                        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-                                        if (currentUser != null) {
-                                            currentUser.sendEmailVerification()
-                                                    .addOnCompleteListener(verificationTask -> {
-                                                        if (verificationTask.isSuccessful()) {
-                                                            Toast.makeText(SignUpForPAO.this, "User created successfully. A verification email has been sent.", Toast.LENGTH_LONG).show();
-                                                        } else {
-                                                            Toast.makeText(SignUpForPAO.this, "Failed to send verification email: " + verificationTask.getException().getMessage(), Toast.LENGTH_LONG).show();
-                                                        }
-                                                    });
-                                        }
+                                        // User created successfully
+                                        Toast.makeText(SignUpForPAO.this, "User created successfully.", Toast.LENGTH_LONG).show();
+                                        Intent intent = new Intent(SignUpForPAO.this, AdminManagePAO.class);
+                                        startActivity(intent);
+                                        finish();
                                     } else {
                                         Toast.makeText(SignUpForPAO.this, "Error creating user: " + task1.getException().getMessage(), Toast.LENGTH_LONG).show();
                                     }
@@ -138,6 +131,7 @@ public class SignUpForPAO extends AppCompatActivity {
                     }
                 });
     }
+
 
     private boolean validateInputs(String email, String password, String name) {
         boolean emailValid = isValidEmail(email) && checkField(etEmailSU);
