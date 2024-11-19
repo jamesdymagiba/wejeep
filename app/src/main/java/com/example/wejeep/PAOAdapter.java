@@ -1,7 +1,10 @@
 package com.example.wejeep;
 
 import android.app.AlertDialog;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
@@ -24,12 +30,18 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
     private List<PAOModel> paoList;
     private FirebaseFirestore db;
     private FirebaseFunctions firebaseFunctions;
+    private FirebaseAuth firebaseAuth;
+    private Context context;
+    private CustomLoadingDialog customLoadingDialog;
 
     // Constructor to accept Firestore instance
-    public PAOAdapter(List<PAOModel> paoList, FirebaseFirestore db) {
+    public PAOAdapter(List<PAOModel> paoList, FirebaseFirestore db, Activity context) {
         this.paoList = paoList;
         this.db = db;
         this.firebaseFunctions = FirebaseFunctions.getInstance();
+        this.firebaseAuth = FirebaseAuth.getInstance();
+        this.context = context;
+        customLoadingDialog = new CustomLoadingDialog(context);
     }
 
     @NonNull
@@ -57,6 +69,7 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
                 .setTitle("Delete PAO")
                 .setMessage("Are you sure you want to delete this PAO?")
                 .setPositiveButton("Yes", (dialog, which) -> {
+                    customLoadingDialog.showLoadingScreen();
                     deletePAO(paoId, position, context); // Proceed with delete after confirmation
                 })
                 .setNegativeButton("No", null) // Dismiss the dialog if "No" is clicked
@@ -65,55 +78,56 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
 
     // Method to delete PAO from Firestore and update RecyclerView
     private void deletePAO(String paoId, int position, Context context) {
-        if (paoId != null) {
-            // Retrieve the document from Firestore based on the document ID
-            db.collection("users").document(paoId) // Use document ID to reference the specific PAO
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            String uid = paoId;  // Save paoId as uid
-                            Log.d("PAOAdapter", "UID from Firestore: " + uid);
-
-                            // Check if UID is not null or empty
-                            if (uid != null && !uid.isEmpty()) {
-                                // Pass UID inside a map to Firebase function
-                                Map<String, Object> data = new HashMap<>();
-                                data.put("uid", uid);  // Passing the UID as a key-value pair
-
-                                // Call the Firebase function to delete the user account
-                                Log.d("PAOAdapter", "UID from Firestore: " + uid);
-                                Log.d("PAOAdapter", "paoid from Firestore: " + paoId);
-
-                                firebaseFunctions
-                               .getHttpsCallable("deleteUserAccount")
-                                .call(data)  // Passing the map as the argument
-                                        .addOnSuccessListener(result -> {
-                                            // Remove the PAO from the list and update UI
-                                            paoList.remove(position);
-                                            notifyItemRemoved(position); // Notify the adapter that the item was removed
-                                            Toast.makeText(context, "PAO deleted", Toast.LENGTH_SHORT).show();
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            // On Failure
-                                            Toast.makeText(context, "Error deleting user account: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                        });
-                            } else {
-                                // If UID is null or empty
-                                Toast.makeText(context, "UID is null or empty", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            // If the document doesn't exist
-                            Toast.makeText(context, "PAO document does not exist in Firestore", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // If the document id is null
-                        Toast.makeText(context, "Error retrieving PAO from Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
-        } else {
-            // Handle case where PAO ID is null
-            Toast.makeText(context, "PAO ID is null", Toast.LENGTH_SHORT).show();
+        // Check if user is signed in
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
+        if (user == null) {
+            Toast.makeText(context, "User must be signed in.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        // Get ID token from the currently signed-in user
+        user.getIdToken(true)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String idToken = task.getResult().getToken();  // Retrieve the ID token
+                        db.collection("users").document(paoId)
+                                .get()
+                                .addOnSuccessListener(documentSnapshot -> {
+                                    if (documentSnapshot.exists()) {
+                                        // Prepare data to send to the Firebase function
+                                        String uid = paoId;
+
+                                        HashMap<String, Object> info = new HashMap<>();
+                                        info.put("uid", uid);
+                                        info.put("idToken", idToken);
+
+                                        Log.d("PAOAdapter","Data is:"+info);
+                                        // Call the Firebase function with the ID token
+                                        firebaseFunctions
+                                                .getHttpsCallable("deleteUserAccount")
+                                                .call(info)
+                                                .addOnCompleteListener(task1 -> {
+                                                    customLoadingDialog.hideLoadingScreen();
+                                                    if (task1.isSuccessful()) {
+                                                        paoList.remove(position);
+                                                        notifyItemRemoved(position); // Notify the adapter that the item was removed
+                                                        Toast.makeText(context, "PAO deleted", Toast.LENGTH_SHORT).show();
+                                                    } else {
+                                                        Toast.makeText(context, "Error Deleting User: " + task1.getException().getMessage(), Toast.LENGTH_LONG).show();
+                                                    }
+                                                });
+                                    } else {
+                                        // If the document doesn't exist
+                                        Toast.makeText(context, "PAO document does not exist in Firestore", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }else {
+                        customLoadingDialog.hideLoadingScreen();
+                        Log.e("Error", "Failed to get ID token: " + task.getException().getMessage());
+                        Toast.makeText(context, "Failed to get ID token.", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
     @Override
     public int getItemCount() {

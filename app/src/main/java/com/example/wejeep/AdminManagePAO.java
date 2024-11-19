@@ -93,7 +93,7 @@ public class AdminManagePAO extends AppCompatActivity {
         recyclerViewPAO = findViewById(R.id.recyclerViewPAO);
         recyclerViewPAO.setLayoutManager(new LinearLayoutManager(this));
         paoList = new ArrayList<>();
-        paoAdapter = new PAOAdapter(paoList, db);
+        paoAdapter = new PAOAdapter(paoList, db, this);
         recyclerViewPAO.setAdapter(paoAdapter);
     }
     private void loadPAOsFromFirestore() {
