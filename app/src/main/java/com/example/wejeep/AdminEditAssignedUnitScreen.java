@@ -97,7 +97,46 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         scheduleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSchedule.setAdapter(scheduleAdapter);
 
-        // Inside onCreate()
+        spinnerUnitnumber.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Retrieve the selected unit number
+                String selectedUnitnumber = unitnumberList.get(position);
+
+                // Query Firestore to fetch the associated plate number
+                db.collection("units")
+                        .whereEqualTo("unitNumber", selectedUnitnumber)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                // Retrieve the plate number from the document
+                                String plateNumber = task.getResult().getDocuments().get(0).getString("plateNumber");
+                                if (plateNumber != null) {
+                                    // Update spinnerPlatenumber to show the fetched plate number
+                                    platenumberList.clear();
+                                    platenumberList.add(plateNumber);
+                                    platenumberAdapter.notifyDataSetChanged();
+
+                                    // Set the selected plate number
+                                    spinnerPlatenumber.setSelection(0);
+                                }
+                            } else {
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "No plate number found for the selected unit", Toast.LENGTH_SHORT).show();
+                                platenumberList.clear();
+                                platenumberAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(AdminEditAssignedUnitScreen.this, "Failed to fetch plate number: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing
+            }
+        });
+
         spinnerSchedule.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -286,10 +325,20 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
     // Set the selected item in a spinner based on the provided value
     private void setSpinnerSelection(Spinner spinner, String value) {
         if (value == null) return;
+
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
+        if (adapter == null || adapter.getCount() == 0) {
+            // Adapter not ready, wait for it to populate
+            spinner.post(() -> setSpinnerSelection(spinner, value));
+            return;
+        }
+
         int position = adapter.getPosition(value);
         if (position >= 0) {
             spinner.setSelection(position);
+        } else {
+            // Log for debugging
+            Toast.makeText(this, "Value not found in spinner: " + value, Toast.LENGTH_SHORT).show();
         }
     }
 
