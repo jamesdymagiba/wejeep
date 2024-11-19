@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
@@ -19,9 +18,9 @@ import com.google.firebase.auth.FirebaseUser;
 public class Login extends AppCompatActivity {
     private AuthManager authManager;
     private GoogleSignInHelper googleSignInHelper;
+    private CustomLoadingDialog customLoadingDialog;
     private TextInputEditText etEmailLI, etPasswordLI;
     private Button btnLoginLI, btnGoogleLI, btnForgetLI;
-    private ProgressBarHandler progressBarHandler;
     private boolean valid = true;
     private static final int RC_SIGN_IN = 9001;
 
@@ -30,8 +29,7 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        ProgressBar progressBarLI = findViewById(R.id.pbLI);
-        progressBarHandler = new ProgressBarHandler(progressBarLI);
+        customLoadingDialog = new CustomLoadingDialog(this);
 
         authManager = new AuthManager(this);
         googleSignInHelper = new GoogleSignInHelper(this);
@@ -48,19 +46,20 @@ public class Login extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         btnLoginLI.setOnClickListener(view -> {
-            progressBarHandler.showProgressBar();
+
             String email = String.valueOf(etEmailLI.getText());
             String password = String.valueOf(etPasswordLI.getText());
 
             if (validateInputs()) {
-                authManager.signInUser(email, password, progressBarHandler);
+                customLoadingDialog.showLoadingScreen();
+                authManager.signInUser(email, password, customLoadingDialog);
             } else {
-                progressBarHandler.hideProgressBar();
+                customLoadingDialog.hideLoadingScreen();
             }
         });
 
         btnGoogleLI.setOnClickListener(v -> {
-            progressBarHandler.showProgressBar();
+            customLoadingDialog.showLoadingScreen();
             googleSignInHelper.signIn();
         });
         btnForgetLI.setOnClickListener(v -> {
@@ -68,14 +67,14 @@ public class Login extends AppCompatActivity {
             if (email.isEmpty()) {
                 Toast.makeText(Login.this, "Please enter your email to reset the password.", Toast.LENGTH_SHORT).show();
             } else {
-                progressBarHandler.showProgressBar();
+                customLoadingDialog.showLoadingScreen();
                 FirebaseAuth.getInstance().sendPasswordResetEmail(email)
                         .addOnCompleteListener(task -> {
-                            progressBarHandler.hideProgressBar();
+                            customLoadingDialog.hideLoadingScreen();
                             if (task.isSuccessful()) {
                                 Toast.makeText(Login.this, "Password reset email sent.", Toast.LENGTH_SHORT).show();
                             } else {
-                                Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Login.this, "Error occurred. Please try again.", Toast.LENGTH_SHORT).show();
                             }
                         });
             }
@@ -89,7 +88,7 @@ public class Login extends AppCompatActivity {
             googleSignInHelper.handleSignInResult(requestCode, resultCode, data, new GoogleSignInHelper.SignInCallback() {
                 @Override
                 public void onSignInSuccess(FirebaseUser user) {
-                    progressBarHandler.hideProgressBar();
+                    customLoadingDialog.hideLoadingScreen();
                     if (user != null) {
                         if (user.getEmail() != null) {
                             // Check if the user is registered
@@ -106,7 +105,7 @@ public class Login extends AppCompatActivity {
 
                 @Override
                 public void onSignInFailure(Exception e) {
-                    progressBarHandler.hideProgressBar();
+                    customLoadingDialog.hideLoadingScreen();
                     Toast.makeText(Login.this, "Sign-in failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });

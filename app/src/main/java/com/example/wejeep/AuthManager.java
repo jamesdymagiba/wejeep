@@ -1,11 +1,13 @@
 package com.example.wejeep;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -29,30 +31,53 @@ public class AuthManager {
         this.context = context;
     }
 
-    public void signUpUser(String email, String password, String name, final ProgressBarHandler progressBarHandler) {
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
-                        if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                sendVerificationEmail(user, name);
-                            }
-                        } else {
-                            Toast.makeText(context, "Sign up failed.", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+    private long lastSignUpTime = 0;
+    private static final long DEBOUNCE_DELAY = 2000; // 2 seconds debounce delay
+
+    public void signUpUser(String email, String password, String name, final CustomLoadingDialog customLoadingDialog) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastSignUpTime < DEBOUNCE_DELAY) {
+            Toast.makeText(context, "Please wait before signing up again.", Toast.LENGTH_SHORT).show();
+            customLoadingDialog.hideLoadingScreen();
+            return; // Exit if called within the debounce delay
+        }
+        lastSignUpTime = currentTime; // Update last sign-up time
+
+        checkIfUserExists(email, new UserCheckCallback() {
+            @Override
+            public void onUserCheck(boolean exists) {
+                if (exists) {
+                    customLoadingDialog.hideLoadingScreen();
+                    Toast.makeText(context, "User already exists.", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Proceed with user sign up if the user does not exist
+                    mAuth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    customLoadingDialog.hideLoadingScreen();
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = mAuth.getCurrentUser();
+                                        if (user != null) {
+                                            sendVerificationEmail(user, name);
+                                        }
+                                    } else {
+                                        Toast.makeText(context, "Sign up failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 
-    public void signInUser(String email, String password, final ProgressBarHandler progressBarHandler) {
+
+    public void signInUser(String email, String password, final CustomLoadingDialog customLoadingDialog) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        progressBarHandler.hideProgressBar();
+                        customLoadingDialog.hideLoadingScreen();
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null && user.isEmailVerified()) {
@@ -87,8 +112,9 @@ public class AuthManager {
                                         }
                                     }
                                 });
-                            } else if (user != null) {
+                            } else if (user != null && !user.isEmailVerified()) {
                                 Toast.makeText(context, "Please verify your email address.", Toast.LENGTH_SHORT).show();
+                                promptForEmailVerification(user);
                             } else {
                                 Toast.makeText(context, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             }
@@ -99,7 +125,25 @@ public class AuthManager {
                 });
     }
 
-
+    private void promptForEmailVerification(FirebaseUser user) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setMessage("Your email is not verified. Would you like to receive a verification email?")
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // If the user agrees, send a verification email
+                        sendVerificationEmailOnly(user);
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User declined the email
+                        Toast.makeText(context, "You can verify your email later.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+        builder.create().show();
+    }
+    //sending of verification email and creating of account
     private void sendVerificationEmail(FirebaseUser user, String name) {
         user.sendEmailVerification()
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -115,7 +159,21 @@ public class AuthManager {
                     }
                 });
     }
-
+    //sending of verification email only
+    private void sendVerificationEmailOnly(FirebaseUser user) {
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("AuthManager", "Verification email sent.");
+                        } else {
+                            Log.w("AuthManager", "Error sending verification email.", task.getException());
+                            Toast.makeText(context, "Error sending verification email.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
     private void updateUserName(FirebaseUser user, String name) {
         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                 .setDisplayName(name)

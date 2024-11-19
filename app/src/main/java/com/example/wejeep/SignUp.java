@@ -8,7 +8,6 @@ import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 import androidx.appcompat.widget.Toolbar;
 import com.google.android.material.textfield.TextInputEditText;
@@ -20,7 +19,7 @@ public class SignUp extends AppCompatActivity {
     private GoogleSignInHelper googleSignInHelper;
     private TextInputEditText etEmailSU, etPasswordSU, etNameSU;
     private Button btnSignupSU, btnGoogleSU;
-    private ProgressBarHandler progressBarHandler;
+    private CustomLoadingDialog customLoadingDialog;
     private boolean valid = true;
     private static final int RC_SIGN_IN = 9001;
 
@@ -29,8 +28,7 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
-        ProgressBar progressBarSU = findViewById(R.id.pbSU);
-        progressBarHandler = new ProgressBarHandler(progressBarSU);
+        customLoadingDialog = new CustomLoadingDialog(this);
 
         authManager = new AuthManager(this);
         googleSignInHelper = new GoogleSignInHelper(this);
@@ -42,20 +40,20 @@ public class SignUp extends AppCompatActivity {
         btnGoogleSU = findViewById(R.id.btnGoogleSU);
 
         btnSignupSU.setOnClickListener(view -> {
-            progressBarHandler.showProgressBar();
+            customLoadingDialog.showLoadingScreen();
             String email = String.valueOf(etEmailSU.getText());
             String password = String.valueOf(etPasswordSU.getText());
             String name = String.valueOf(etNameSU.getText());
 
             if (validateInputs(email, password, name)) {
-                authManager.signUpUser(email, password, name, progressBarHandler);
+                authManager.signUpUser(email, password, name, customLoadingDialog);
             } else {
-                progressBarHandler.hideProgressBar();
+                customLoadingDialog.hideLoadingScreen();
             }
         });
 
         btnGoogleSU.setOnClickListener(v -> {
-            progressBarHandler.showProgressBar();
+            customLoadingDialog.showLoadingScreen();
             googleSignInHelper.signIn();
         });
 
@@ -72,7 +70,7 @@ public class SignUp extends AppCompatActivity {
             googleSignInHelper.handleSignInResult(requestCode, resultCode, data, new GoogleSignInHelper.SignInCallback() {
                 @Override
                 public void onSignInSuccess(FirebaseUser user) {
-                    progressBarHandler.hideProgressBar();
+                    customLoadingDialog.hideLoadingScreen();
                     Toast.makeText(SignUp.this, "Sign-in successful: " + user.getEmail(), Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(SignUp.this, HSPassenger.class);
                     startActivity(intent);
@@ -81,7 +79,7 @@ public class SignUp extends AppCompatActivity {
 
                 @Override
                 public void onSignInFailure(Exception e) {
-                    progressBarHandler.hideProgressBar();
+                    customLoadingDialog.hideLoadingScreen();
                     Toast.makeText(SignUp.this, "Sign-in failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });

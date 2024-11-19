@@ -76,34 +76,13 @@ public class AdminManageDriver extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, AdminManageDriver.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
         });
-
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName());
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
-        }
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
     }
 
     // Method to fetch driver data from Firestore
@@ -116,7 +95,7 @@ public class AdminManageDriver extends AppCompatActivity {
                     driver.setDocumentId(document.getId()); // Set the document ID
                     driverList.add(driver);
                 }
-                driverAdapter.notifyDataSetChanged(); // Update the RecyclerView with data
+                driverAdapter.notifyDataSetChanged(); // Update the RecyclerView with datas
             } else {
                 Toast.makeText(AdminManageDriver.this, "Error getting drivers.", Toast.LENGTH_SHORT).show();
             }
@@ -138,7 +117,7 @@ public class AdminManageDriver extends AppCompatActivity {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            BackPressHandler.handleBackPress(this);
         }
     }
 }

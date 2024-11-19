@@ -9,7 +9,7 @@
             android:icon="@drawable/home_logo"
             android:title="Home" />
         <item
-            android:id="@+id/itmActiveJeepHSP"
+            android:id="@+id/itmActiveModernJeepHSP"
             android:icon="@drawable/bus_logo"
             android:title="Active Modern Jeep/s" />
         <item
@@ -42,6 +42,10 @@
             android:id="@+id/itmManageDriverHSP"
             android:icon="@drawable/managedriver_icon"
             android:title="Manage Driver" />
+        <item
+            android:id="@+id/itmManagePAOHSP"
+            android:icon="@drawable/pao_icon"
+            android:title="Manage PAO" />
         <item
             android:id="@+id/itmManageUnitHSP"
             android:icon="@drawable/manageunit_icon"

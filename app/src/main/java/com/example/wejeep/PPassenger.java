@@ -4,6 +4,7 @@ import static androidx.fragment.app.FragmentManager.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -30,6 +31,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -41,15 +44,82 @@ public class PPassenger extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    Button btnEditProfilePP;
+    Button btnEditProfilePP, btnDeleteAccountPP;
+    private static final String TAG = "PPassenger";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ppassenger);
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+
         Toolbar toolbar = findViewById(R.id.toolbarPP);
         btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
+        btnDeleteAccountPP = findViewById(R.id.btnDeleteAccountPP);
+
+        btnDeleteAccountPP.setOnClickListener(view -> {
+            // Show confirmation dialog
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle("Delete Account")
+                    .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Get current user ID (UID)
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user != null) {
+                            String userId = user.getUid();
+
+                            // Delete user document from Firestore
+                            FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(userId)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Check if the user has a profile picture
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                                        StorageReference profilePicRef = storage.getReference().child("profile_pictures/" + userId + ".jpg");
+
+                                        // Try to check if the profile picture exists before attempting to delete
+                                        profilePicRef.getMetadata()
+                                                .addOnSuccessListener(metadata -> {
+                                                    // If metadata is found, delete the profile picture
+                                                    profilePicRef.delete()
+                                                            .addOnSuccessListener(aVoid1 -> {
+                                                                // Delete the account from Firebase Authentication
+                                                                user.delete()
+                                                                        .addOnSuccessListener(aVoid2 -> {
+                                                                            Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                            startActivity(new Intent(PPassenger.this, Login.class));
+                                                                        })
+                                                                        .addOnFailureListener(e -> {
+                                                                            Toast.makeText(view.getContext(), "Failed to delete account: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                                        });
+                                                            })
+                                                            .addOnFailureListener(e -> {
+                                                                Toast.makeText(view.getContext(), "Failed to delete profile picture: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                            });
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    // If no profile picture is found, just proceed with deleting the account
+                                                    user.delete()
+                                                            .addOnSuccessListener(aVoid2 -> {
+                                                                Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                startActivity(new Intent(PPassenger.this, Login.class));
+                                                            })
+                                                            .addOnFailureListener(e1 -> {
+                                                                Toast.makeText(view.getContext(), "Failed to delete account: " + e1.getMessage(), Toast.LENGTH_LONG).show();
+                                                            });
+                                                });
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(view.getContext(), "Failed to delete Firestore document: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    });
+                        }
+                    })
+                    .setNegativeButton("No", null) // Do nothing if No is clicked
+                    .show();
+        });
 
         btnEditProfilePP.setOnClickListener(view -> {
             startActivity(new Intent(PPassenger.this, EPPassenger.class));
@@ -76,47 +146,61 @@ public class PPassenger extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                boolean handled = navigationManager.handleNavigationItemSelected(item);
+                boolean handled = navigationManager.handleNavigationItemSelected(item, PPassenger.this);
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return handled;
             }
         });
 
-        auth = FirebaseAuth.getInstance();
-        user = auth.getCurrentUser();
+        //Add profile picture and name from firestore in header
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            updateUserUI();
-        }
+        updateUserProfileUI();
     }
 
-    private void updateUserUI() {
-        View headerView = navigationView.getHeaderView(0);
-        ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-        ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+    private void updateUserProfileUI() {
+        if (user != null) {
+            String userId = user.getUid();
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Glide.with(this)
-                .load(user.getPhotoUrl())
-                .apply(RequestOptions.circleCropTransform())
-                .into(ivProfilePicturePP);
+            db.collection("users").document(userId).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful() && task.getResult() != null) {
+                    String name = task.getResult().getString("name");
+                    String profilePicture = task.getResult().getString("profilePicture");
 
-        TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-        TextView tvNamePP = findViewById(R.id.tvNamePP);
+                    ImageView ivProfilePicturePP = findViewById(R.id.ivProfilePicturePP);
+                    TextView tvNamePP = findViewById(R.id.tvNamePP);
 
-        tvNamePP.setText(user.getDisplayName());
-        tvNameHSP.setText(user.getDisplayName());
+                    // Set the name from Firestore
+                    tvNamePP.setText(name);
 
-        if (user.getPhotoUrl() != null) {
-            Glide.with(this)
-                    .load(user.getPhotoUrl())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(ivProfilePictureHSP);
+                    // Load the profile picture from Firestore or use a placeholder if it doesn't exist
+                    if (profilePicture != null && !profilePicture.isEmpty()) {
+                        Glide.with(this)
+                                .load(profilePicture)
+                                .apply(RequestOptions.circleCropTransform())
+                                .into(ivProfilePicturePP);
+                    } else {
+                        ivProfilePicturePP.setImageResource(R.drawable.placeholder_image);
+                    }
+                } else {
+                    Toast.makeText(this, "Error fetching user information", Toast.LENGTH_SHORT).show();
+                    Log.w(TAG, "Error fetching user information from Firestore", task.getException());
+                }
+            });
+        } else {
+            // Handle the case when the user is not logged in
+            Toast.makeText(this, "User is not logged in. Redirecting to login screen.", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(PPassenger.this, Login.class));
+            finish(); // Finish the current activity to prevent further access
+        }
+    }
+    @Override
+    public void onBackPressed() {
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            BackPressHandler.handleBackPress(this);
         }
     }
 }
