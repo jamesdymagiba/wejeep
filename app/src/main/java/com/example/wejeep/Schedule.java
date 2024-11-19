@@ -82,11 +82,11 @@ public class Schedule extends AppCompatActivity {
     // Adjust document ID to dynamically retrieve schedule if needed
 
         if (user != null) {
-            String conductorName = user.getDisplayName(); // Get the current user's display name
+            String conductorEmail = user.getDisplayName(); // Get the current user's display name
 
             // Query Firestore collection with a filter by conductor name
             db.collection("assigns")
-                    .whereEqualTo("conductor", conductorName)  // Query by the conductor field
+                    .whereEqualTo("email", conductorEmail)  // Query by the conductor field
                     .get()
                     .addOnSuccessListener(queryDocumentSnapshots -> {
                         if (!queryDocumentSnapshots.isEmpty()) {
