@@ -78,6 +78,23 @@ public class AdminAddDriver extends AppCompatActivity {
             return;
         }
 
+        String driverNamePattern = "^[a-zA-Z ]{2,}$";
+        if (!driverName.matches(driverNamePattern)) {
+            etDriverName.setError("Name must be at least 2 characters and contain only letters and spaces");
+            return;
+        }
+
+        String phoneNumberPattern = "^09\\d{9}$";
+        if (!driverContact.matches(phoneNumberPattern)) {
+            etDriverContact.setError("Phone number must be 11 digits and start with '09'");
+            return;
+        }
+
+        if (driverName.length() <2 || !driverName.matches("[a-zA-Z ]+")) {
+            Toast.makeText(this, "Name must be at least 2 characters and contain only letters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         // Create a driver object
         Map<String, Object> driver = new HashMap<>();
         driver.put("name", driverName);

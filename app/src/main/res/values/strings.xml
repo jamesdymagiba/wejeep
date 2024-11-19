@@ -89,6 +89,10 @@
     <string name="date_added_pao">Date Added :</string>
     <string name="active_modern_jeep_s">Active Modern Jeep/s</string>
     <string name="pao">PAO:</string>
+    <string name="add_vehicle">Add Vehicle</string>
+    <string name="edit_assigned">Edit Assigned</string>
+    <string name="edit_assign_unit">Edit Assign Unit</string>
+
 
 
 </resources>
