@@ -75,6 +75,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
+
         fetchDriverFromFirestore();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {

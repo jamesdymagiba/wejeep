@@ -80,6 +80,8 @@
     <string name="admin_dashboard">Admin Dashboard</string>
     <string name="profile_picture">Profile Picture</string>
     <string name="add_vehicle">Add Vehicle</string>
+    <string name="edit_assigned">Edit Assigned</string>
+    <string name="edit_assign_unit">Edit Assign Unit</string>
 
 
 </resources>

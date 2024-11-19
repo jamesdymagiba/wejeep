@@ -46,7 +46,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
     private ArrayList<String> driverList = new ArrayList<>();
     private ArrayAdapter<String>  driverAdapter, conductorAdapter, platenumberAdapter, unitnumberAdapter, scheduleAdapter;
     private Button btnConfirm, btnBack;
-    private String selectedDriver, selectedPlatenumber,selectedConductor,selectedUnitnumber;
+    private String selectedDriver, selectedPlatenumber,selectedConductor,selectedUnitnumber, selectedConductorEmail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +69,11 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         EditTextToday = findViewById(R.id.etToday);
         View btnConfirm = findViewById(R.id.btnConfirm);
         btnBack = findViewById(R.id.btnBack);
+
+        EditTextFromday.setEnabled(false);
+        EditTextToday.setEnabled(false);
+        EditTextFromtime.setEnabled(false);
+        EditTextTotime.setEnabled(false);
 
         // Set up adapters for spinners
 
@@ -156,16 +161,31 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 // Do nothing here
             }
         });
+        // Modify the spinnerConductor listener
         spinnerConductor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                selectedConductor = conductorList.get(position); // Get the selected driver and store it
-                // Fetch the corresponding plate number for the selected unit number
+                selectedConductor = conductorList.get(position); // Get the selected conductor name
+
+                // Query Firestore to fetch the email for the selected conductor
+                db.collection("users")
+                        .whereEqualTo("name", selectedConductor)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                // Fetch the email field from the document
+                                selectedConductorEmail = task.getResult().getDocuments().get(0).getString("email");
+                            } else {
+                                selectedConductorEmail = null; // Reset email if not found
+                                Toast.makeText(AdminAssignUnitScreen.this, "Failed to fetch email for the selected conductor", Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                // Do nothing here
+                // Reset the selected conductor's email if nothing is selected
+                selectedConductorEmail = null;
             }
         });
 
@@ -237,6 +257,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                         selectedPlatenumber != null && !selectedPlatenumber.isEmpty() &&
                         selectedUnitnumber != null && !selectedUnitnumber.isEmpty() &&
                         selectedConductor != null && !selectedConductor.isEmpty() &&
+                        selectedConductorEmail != null && !selectedConductorEmail.isEmpty() &&
                         selectedToDay != null && !selectedToDay.isEmpty() &&
                         selectedToTime != null && !selectedToTime.isEmpty() &&
                         selectedFromTime != null && !selectedFromTime.isEmpty() &&
@@ -248,6 +269,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                     assignData.put("platenumber", selectedPlatenumber);
                     assignData.put("driver", selectedDriver);
                     assignData.put("conductor", selectedConductor);
+                    assignData.put("email", selectedConductorEmail);
                     assignData.put("fromday", selectedFromDay);
                     assignData.put("today", selectedToDay);
                     assignData.put("fromtime", selectedFromTime);
