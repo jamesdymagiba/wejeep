@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -91,7 +92,7 @@ public class AdminManagePAO extends AppCompatActivity {
         recyclerViewPAO = findViewById(R.id.recyclerViewPAO);
         recyclerViewPAO.setLayoutManager(new LinearLayoutManager(this));
         paoList = new ArrayList<>();
-        paoAdapter = new PAOAdapter(paoList, db);
+        paoAdapter = new PAOAdapter(paoList, db, this);
         recyclerViewPAO.setAdapter(paoAdapter);
     }
 
@@ -133,9 +134,14 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
+
                             String dateAdded = document.getString("dateAdded");
                             if (name != null && email != null && dateAdded != null) {  // Check for null values
                                 paoList.add(new PAOModel(name, email, documentId, dateAdded));  // Include date added
+
+                            String dateadded = document.getString("dateadded"); // Retrieve date added
+                            if (name != null && email != null && dateadded != null) {  // Check for null values
+                                paoList.add(new PAOModel(name, email, documentId, dateadded));  // Include date added
                             }
                         }
                         paoAdapter.notifyDataSetChanged();  // Notify adapter of data changes

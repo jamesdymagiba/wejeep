@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,6 +23,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+
+
+import android.view.Menu;
+import android.view.MenuItem;
 public class Schedule extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
@@ -51,26 +57,31 @@ public class Schedule extends AppCompatActivity {
         // Initialize the toolbar
         Toolbar toolbar = findViewById(R.id.toolbarSchedule);
 
-        // Initialize DrawerLayout and NavigationView
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+        // Initialize navigationManager and navigationView for menuVisibilityManager
+        navigationManager = new NavigationManager(this);
+        NavigationView navigationView = findViewById(R.id.nav_view);
 
-        // Set up DrawerToggle for Navigation Drawer
+        // Initialize MenuVisibilityManager with the NavigationView
+        Menu menu = navigationView.getMenu();
+        menuVisibilityManager = new MenuVisibilityManager(this);
+        menuVisibilityManager.fetchUserRole(menu);
+
+        //Initialize Drawer for menu
+        drawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        // Set up NavigationManager and MenuVisibilityManager
-        navigationManager = new NavigationManager(this);
-        menuVisibilityManager = new MenuVisibilityManager(this);
-        navigationView.setNavigationItemSelectedListener(item -> {
-            boolean handled = navigationManager.handleNavigationItemSelected(item, Schedule.this);
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return handled;
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                boolean handled = navigationManager.handleNavigationItemSelected(item, Schedule.this);
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return handled;
+            }
         });
 
-        // Check user authentication and set the profile info
-        checkUserAuthentication();
+        UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
 
         // Retrieve schedule data from Firestore using the authenticated user's name
         fetchScheduleData();

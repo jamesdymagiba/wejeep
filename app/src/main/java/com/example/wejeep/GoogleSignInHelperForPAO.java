@@ -2,15 +2,17 @@ package com.example.wejeep;
 
 import android.app.Activity;
 import android.content.Intent;
+
 import android.net.Uri;
 import android.util.Log;
+import com.google.firebase.auth.FirebaseAuth;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class GoogleSignInHelperForPAO {
@@ -18,27 +20,29 @@ public class GoogleSignInHelperForPAO {
     private static final String TAG = "GoogleSignInHelperForPAO";
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseFirestore db;
+
+public class GoogleSignInHelperForPAO {
     private Activity activity;
-    private static final int RC_SIGN_IN = 9001;
+    private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth firebaseAuth;
 
     public GoogleSignInHelperForPAO(Activity activity) {
         this.activity = activity;
+
         db = FirebaseFirestore.getInstance(); // Initialize Firestore
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(activity.getString(R.string.default_web_client_id)) // Your web client ID here
+
+        firebaseAuth = FirebaseAuth.getInstance();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(activity.getString(R.string.default_web_client_id))
+
                 .requestEmail()
                 .build();
 
-        mGoogleSignInClient = GoogleSignIn.getClient(activity, gso);
-    }
-
-    public void signIn() {
-        // Clear existing sign-in state to ensure account selection
-        mGoogleSignInClient.signOut().addOnCompleteListener(activity, task -> {
-            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-            activity.startActivityForResult(signInIntent, RC_SIGN_IN);
-        });
+        googleSignInClient = GoogleSignIn.getClient(activity, gso);
     }
 
     public void handleSignInResult(int requestCode, int resultCode, Intent data, final SignInCallback callback) {
