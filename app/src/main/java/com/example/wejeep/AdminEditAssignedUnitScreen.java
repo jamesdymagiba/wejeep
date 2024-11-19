@@ -97,6 +97,55 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         scheduleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSchedule.setAdapter(scheduleAdapter);
 
+        // Inside onCreate()
+        spinnerSchedule.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected schedule
+                String selectedSchedule = parent.getItemAtPosition(position).toString();
+
+                // Query Firestore for the document with the matching schedule
+                db.collection("schedules")
+                        .whereEqualTo("schedule", selectedSchedule)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    // Retrieve the "Fromday" field
+                                    String fromDay = document.getString("Fromday");
+                                    String toDay = document.getString("Today");
+                                    String fromTime = document.getString("Fromtime");
+                                    String toTime = document.getString("Totime");
+                                    if (fromDay != null) {
+                                        EditTextFromday.setText(fromDay);
+                                    }
+                                    if (toDay != null) {
+                                        EditTextToday.setText(toDay);
+                                    }
+                                    if (fromTime != null) {
+                                        EditTextFromtime.setText(fromTime);
+                                    }
+                                    if (toTime != null) {
+                                        EditTextTotime.setText(toTime);
+                                    } else {
+                                        Toast.makeText(AdminEditAssignedUnitScreen.this, "Fromday not found in the document", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "Schedule document not found", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "Error fetching schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+
         // Fetch data for spinners and set initial selections
         fetchUnits(unitNumber);
         fetchPlatenumber(plateNumber);
