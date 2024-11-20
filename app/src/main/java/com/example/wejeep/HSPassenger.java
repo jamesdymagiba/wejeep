@@ -273,7 +273,7 @@ public class HSPassenger extends AppCompatActivity {
                                         .addOnSuccessListener(userDocument -> {
                                             if (userDocument.exists()) {
                                                 String userRole = userDocument.getString("role");
-
+                                                mapView.invalidate();
                                                 // Create a marker for other users' locations
                                                 Marker otherUserMarker = new Marker(mapView);
                                                 otherUserMarker.setPosition(geoPoint);
@@ -373,13 +373,18 @@ public class HSPassenger extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (mapView == null) {
+            mapView = findViewById(R.id.map);
+        }
         mapView.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
+        if (mapView != null) {
+            mapView.onPause();
+        }
         if (isLocationEnabled) {
             disableMyLocation();
         }
@@ -389,7 +394,9 @@ public class HSPassenger extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         cancelLocationTimer();
-        mapView.onDetach();
+        //if (mapView != null) {
+        //    mapView.onDetach();
+       // }
         removeUserLocationFromFirestore();
     }
     private void removeUserLocationFromFirestore() {
