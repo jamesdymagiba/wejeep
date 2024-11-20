@@ -1,8 +1,11 @@
 package com.example.wejeep;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,24 +16,22 @@ import java.util.ArrayList;
 
 public class AdminEditAssignedUnitScreen extends AppCompatActivity {
 
-    private Spinner spinnerUnitnumber, spinnerPlatenumber, spinnerDriver, spinnerConductor, spinnerToday, spinnerFromday, spinnerTotime, spinnerFromtime;
+    private Spinner spinnerUnitnumber, spinnerPlatenumber, spinnerDriver, spinnerConductor, spinnerSchedule;
     private Button btnConfirm, btnBack;
     private FirebaseFirestore db;
-    private String documentId;
+    private String documentId, selectedConductor, selectedPlateNumber, selectedDriver;
+    private EditText EditTextFromday,EditTextToday,EditTextTotime,EditTextFromtime;
 
     // Data lists for spinners
     private ArrayList<String> unitnumberList = new ArrayList<>();
     private ArrayList<String> platenumberList = new ArrayList<>();
     private ArrayList<String> driverList = new ArrayList<>();
     private ArrayList<String> conductorList = new ArrayList<>();
-    private ArrayList<String> fromdayList = new ArrayList<>();
-    private ArrayList<String> todayList = new ArrayList<>();
-    private ArrayList<String> fromtimeList = new ArrayList<>();
-    private ArrayList<String> totimeList = new ArrayList<>();
+    private ArrayList<String> scheduleList = new ArrayList<>();
 
 
     // Adapters for spinners
-    private ArrayAdapter<String> unitnumberAdapter, platenumberAdapter, driverAdapter, conductorAdapter, fromdayAdapter, todayAdapter, fromtimeAdapter, totimeAdapter ;
+    private ArrayAdapter<String> unitnumberAdapter, platenumberAdapter, driverAdapter, conductorAdapter, scheduleAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,12 +46,18 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         spinnerPlatenumber = findViewById(R.id.spinnerPlatenumber);
         spinnerDriver = findViewById(R.id.spinnerDriver);
         spinnerConductor = findViewById(R.id.spinnerConductor);
-        spinnerFromday = findViewById(R.id.spinnerFromday);
-        spinnerToday = findViewById(R.id.spinnerToday);
-        spinnerTotime = findViewById(R.id.spinnerTotime);
-        spinnerFromtime = findViewById(R.id.spinnerFromtime);
+        spinnerSchedule = findViewById(R.id.spinnerSchedule);
+        EditTextFromday = findViewById(R.id.etFromday);
+        EditTextToday = findViewById(R.id.etToday);
+        EditTextTotime = findViewById(R.id.etTotime);
+        EditTextFromtime = findViewById(R.id.etFromtime);
         btnConfirm = findViewById(R.id.btnConfirm);
         btnBack = findViewById(R.id.btnBack);
+
+        EditTextFromday.setEnabled(false);
+        EditTextToday.setEnabled(false);
+        EditTextFromtime.setEnabled(false);
+        EditTextTotime.setEnabled(false);
 
         // Get driver data from Intent
         documentId = getIntent().getStringExtra("documentId");
@@ -58,11 +65,16 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         String plateNumber = getIntent().getStringExtra("plateNumber");
         String driverName = getIntent().getStringExtra("driverName");
         String conductorName = getIntent().getStringExtra("conductorName");
-        String fromDay = getIntent().getStringExtra("driverName");
-        String toDay = getIntent().getStringExtra("driverName");
-        String fromTime = getIntent().getStringExtra("driverName");
-        String toTime = getIntent().getStringExtra("driverName");
+        String fromDay = getIntent().getStringExtra("fromDay");
+        String toDay = getIntent().getStringExtra("toDay");
+        String fromTime = getIntent().getStringExtra("fromTime");
+        String toTime = getIntent().getStringExtra("toTime");
 
+        // Set EditText values
+        if (fromDay != null) EditTextFromday.setText(fromDay);
+        if (toDay != null) EditTextToday.setText(toDay);
+        if (fromTime != null) EditTextFromtime.setText(fromTime);
+        if (toTime != null) EditTextTotime.setText(toTime);
 
         // Set up adapters
         unitnumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitnumberList);
@@ -77,16 +89,151 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         driverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDriver.setAdapter(driverAdapter);
 
-        // Fetch data for spinners
+        conductorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, conductorList);
+        conductorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerConductor.setAdapter(conductorAdapter);
+
+        scheduleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, scheduleList);
+        scheduleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerSchedule.setAdapter(scheduleAdapter);
+
+        spinnerUnitnumber.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Retrieve the selected unit number
+                String selectedUnitnumber = unitnumberList.get(position);
+
+                // Query Firestore to fetch the associated plate number
+                db.collection("units")
+                        .whereEqualTo("unitNumber", selectedUnitnumber)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                // Retrieve the plate number from the document
+                                String plateNumber = task.getResult().getDocuments().get(0).getString("plateNumber");
+                                if (plateNumber != null) {
+                                    // Update spinnerPlatenumber to show the fetched plate number
+                                    platenumberList.clear();
+                                    platenumberList.add(plateNumber);
+                                    platenumberAdapter.notifyDataSetChanged();
+
+                                    // Set the selected plate number
+                                    spinnerPlatenumber.setSelection(0);
+                                }
+                            } else {
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "No plate number found for the selected unit", Toast.LENGTH_SHORT).show();
+                                platenumberList.clear();
+                                platenumberAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(AdminEditAssignedUnitScreen.this, "Failed to fetch plate number: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        });
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing
+            }
+        });
+
+        spinnerSchedule.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Get the selected schedule
+                String selectedSchedule = parent.getItemAtPosition(position).toString();
+
+                // Query Firestore for the document with the matching schedule
+                db.collection("schedules")
+                        .whereEqualTo("schedule", selectedSchedule)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    // Retrieve the "Fromday" field
+                                    String fromDay = document.getString("Fromday");
+                                    String toDay = document.getString("Today");
+                                    String fromTime = document.getString("Fromtime");
+                                    String toTime = document.getString("Totime");
+                                    if (fromDay != null) {
+                                        EditTextFromday.setText(fromDay);
+                                    }
+                                    if (toDay != null) {
+                                        EditTextToday.setText(toDay);
+                                    }
+                                    if (fromTime != null) {
+                                        EditTextFromtime.setText(fromTime);
+                                    }
+                                    if (toTime != null) {
+                                        EditTextTotime.setText(toTime);
+                                    } else {
+                                        Toast.makeText(AdminEditAssignedUnitScreen.this, "Fromday not found in the document", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            } else {
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "Schedule document not found", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e ->
+                                Toast.makeText(AdminEditAssignedUnitScreen.this, "Error fetching schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                // Do nothing
+            }
+        });
+
+
+        // Fetch data for spinners and set initial selections
         fetchUnits(unitNumber);
         fetchPlatenumber(plateNumber);
         fetchDrivers(driverName);
+        fetchConductor(conductorName);
+        fetchSchedules();
 
         // Handle Apply Changes button click
         btnConfirm.setOnClickListener(v -> applyChanges());
 
         // Handle Back button click
         btnBack.setOnClickListener(v -> finish());
+    }
+
+    // Updated methods to set initial selection
+    private void fetchConductor(String conductorName) {
+        db.collection("users")
+                .whereEqualTo("role", "pao")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        conductorList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String name = document.getString("name");
+                            if (name != null) {
+                                conductorList.add(name);
+                            }
+                        }
+                        conductorAdapter.notifyDataSetChanged();
+                        setSpinnerSelection(spinnerConductor, conductorName);
+                    }
+                });
+    }
+
+    private void fetchSchedules() {
+        db.collection("schedules")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        scheduleList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String schedule = document.getString("schedule");
+                            if (schedule != null) {
+                                scheduleList.add(schedule);
+                            }
+                        }
+                        scheduleAdapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void fetchUnits(String unitNumber) {
@@ -148,8 +295,15 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         String updatedUnitNumber = spinnerUnitnumber.getSelectedItem().toString().trim();
         String updatedPlatenumber = spinnerPlatenumber.getSelectedItem().toString().trim();
         String updatedDriver = spinnerDriver.getSelectedItem().toString().trim();
+        String updatedConductor = spinnerConductor.getSelectedItem().toString().trim();
+        String updatedFromday = EditTextFromday.getText().toString().trim();
+        String updatedFromtime = EditTextFromtime.getText().toString().trim();
+        String updatedTotime = EditTextTotime.getText().toString().trim();
+        String updatedToday = EditTextToday.getText().toString().trim();
 
-        if (updatedUnitNumber.isEmpty() || updatedPlatenumber.isEmpty() || updatedDriver.isEmpty()) {
+
+
+        if (updatedUnitNumber.isEmpty() || updatedPlatenumber.isEmpty() || updatedDriver.isEmpty() || updatedFromday.isEmpty() || updatedTotime.isEmpty() || updatedToday.isEmpty() || updatedFromday.isEmpty() || updatedConductor.isEmpty()) {
             Toast.makeText(AdminEditAssignedUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -158,7 +312,8 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         db.collection("assigns").document(documentId)
                 .update("unitnumber", updatedUnitNumber,
                         "platenumber", updatedPlatenumber,
-                        "driver", updatedDriver)
+                        "driver", updatedDriver, "conductor", updatedConductor, "fromday", updatedFromday,
+                "today", updatedToday, "fromtime", updatedFromtime, "totime", updatedTotime)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AdminEditAssignedUnitScreen.this, "Updated successfully", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
@@ -170,10 +325,21 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
     // Set the selected item in a spinner based on the provided value
     private void setSpinnerSelection(Spinner spinner, String value) {
         if (value == null) return;
+
         ArrayAdapter<String> adapter = (ArrayAdapter<String>) spinner.getAdapter();
+        if (adapter == null || adapter.getCount() == 0) {
+            // Adapter not ready, wait for it to populate
+            spinner.post(() -> setSpinnerSelection(spinner, value));
+            return;
+        }
+
         int position = adapter.getPosition(value);
         if (position >= 0) {
             spinner.setSelection(position);
+        } else {
+            // Log for debugging
+            Toast.makeText(this, "Value not found in spinner: " + value, Toast.LENGTH_SHORT).show();
         }
     }
+
 }

@@ -59,9 +59,6 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         assignAdapter = new AssignAdapter(assignList);
         recyclerView.setAdapter(assignAdapter);
 
-
-        fetchDriverFromFirestore();
-
         // Initialize navigationManager and navigationView for menuVisibilityManager
         //jamesdyandwelberinbranch
         navigationManager = new NavigationManager(this);
@@ -77,6 +74,7 @@ public class AdminManageActiveUnitList extends AppCompatActivity {
         ActionBarDrawerToggle drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
 
         fetchDriverFromFirestore();
 
