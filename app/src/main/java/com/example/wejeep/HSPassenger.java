@@ -69,8 +69,6 @@ public class HSPassenger extends AppCompatActivity {
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
     private Menu menu;
-    private ListenerRegistration listenerRegistration;
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
@@ -184,12 +182,6 @@ public class HSPassenger extends AppCompatActivity {
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
-    private void stopListeningForLocations() {
-        if (listenerRegistration != null) {
-            listenerRegistration.remove();
-            listenerRegistration = null;
-        }
-    }
     private void clearMap() {
         if (mapView != null) {
             mapView.getOverlays().clear();
@@ -290,7 +282,12 @@ public class HSPassenger extends AppCompatActivity {
                                                 Log.d(TAG, "User role: " + userRole);
                                                 mapView.invalidate();
 
-                                               addMarkerToMap(geoPoint,userRole);
+                                                try{
+                                                    addMarkerToMap(geoPoint,userRole);
+                                                }catch (Exception error){
+                                                    Log.e("HSPassenger","The exception is: ",error);
+                                                }
+
 
                                             }
                                         });
@@ -405,6 +402,9 @@ public class HSPassenger extends AppCompatActivity {
         if (mapView != null) {
             mapView.onPause();
             clearMap();
+        }
+        if(isLocationEnabled){
+            disableMyLocation();
         }
     }
 
