@@ -65,6 +65,7 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         String plateNumber = getIntent().getStringExtra("plateNumber");
         String driverName = getIntent().getStringExtra("driverName");
         String conductorName = getIntent().getStringExtra("conductorName");
+        String Schedule = getIntent().getStringExtra("schedule");
         String fromDay = getIntent().getStringExtra("fromDay");
         String toDay = getIntent().getStringExtra("toDay");
         String fromTime = getIntent().getStringExtra("fromTime");
@@ -75,6 +76,11 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         if (toDay != null) EditTextToday.setText(toDay);
         if (fromTime != null) EditTextFromtime.setText(fromTime);
         if (toTime != null) EditTextTotime.setText(toTime);
+        spinnerUnitnumber.getSelectedItem();//////////////////////////
+        spinnerSchedule.getSelectedItem();//////////////
+        spinnerConductor.getSelectedItem();///////////////////////
+        spinnerDriver.getSelectedItem();//////////////////
+        spinnerSchedule.getSelectedItem();///////////////////////
 
         // Set up adapters
         unitnumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitnumberList);
@@ -236,32 +242,38 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
                 });
     }
 
-    private void fetchUnits(String unitNumber) {
-        db.collection("units")
+    private void fetchUnits(String unitNumber) {  ///////////////////////////
+        db.collection("assigns")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         unitnumberList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String unitnumber = document.getString("unitNumber");
+                            String unitnumber = document.getString("unitnumber");
                             if (unitnumber != null) {
                                 unitnumberList.add(unitnumber);
                             }
                         }
                         unitnumberAdapter.notifyDataSetChanged();
-                        setSpinnerSelection(spinnerUnitnumber, unitNumber);
+
+                        // Ensure the spinner selection is set after the adapter is updated
+                        if (unitNumber != null && !unitNumber.isEmpty()) {
+                            setSpinnerSelection(spinnerUnitnumber, unitNumber);
+                        }
+                    } else {
+                        Toast.makeText(this, "Failed to fetch units: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
 
     private void fetchPlatenumber(String plateNumber) {
-        db.collection("units")
+        db.collection("assigns")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         platenumberList.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String platenumber = document.getString("plateNumber");
+                            String platenumber = document.getString("platenumber");
                             if (platenumber != null) {
                                 platenumberList.add(platenumber);
                             }

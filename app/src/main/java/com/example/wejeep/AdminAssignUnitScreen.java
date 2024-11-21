@@ -245,12 +245,11 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Get the value from EditTextFromday
+                // Get the value from EditText fields
                 String selectedFromDay = EditTextFromday.getText().toString().trim();
                 String selectedToDay = EditTextToday.getText().toString().trim();
                 String selectedToTime = EditTextTotime.getText().toString().trim();
                 String selectedFromTime = EditTextFromtime.getText().toString().trim();
-
 
                 // Validate if all required fields are selected
                 if (selectedDriver != null && !selectedDriver.isEmpty() &&
@@ -263,33 +262,53 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                         selectedFromTime != null && !selectedFromTime.isEmpty() &&
                         selectedFromDay != null && !selectedFromDay.isEmpty()) {
 
-                    // Prepare the data to be saved in the 'assigns' collection
-                    Map<String, Object> assignData = new HashMap<>();
-                    assignData.put("unitnumber", selectedUnitnumber);
-                    assignData.put("platenumber", selectedPlatenumber);
-                    assignData.put("driver", selectedDriver);
-                    assignData.put("conductor", selectedConductor);
-                    assignData.put("email", selectedConductorEmail);
-                    assignData.put("fromday", selectedFromDay);
-                    assignData.put("today", selectedToDay);
-                    assignData.put("fromtime", selectedFromTime);
-                    assignData.put("totime", selectedToTime);
+                    // Fetch the vehicleModel from the "units" collection
+                    db.collection("units")
+                            .whereEqualTo("unitNumber", selectedUnitnumber)
+                            .get()
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                    // Retrieve the vehicleModel from the document
+                                    String vehicleModel = task.getResult().getDocuments().get(0).getString("vehicleModel");
 
-                    // Save the combined data in one document in the "assigns" collection
-                    db.collection("assigns")
-                            .add(assignData)
-                            .addOnSuccessListener(documentReference -> {
-                                // Data saved successfully
-                                Toast.makeText(AdminAssignUnitScreen.this, "Driver and Plate number assigned successfully", Toast.LENGTH_SHORT).show();
+                                    if (vehicleModel != null) {
+                                        // Prepare the data to be saved in the 'assigns' collection
+                                        Map<String, Object> assignData = new HashMap<>();
+                                        assignData.put("unitnumber", selectedUnitnumber);
+                                        assignData.put("platenumber", selectedPlatenumber);
+                                        assignData.put("driver", selectedDriver);
+                                        assignData.put("conductor", selectedConductor);
+                                        assignData.put("email", selectedConductorEmail);
+                                        assignData.put("fromday", selectedFromDay);
+                                        assignData.put("today", selectedToDay);
+                                        assignData.put("fromtime", selectedFromTime);
+                                        assignData.put("totime", selectedToTime);
+                                        assignData.put("vehiclemodel", vehicleModel); // Include the vehicle model
 
-                                // Navigate to AdminManageActiveUnitList activity after success
-                                Intent intent = new Intent(AdminAssignUnitScreen.this, AdminManageActiveUnitList.class);
-                                startActivity(intent);
-                                finish(); // Optionally, finish the current activity to prevent going back
-                            })
-                            .addOnFailureListener(e -> {
-                                // Failed to save data
-                                Toast.makeText(AdminAssignUnitScreen.this, "Failed to assign driver and plate number", Toast.LENGTH_SHORT).show();
+                                        // Save the combined data in one document in the "assigns" collection
+                                        db.collection("assigns")
+                                                .add(assignData)
+                                                .addOnSuccessListener(documentReference -> {
+                                                    // Data saved successfully
+                                                    Toast.makeText(AdminAssignUnitScreen.this, "Driver and Plate number assigned successfully", Toast.LENGTH_SHORT).show();
+
+                                                    // Navigate to AdminManageActiveUnitList activity after success
+                                                    Intent intent = new Intent(AdminAssignUnitScreen.this, AdminManageActiveUnitList.class);
+                                                    startActivity(intent);
+                                                    finish(); // Optionally, finish the current activity to prevent going back
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    // Failed to save data
+                                                    Toast.makeText(AdminAssignUnitScreen.this, "Failed to assign driver and plate number", Toast.LENGTH_SHORT).show();
+                                                });
+                                    } else {
+                                        // Handle the case where vehicleModel is null
+                                        Toast.makeText(AdminAssignUnitScreen.this, "Vehicle model not found for the selected unit", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    // Handle failure to fetch data from "units" collection
+                                    Toast.makeText(AdminAssignUnitScreen.this, "Failed to fetch vehicle model", Toast.LENGTH_SHORT).show();
+                                }
                             });
                 } else {
                     // Some fields are missing, notify the user
@@ -297,6 +316,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 }
             }
         });
+
 
 
         btnBack.setOnClickListener(new View.OnClickListener() {
