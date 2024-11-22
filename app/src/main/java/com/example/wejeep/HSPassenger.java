@@ -264,36 +264,6 @@ public class HSPassenger extends AppCompatActivity {
         removeUserLocationFromFirestore();
         cancelLocationTimer();
     }
-    private void initializeMapView() {
-        if (mapView == null) {
-            mapView = findViewById(R.id.map);
-            mapView.setMultiTouchControls(true);
-            mapView.getController().setZoom(19.0);
-        }
-        mapView.getOverlays().clear(); // Clear previous markers
-        mapView.invalidate(); // Refresh the map
-    }
-    private void addMarkerToMap(GeoPoint geoPoint, String userRole) {
-        if (mapView == null) {
-            Log.e(TAG, "mapView is null. Reinitializing...");
-            mapView = new MapView(this); // or use the context for the fragment
-            mapView.setTileSource(TileSourceFactory.MAPNIK);
-            mapView.setBuiltInZoomControls(true);
-            mapView.setMultiTouchControls(true);
-        }
-
-        Marker otherUserMarker = new Marker(mapView);
-        otherUserMarker.setPosition(geoPoint);
-
-        if ("passenger".equals(userRole)) {
-            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
-        } else if ("pao".equals(userRole)) {
-            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
-        }
-
-        mapView.getOverlays().add(otherUserMarker);
-        mapView.invalidate();
-    }
     private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
