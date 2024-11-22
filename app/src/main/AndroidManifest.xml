@@ -20,9 +20,6 @@
             android:name=".ActiveModernJeeps"
             android:exported="false" />
         <activity
-            android:name=".AdminAddVehicleUnit"
-            android:exported="false" />
-        <activity
             android:name=".AdminEditAssignedUnitScreen"
             android:exported="false" />
         <activity
@@ -63,6 +60,9 @@
             android:exported="false" />
         <activity
             android:name=".AdminEditDriver"
+            android:exported="false" />
+        <activity
+            android:name=".AdminAddVehicleUnit"
             android:exported="false" />
         <activity
             android:name=".AdminAddDriver"

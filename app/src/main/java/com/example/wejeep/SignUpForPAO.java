@@ -1,22 +1,23 @@
 package com.example.wejeep;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.functions.FirebaseFunctions;
-import com.google.firebase.functions.HttpsCallableResult;
+
 import java.util.HashMap;
 
 public class SignUpForPAO extends AppCompatActivity {
@@ -30,7 +31,7 @@ public class SignUpForPAO extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_sign_up_for_pao);
 
         customLoadingDialog = new CustomLoadingDialog(this);
 
@@ -40,7 +41,7 @@ public class SignUpForPAO extends AppCompatActivity {
         etEmailSU = findViewById(R.id.etEmailSU);
         etPasswordSU = findViewById(R.id.etPasswordSU);
         etNameSU = findViewById(R.id.etNameSU);
-        btnSignupSU = findViewById(R.id.btnSignupSU);
+        btnSignupSU = findViewById(R.id.btnSignPao);
 
         btnSignupSU.setOnClickListener(view -> {
             customLoadingDialog.showLoadingScreen();

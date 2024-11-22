@@ -9,7 +9,7 @@
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbarAdminManagesPao"
+            android:id="@+id/toolbarAdminManagePao"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/blueTextColor"
@@ -31,7 +31,7 @@
             android:id="@+id/recyclerViewPAO"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_below="@id/toolbarAdminManagesPao"
+            android:layout_below="@id/toolbarAdminManagePao"
             android:layout_above="@id/btnAddPao"
             android:scrollbars="vertical"
             android:layout_marginBottom="20dp"
@@ -58,5 +58,4 @@
         android:layout_gravity="start"
         app:headerLayout="@layout/header"
         app:menu="@menu/main_menu" />
-
 </androidx.drawerlayout.widget.DrawerLayout>

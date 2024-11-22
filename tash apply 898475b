@@ -1,0 +1,38 @@
+[33me14e831[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mPAO-cy[m[33m)[m HEAD@{0}: commit (merge): Merge remote-tracking branch 'origin/triobranch' into PAO-cy
+[33m898475b[m HEAD@{1}: commit: Schedule (email instaed of name , dateadded , andriiod maniifest)
+[33md44f725[m[33m ([m[1;31morigin/PAO-cy[m[33m)[m HEAD@{2}: commit (merge): Merge remote-tracking branch 'origin/zxc-new' into PAO-cy
+[33me24891f[m HEAD@{3}: reset: moving to HEAD
+[33me24891f[m HEAD@{4}: reset: moving to HEAD
+[33me24891f[m HEAD@{5}: merge origin/triobranch: Merge made by the 'ort' strategy.
+[33mf2837bc[m HEAD@{6}: commit (merge): Merge remote-tracking branch 'origin/triobranch' into PAO-cy
+[33ma803f0c[m HEAD@{7}: commit: error (googlesigninhelper, email )
+[33mf284350[m HEAD@{8}: merge origin/zxc-new: Merge made by the 'ort' strategy.
+[33m9f9f311[m HEAD@{9}: merge origin/triobranch: Fast-forward
+[33m05c582b[m HEAD@{10}: merge origin/jamesdyandwelberinbranch: Merge made by the 'ort' strategy.
+[33mc6e6c42[m HEAD@{11}: commit: Merge remote-tracking branch 'origin/jamesdyandwelberinbranch' into PAO-cy
+[33m0674e99[m HEAD@{12}: commit (merge): Merge remote-tracking branch 'origin/jamesdyandwelberinbranch' into PAO-cy
+[33m5d490b0[m HEAD@{13}: reset: moving to HEAD
+[33m5d490b0[m HEAD@{14}: reset: moving to 5d490b0f9a355c07803b7e420c25c2267c0f3ab7
+[33m816d832[m HEAD@{15}: reset: moving to 816d832819553704c8c83a7829de64e9d6a295a1
+[33ma8f4268[m HEAD@{16}: commit (merge): Merge remote-tracking branch 'origin/jamesdyandwelberinbranch' into PAO-cy
+[33m816d832[m HEAD@{17}: commit: NavManager&Menu Added (Adminpao, Schedule and Dashboard)
+[33m5d490b0[m HEAD@{18}: commit (merge): Merge branch 'jamesdybranch' into PAO-cy
+[33me1d4b96[m HEAD@{19}: reset: moving to HEAD
+[33me1d4b96[m HEAD@{20}: commit: Fix Schedule, Signup , Delete Confirmation , Delete Paolist and Database
+[33mdaaef46[m HEAD@{21}: reset: moving to daaef465b431d06e0afce305028ec57eaa1c8996
+[33m4d61632[m HEAD@{22}: commit: Fix Schedule, Signup , Delete Confirmation , Delete Paolist and Database
+[33mdaaef46[m HEAD@{23}: commit: jers
+[33m4d1d905[m HEAD@{24}: checkout: moving from jamesdybranch to PAO-cy
+[33m4d1d905[m HEAD@{25}: checkout: moving from PAO-cy to jamesdybranch
+[33m4d1d905[m HEAD@{26}: checkout: moving from jamesdybranch to PAO-cy
+[33m4d1d905[m HEAD@{27}: checkout: moving from PAO-cy to jamesdybranch
+[33m4d1d905[m HEAD@{28}: checkout: moving from jamesdybranch to PAO-cy
+[33m4d1d905[m HEAD@{29}: checkout: moving from PAO-cy to jamesdybranch
+[33m4d1d905[m HEAD@{30}: checkout: moving from main to PAO-cy
+[33m7aab9bb[m HEAD@{31}: reset: moving to HEAD
+[33m7aab9bb[m HEAD@{32}: checkout: moving from PAO-cy to main
+[33m4d1d905[m HEAD@{33}: reset: moving to HEAD
+[33m4d1d905[m HEAD@{34}: merge origin/jamesdybranch: Fast-forward
+[33m48e31f4[m HEAD@{35}: reset: moving to HEAD
+[33m48e31f4[m HEAD@{36}: checkout: moving from main to PAO-cy
+[33m7aab9bb[m HEAD@{37}: clone: from https://github.com/jamesdymagiba/wejeep.git

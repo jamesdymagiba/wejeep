@@ -3,8 +3,6 @@ package com.example.wejeep;
 import android.app.AlertDialog;
 import android.app.Activity;
 import android.content.Context;
-import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,16 +12,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
 
@@ -57,10 +53,24 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
         holder.tvPaoName.setText(pao.getName());
         holder.tvPaoEmail.setText(pao.getEmail());
         holder.tvDateAdded.setText(pao.getDateAdded()); // Set the date added
-        // Set up the delete button click listener
-        holder.btnDelete.setOnClickListener(v -> {
-            showDeleteConfirmationDialog(pao.getDocumentId(), position, holder.itemView.getContext());
-        });
+
+        // Conditionally hide the delete button (e.g., based on role or other logic)
+        boolean showDeleteButton = shouldShowDeleteButton(); // Replace with your logic
+        if (showDeleteButton) {
+            holder.btnDelete.setVisibility(View.VISIBLE); // Show the button
+            holder.btnDelete.setOnClickListener(v -> {
+                showDeleteConfirmationDialog(pao.getDocumentId(), position, holder.itemView.getContext());
+            });
+        } else {
+            holder.btnDelete.setVisibility(View.GONE); // Hide the button
+        }
+    }
+
+    // Mock method to decide whether to show the delete button
+    private boolean shouldShowDeleteButton() {
+        // Example: Only allow admin users to see the delete button
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        return currentUser != null && currentUser.getEmail().equals("admin@example.com");
     }
 
     // Method to show a confirmation dialog before deleting
