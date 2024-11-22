@@ -1,12 +1,10 @@
 package com.example.wejeep;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,8 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,11 +23,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.caverock.androidsvg.BuildConfig;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -45,12 +38,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
-
-import android.graphics.drawable.Drawable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -130,9 +122,7 @@ public class HSPassenger extends AppCompatActivity {
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
         // Initialize the Map
-        mapView = findViewById(R.id.map);
-        mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(19.0);
+        initializeMapView();
 
         // Initialize the marker
         locationMarker = new Marker(mapView);
@@ -140,6 +130,22 @@ public class HSPassenger extends AppCompatActivity {
 
         // Set custom icon for the marker
         locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
+        // Set up the toggle button
+        Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+
+        // Disable button initially until the schedule is verified
+        toggleLocationButton.setEnabled(true);
+
+        // Check user's schedule
+        checkUserSchedule(toggleLocationButton);
+
+        toggleLocationButton.setOnClickListener(v -> {
+            if (isLocationEnabled) {
+                disableMyLocation();
+            } else {
+                enableMyLocation();
+            }
+        });
 
         // Initialize location services
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -157,7 +163,7 @@ public class HSPassenger extends AppCompatActivity {
             }
         };
         // Set up the toggle button
-        Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+        toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
         toggleLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,8 +174,6 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
-
-
 
         // Check for location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -211,8 +215,20 @@ public class HSPassenger extends AppCompatActivity {
             toggleLocationButton.setText("Location is On");
             toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
 
-            startLocationTimer();
-            Toast.makeText(this, "Location will be turned off automatically after 5 minutes", Toast.LENGTH_SHORT).show();
+            // Check the user's role and skip the timer for "pao" role
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String userId = user.getUid();
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String userRole = documentSnapshot.getString("role");
+                            if (!"pao".equalsIgnoreCase(userRole)) {
+                                startLocationTimer(); // Start timer only for non-pao users
+                                Toast.makeText(HSPassenger.this, "Location will be turned off automatically after 5 minutes", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
         } else {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
         }
@@ -241,7 +257,36 @@ public class HSPassenger extends AppCompatActivity {
 
         cancelLocationTimer();
     }
+    private void initializeMapView() {
+        if (mapView == null) {
+            mapView = findViewById(R.id.map);
+            mapView.setMultiTouchControls(true);
+            mapView.getController().setZoom(19.0);
+        }
+        mapView.getOverlays().clear(); // Clear previous markers
+        mapView.invalidate(); // Refresh the map
+    }
+    private void addMarkerToMap(GeoPoint geoPoint, String userRole) {
+        if (mapView == null) {
+            Log.e(TAG, "mapView is null. Reinitializing...");
+            mapView = new MapView(this); // or use the context for the fragment
+            mapView.setTileSource(TileSourceFactory.MAPNIK);
+            mapView.setBuiltInZoomControls(true);
+            mapView.setMultiTouchControls(true);
+        }
 
+        Marker otherUserMarker = new Marker(mapView);
+        otherUserMarker.setPosition(geoPoint);
+
+        if ("passenger".equals(userRole)) {
+            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        } else if ("pao".equals(userRole)) {
+            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+        }
+
+        mapView.getOverlays().add(otherUserMarker);
+        mapView.invalidate();
+    }
     private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
@@ -273,23 +318,16 @@ public class HSPassenger extends AppCompatActivity {
                                         .addOnSuccessListener(userDocument -> {
                                             if (userDocument.exists()) {
                                                 String userRole = userDocument.getString("role");
+                                                Log.d(TAG, "User role: " + userRole);
+                                                mapView.invalidate();
 
-                                                // Create a marker for other users' locations
-                                                Marker otherUserMarker = new Marker(mapView);
-                                                otherUserMarker.setPosition(geoPoint);
-
-                                                // Set marker icon based on user role
-                                                if ("passenger".equals(userRole)) {
-                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
-                                                } else if ("pao".equals(userRole)) {
-                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+                                                try{
+                                                    addMarkerToMap(geoPoint,userRole);
+                                                }catch (Exception error){
+                                                    Log.e("HSPassenger","The exception is: ",error);
                                                 }
 
-                                                //otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon)); removed because admin will not be tracked anymore
 
-                                                // Add the marker to the map
-                                                mapView.getOverlays().add(otherUserMarker);
-                                                mapView.invalidate();
                                             }
                                         });
                             } else {
@@ -413,6 +451,61 @@ public class HSPassenger extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
+            private void checkUserSchedule(Button toggleLocationButton) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                // Fetch user role from Firestore or from a locally stored reference
+                db.collection("users") // Assuming you have a 'users' collection where roles are stored
+                        .document(user.getUid()) // Use the current user's unique ID
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String role = documentSnapshot.getString("role");
+
+                                if ("pao".equalsIgnoreCase(role)) { // Check if the user is a PAO
+                                    // Proceed to fetch the schedule for PAO users
+                                    db.collection("assigns")
+                                            .whereEqualTo("email", user.getEmail())
+                                            .get()
+                                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                                if (!queryDocumentSnapshots.isEmpty()) {
+                                                    // Schedule exists, enable the location button
+                                                    enableMyLocation();
+                                                    toggleLocationButton.setEnabled(true);
+                                                    toggleLocationButton.setText("Location is On");
+                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
+                                                    Toast.makeText(this, "Schedule verified.", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    // No schedule found
+                                                    disableMyLocation();
+                                                    toggleLocationButton.setEnabled(false);
+                                                    toggleLocationButton.setText("Location is Off");
+                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+                                                    Toast.makeText(this, "No schedule found.", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                // Handle errors in fetching the schedule
+                                                disableMyLocation();
+                                                toggleLocationButton.setEnabled(false);
+                                                toggleLocationButton.setText("Location is Off");
+                                                toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+                                                Toast.makeText(this, "Error verifying schedule. Please try again later.", Toast.LENGTH_LONG).show();
+                                                Log.e(TAG, "Error checking user schedule", e);
+                                            });
+                                } else {
+                                }
+                            } else {
+                                Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error fetching user role", e);
+                        });
+            }
+
+
     private void updateCurrentUserMarker(String userRole) {
         // Set marker icon based on the logged-in user's role
         if ("passenger".equals(userRole)) {

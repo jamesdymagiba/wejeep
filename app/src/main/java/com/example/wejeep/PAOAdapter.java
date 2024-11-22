@@ -6,32 +6,25 @@ import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.functions.FirebaseFunctions;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
 
     private List<PAOModel> paoList;
     private FirebaseFirestore db;
-
-
-    public PAOAdapter(List<PAOModel> paoList, FirebaseFirestore db) {
-        this.paoList = paoList;
-        this.db = db;
-
     private FirebaseFunctions firebaseFunctions;
     private FirebaseAuth firebaseAuth;
     private Context context;
@@ -45,7 +38,6 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
         this.firebaseAuth = FirebaseAuth.getInstance();
         this.context = context;
         customLoadingDialog = new CustomLoadingDialog(context);
-
     }
 
     @NonNull
@@ -60,52 +52,32 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
         PAOModel pao = paoList.get(position);
         holder.tvPaoName.setText(pao.getName());
         holder.tvPaoEmail.setText(pao.getEmail());
-        holder.tvDateAdded.setText(pao.getDateAdded());
+        holder.tvDateAdded.setText(pao.getDateAdded()); // Set the date added
 
-        holder.btnDelete.setOnClickListener(v -> showDeleteConfirmationDialog(pao, position, holder.btnDelete, holder.itemView.getContext()));
+        // Conditionally hide the delete button (e.g., based on role or other logic)
+        boolean showDeleteButton = shouldShowDeleteButton(); // Replace with your logic
+        if (showDeleteButton) {
+            holder.btnDelete.setVisibility(View.VISIBLE); // Show the button
+            holder.btnDelete.setOnClickListener(v -> {
+                showDeleteConfirmationDialog(pao.getDocumentId(), position, holder.itemView.getContext());
+            });
+        } else {
+            holder.btnDelete.setVisibility(View.GONE); // Hide the button
+        }
     }
 
-    private void showDeleteConfirmationDialog(PAOModel pao, int position, Button btnDelete, Context context) {
+    // Mock method to decide whether to show the delete button
+    private boolean shouldShowDeleteButton() {
+        // Example: Only allow admin users to see the delete button
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        return currentUser != null && currentUser.getEmail().equals("admin@example.com");
+    }
+
+    // Method to show a confirmation dialog before deleting
+    private void showDeleteConfirmationDialog(String paoId, int position, Context context) {
         new AlertDialog.Builder(context)
                 .setTitle("Delete PAO")
                 .setMessage("Are you sure you want to delete this PAO?")
-                .setPositiveButton("Yes", (dialog, which) -> deletePAO(pao, position, btnDelete, context))
-                .setNegativeButton("No", null)
-                .show();
-    }
-
-    private void deletePAO(PAOModel pao, int position, Button btnDelete, Context context) {
-        String paoId = pao.getDocumentId();  // Get the document ID from the PAO model
-        if (paoId != null) {
-            // Temporarily disable the button to prevent multiple clicks
-            btnDelete.setEnabled(false);
-
-            // Show a Toast indicating that deletion is in progress
-            Toast.makeText(context, "Deleting PAO...", Toast.LENGTH_SHORT).show();
-
-            // Proceed to delete the PAO from Firestore
-            db.collection("users").document(paoId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        // Notify the user of success
-                        Toast.makeText(context, "PAO DELETED ", Toast.LENGTH_SHORT).show();
-                        // Remove the item from the local list
-                        paoList.remove(position);
-                        notifyItemRemoved(position);
-                    })
-                    .addOnFailureListener(e -> {
-                        // Handle failure
-                        Toast.makeText(context, "Error deleting PAO: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                        // Optionally re-add the item to the list in case of failure
-                        paoList.add(position, pao); // Re-add the PAO model
-                        notifyItemInserted(position);
-                    })
-                    .addOnCompleteListener(task -> {
-                        // Re-enable the button after the operation completes
-                        btnDelete.setEnabled(true);
-                    });
-        } else {
-            Toast.makeText(context, "PAO ID is null", Toast.LENGTH_SHORT).show();
                 .setPositiveButton("Yes", (dialog, which) -> {
                     customLoadingDialog.showLoadingScreen();
                     deletePAO(paoId, position, context); // Proceed with delete after confirmation
@@ -173,14 +145,14 @@ public class PAOAdapter extends RecyclerView.Adapter<PAOAdapter.PAOViewHolder> {
     }
 
     static class PAOViewHolder extends RecyclerView.ViewHolder {
-        TextView tvPaoName, tvPaoEmail, tvDateAdded;
+        TextView tvPaoName, tvPaoEmail, tvDateAdded; // Added dateTextView
         Button btnDelete;
 
         PAOViewHolder(@NonNull View itemView) {
             super(itemView);
             tvPaoName = itemView.findViewById(R.id.tvPaoName);
             tvPaoEmail = itemView.findViewById(R.id.tvPaoEmail);
-            tvDateAdded = itemView.findViewById(R.id.tvDateAdded);
+            tvDateAdded = itemView.findViewById(R.id.tvDateAdded); // Initialize dateTextView
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }
     }

@@ -1,13 +1,9 @@
-
 package com.example.wejeep;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -18,12 +14,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -95,34 +87,6 @@ public class AdminManagePAO extends AppCompatActivity {
         paoAdapter = new PAOAdapter(paoList, db, this);
         recyclerViewPAO.setAdapter(paoAdapter);
     }
-
-    private void checkUserAuthentication(NavigationView navigationView) {
-        FirebaseAuth auth = FirebaseAuth.getInstance();
-        FirebaseUser user = auth.getCurrentUser();
-
-        if (user == null) {
-            // User is not logged in, redirect to Login activity
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            startActivity(intent);
-            finish();
-        } else {
-            // User is logged in, update UI with user information
-            View headerView = navigationView.getHeaderView(0);
-            ImageView ivProfilePictureHSP = headerView.findViewById(R.id.ivProfilePictureHSP);
-            TextView tvNameHSP = headerView.findViewById(R.id.tvNameHSP);
-
-            tvNameHSP.setText(user.getDisplayName() != null ? user.getDisplayName() : "User"); // Handle null display name
-            if (user.getPhotoUrl() != null) {
-                Glide.with(this)
-                        .load(user.getPhotoUrl())
-                        .apply(RequestOptions.circleCropTransform())
-                        .into(ivProfilePictureHSP);
-            }
-        }
-
-    }
-
-
     private void loadPAOsFromFirestore() {
         db.collection("users")
                 .whereEqualTo("role", "pao")
@@ -134,11 +98,6 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
-
-                            String dateAdded = document.getString("dateAdded");
-                            if (name != null && email != null && dateAdded != null) {  // Check for null values
-                                paoList.add(new PAOModel(name, email, documentId, dateAdded));  // Include date added
-
                             String dateadded = document.getString("dateadded"); // Retrieve date added
                             if (name != null && email != null && dateadded != null) {  // Check for null values
                                 paoList.add(new PAOModel(name, email, documentId, dateadded));  // Include date added

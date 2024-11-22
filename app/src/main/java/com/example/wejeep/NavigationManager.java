@@ -1,14 +1,14 @@
 package com.example.wejeep;
 
-import static androidx.fragment.app.FragmentManager.TAG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -86,7 +86,6 @@ public class NavigationManager {
         currentActivity.finish();
         // Start the new activity
         Intent intent = new Intent(context, targetActivity);
-        intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         context.startActivity(intent);
     }
 
