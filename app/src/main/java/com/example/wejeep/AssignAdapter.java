@@ -41,6 +41,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
         holder.tvDriverName.setText(assign.getDriver());
         holder.tvplatenumber.setText(assign.getplatenumber());
         holder.tvConductorName.setText(assign.getConductor());
+        holder.tvSchedule.setText(assign.getSchedule());
         // Edit button logic
         holder.btnEdit.setOnClickListener(v -> {
             Intent intent = new Intent(holder.itemView.getContext(), AdminEditAssignedUnitScreen.class);
@@ -52,6 +53,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
             intent.putExtra("unitnumber", assign.getunitnumber());
             intent.putExtra("driverName", assign.getDriver());
             intent.putExtra("platenumber", assign.getplatenumber());
+            intent.putExtra("schedule", assign.getSchedule());
             ((AdminManageActiveUnitList) holder.itemView.getContext()).startActivityForResult(intent, 100);
         });
 
@@ -67,7 +69,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
     }
 
     public class AssignViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFromDay, tvToDay, tvFromTime, tvToTime, tvunitnumber, tvDriverName, tvConductorName, tvplatenumber;
+        TextView tvFromDay, tvToDay, tvFromTime, tvToTime, tvunitnumber, tvDriverName, tvConductorName, tvplatenumber, tvSchedule;
         Button btnEdit, btnDelete;
 
         public AssignViewHolder(@NonNull View itemView) {
@@ -82,6 +84,7 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
             tvDriverName = itemView.findViewById(R.id.tvDriverName);
             tvConductorName = itemView.findViewById(R.id.tvConductorName);
             tvplatenumber = itemView.findViewById(R.id.tvplatenumber);
+            tvSchedule = itemView.findViewById(R.id.tvSchedule);
 
             // Initialize Buttons
             btnEdit = itemView.findViewById(R.id.btnEdit);

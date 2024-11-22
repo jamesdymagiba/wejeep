@@ -250,6 +250,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 String selectedToDay = EditTextToday.getText().toString().trim();
                 String selectedToTime = EditTextTotime.getText().toString().trim();
                 String selectedFromTime = EditTextFromtime.getText().toString().trim();
+                String selectedSchedule = (String) spinnerSchedule.getSelectedItem(); // Get selected schedule from spinner
 
                 // Validate if all required fields are selected
                 if (selectedDriver != null && !selectedDriver.isEmpty() &&
@@ -260,7 +261,8 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                         selectedToDay != null && !selectedToDay.isEmpty() &&
                         selectedToTime != null && !selectedToTime.isEmpty() &&
                         selectedFromTime != null && !selectedFromTime.isEmpty() &&
-                        selectedFromDay != null && !selectedFromDay.isEmpty()) {
+                        selectedFromDay != null && !selectedFromDay.isEmpty() &&
+                        selectedSchedule != null && !selectedSchedule.isEmpty()) { // Check if schedule is selected
 
                     // Fetch the vehicleModel from the "units" collection
                     db.collection("units")
@@ -284,6 +286,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                                         assignData.put("fromtime", selectedFromTime);
                                         assignData.put("totime", selectedToTime);
                                         assignData.put("vehiclemodel", vehicleModel); // Include the vehicle model
+                                        assignData.put("schedule", selectedSchedule); // Include the schedule
 
                                         // Save the combined data in one document in the "assigns" collection
                                         db.collection("assigns")
@@ -316,6 +319,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 }
             }
         });
+
 
 
 

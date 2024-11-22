@@ -105,6 +105,8 @@ public class AdminAddScheduleScreen extends AppCompatActivity {
         btnAddSchedule = findViewById(R.id.btnConfirm);
         btnBack = findViewById(R.id.btnBack);
 
+        etSchedule.setEnabled(false);
+
 
         checkAndSetScheduleValue();
 
@@ -286,7 +288,7 @@ public class AdminAddScheduleScreen extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentReference docRef = task.getResult();
-                        ScheduleModel newSchedule = new ScheduleModel(fromDay, toDay, fromTime, toTime, docRef.getId());
+                        ScheduleModel newSchedule = new ScheduleModel(fromDay, toDay, fromTime, toTime,Schedules, docRef.getId());
                         scheduleList.add(newSchedule); // Add the new driver to your list
                         scheduleAdapter.notifyItemInserted(scheduleList.size() - 1); // Notify the adapter
                         Toast.makeText(AdminAddScheduleScreen.this, "Schedule added successfully", Toast.LENGTH_SHORT).show();

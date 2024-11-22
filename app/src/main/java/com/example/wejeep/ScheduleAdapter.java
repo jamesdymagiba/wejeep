@@ -37,6 +37,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
         holder.tvToDay.setText(schedule.getToDay());
         holder.tvFromTime.setText(schedule.getFromTime());
         holder.tvToTime.setText(schedule.getToTime());
+        holder.tvSchedule.setText(schedule.getSchedule());
 
         // Edit button logic
         holder.btnEdit.setOnClickListener(v -> {
@@ -46,6 +47,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
             intent.putExtra("toDay", schedule.getToDay()); // Pass driver's contact
             intent.putExtra("fromTime" , schedule.getFromTime());
             intent.putExtra("toTime" , schedule.getToTime());
+            intent.putExtra("Schedule", schedule.getSchedule());
             ((AdminManageScheduleScreen) holder.itemView.getContext()).startActivityForResult(intent, 100); // Start for result with a request code
         });
 
@@ -62,7 +64,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
     }
 
     public class ScheduleViewHolder extends RecyclerView.ViewHolder {
-        TextView tvFromDay, tvToDay, tvFromTime, tvToTime;
+        TextView tvFromDay, tvToDay, tvFromTime, tvToTime, tvSchedule;
         Button btnEdit, btnDelete;
 
         public ScheduleViewHolder(@NonNull View itemView) {
@@ -71,6 +73,7 @@ public class ScheduleAdapter extends RecyclerView.Adapter<ScheduleAdapter.Schedu
             tvToDay = itemView.findViewById(R.id.tvToDay);
             tvFromTime = itemView.findViewById(R.id.tvFromTime);
             tvToTime = itemView.findViewById(R.id.tvToTime);
+            tvSchedule = itemView.findViewById(R.id.tvSchedule);
             btnEdit = itemView.findViewById(R.id.btnEdit);
             btnDelete = itemView.findViewById(R.id.btnDelete);
         }

@@ -22,17 +22,17 @@
             android:layout_marginEnd="16dp">
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/name_pao"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvPaoName"
@@ -46,12 +46,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
@@ -60,7 +60,7 @@
                         android:textColor="@color/black"
                         android:textSize="16sp"
                         android:fontFamily="@font/londrina_solid_regular"
-                        android:layout_width="wrap_content"
+                        android:layout_width="80dp"
                         android:layout_height="wrap_content"/>
 
                     <TextView
@@ -74,21 +74,21 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
                     <TextView
+                        android:layout_width="80dp"
+                        android:layout_height="match_parent"
+                        android:fontFamily="@font/londrina_solid_regular"
                         android:text="@string/date_added_pao"
                         android:textColor="@color/black"
-                        android:textSize="16sp"
-                        android:fontFamily="@font/londrina_solid_regular"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"/>
+                        android:textSize="16sp" />
 
                     <TextView
                         android:id="@+id/tvDateAdded"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="PAO Date Added"
                         android:textSize="16sp"

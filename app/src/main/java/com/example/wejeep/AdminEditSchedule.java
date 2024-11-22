@@ -17,7 +17,7 @@ import java.util.List;
 
 public class AdminEditSchedule extends AppCompatActivity {
 
-    private EditText etFromDay, etToDay, etFromTime, etToTime;
+    private EditText etFromDay, etToDay, etFromTime, etToTime,etSchedule;
     private Button btnConfirm, btnBack;
     private FirebaseFirestore db;
     private String documentId; // To store the document ID
@@ -37,19 +37,42 @@ public class AdminEditSchedule extends AppCompatActivity {
         etToTime = findViewById(R.id.etToTime);
         btnConfirm = findViewById(R.id.btnConfirm);
         btnBack = findViewById(R.id.btnBack);
+        etSchedule = findViewById(R.id.etSchedule);
 
-        // Get driver data from Intent
+        // Disable manual editing of etSchedule
+        etSchedule.setEnabled(false);
+
+        // Get document ID from Intent
         documentId = getIntent().getStringExtra("documentId");
-        String fromDay = getIntent().getStringExtra("fromDay");
-        String toDay = getIntent().getStringExtra("toDay");
-        String fromTime = getIntent().getStringExtra("fromTime");
-        String toTime = getIntent().getStringExtra("toTime");
 
-        // Pre-fill the EditTexts with received data
-        etFromDay.setText(fromDay);
-        etToDay.setText(toDay);
-        etFromTime.setText(fromTime);
-        etToTime.setText(toTime);
+        if (documentId != null && !documentId.isEmpty()) {
+            // Fetch the document data from Firestore
+            db.collection("schedules").document(documentId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Populate the EditTexts with data from Firestore
+                            String fromDay = documentSnapshot.getString("Fromday");
+                            String toDay = documentSnapshot.getString("Today");
+                            String fromTime = documentSnapshot.getString("Fromtime");
+                            String toTime = documentSnapshot.getString("Totime");
+                            String schedule = documentSnapshot.getString("schedule");
+
+                            etFromDay.setText(fromDay != null ? fromDay : "");
+                            etToDay.setText(toDay != null ? toDay : "");
+                            etFromTime.setText(fromTime != null ? fromTime : "");
+                            etToTime.setText(toTime != null ? toTime : "");
+                            etSchedule.setText(schedule != null ? schedule : "");
+                        } else {
+                            Toast.makeText(this, "Document not found.", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(this, "Error loading schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+        } else {
+            Toast.makeText(this, "Invalid document ID.", Toast.LENGTH_SHORT).show();
+        }
+
+
 
         etFromDay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -219,8 +242,9 @@ public class AdminEditSchedule extends AppCompatActivity {
         String updatedToDay = etToDay.getText().toString().trim();
         String updatedFromTime = etFromTime.getText().toString().trim();
         String updateToTime = etToTime.getText().toString().trim();
+        String updateSchedules = etSchedule.getText().toString().trim();
 
-        if (updatedFromDay.isEmpty() || updatedToDay.isEmpty() || updatedFromTime.isEmpty() || updateToTime.isEmpty()) {
+        if (updatedFromDay.isEmpty() || updateSchedules.isEmpty() || updatedToDay.isEmpty() || updatedFromTime.isEmpty() || updateToTime.isEmpty()) {
             Toast.makeText(AdminEditSchedule.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -229,7 +253,7 @@ public class AdminEditSchedule extends AppCompatActivity {
         db.collection("schedules").document(documentId)
                 .update("Fromday", updatedFromDay,
                         "Today", updatedToDay,
-                        "Fromtime", updatedFromTime, "Totime" ,updateToTime)
+                        "Fromtime", updatedFromTime, "Totime" ,updateToTime, "schedule", updateSchedules)
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(AdminEditSchedule.this, "Schedule updated successfully", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
@@ -239,4 +263,5 @@ public class AdminEditSchedule extends AppCompatActivity {
                     Toast.makeText(AdminEditSchedule.this, "Error updating schedule: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 }

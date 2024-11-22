@@ -9,6 +9,7 @@ public class AssignModel {
     private String Today;
     private String Fromtime;
     private String Totime;
+    private String Schedule;
     private String documentId;
 
     public AssignModel() {
@@ -16,7 +17,7 @@ public class AssignModel {
     }
 
     // Required empty constructor for Firebase Firestore
-    public AssignModel(String conductor,String driver, String unitnumber, String platenumber, String Fromday, String Today, String Fromtime, String Totime , String documentId) {
+    public AssignModel(String conductor,String driver, String unitnumber, String platenumber, String Fromday, String Today, String Fromtime, String Totime ,String Schedule, String documentId) {
         this.unitnumber = unitnumber;
         this.platenumber = platenumber;
         this.driver = driver;
@@ -25,6 +26,7 @@ public class AssignModel {
         this.Today = Today;
         this.Fromtime = Fromtime;
         this.Totime = Totime;
+        this.Schedule = Schedule;
         this.documentId = documentId;
     }
 
@@ -53,4 +55,6 @@ public class AssignModel {
     public void setConductor(String conductor) {this.conductor = conductor;}
     public String getDriver() {return driver;}
     public void setDriver(String driver) {this.driver = driver;}
+    public String getSchedule() {return Schedule;}
+    public void setSchedule(String Schedule) {this.Schedule = Schedule;}
 }
