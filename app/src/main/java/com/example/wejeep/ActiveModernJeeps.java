@@ -99,7 +99,7 @@ public class ActiveModernJeeps extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             String unitNumber = document.getString("unitnumber");
-                            String vehicleModel = document.getString("vehicleModel");
+                            String vehicleModel = document.getString("vehiclemodel");
                             String driverName = document.getString("driver"); // Driver's name
                             String paoName = document.getString("conductor");    // PAO's name
                             String plateNumber = document.getString("platenumber");
