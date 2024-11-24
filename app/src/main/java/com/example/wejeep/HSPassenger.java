@@ -36,6 +36,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -44,6 +45,7 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +70,10 @@ public class HSPassenger extends AppCompatActivity {
     private LocationCallback locationCallback;
     private Handler locationTimerHandler;
     private Runnable locationTimerRunnable;
+    private String locationIndicator = "off";  // Default value is "off"
+    private Handler handler;
+    private Runnable checkScheduleRunnable;
+    private boolean isScheduleChecking = false; // To track the state
     //Obsolete code
     /**@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -132,6 +138,9 @@ public class HSPassenger extends AppCompatActivity {
         locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
         // Set up the toggle button
         Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+        // Start periodic schedule checking as soon as the activity is created
+        startScheduleChecking(toggleLocationButton);
+        stopScheduleChecking(toggleLocationButton);
 
         // Disable button initially until the schedule is verified
         toggleLocationButton.setEnabled(true);
@@ -204,6 +213,8 @@ public class HSPassenger extends AppCompatActivity {
                 Log.d(TAG, "LocationCallback is null");
                 return;
             }
+            locationIndicator = "on";  // Set the location indicator to "on"
+            Log.d(TAG, "Location is ON, indicator: " + locationIndicator);
 
             try {
                 fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
@@ -247,7 +258,8 @@ public class HSPassenger extends AppCompatActivity {
         Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
         toggleLocationButton.setText("Location is Off");
         toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
-
+        locationIndicator = "off";  // Set the location indicator to "off"
+        Log.d(TAG, "Location is OFF, indicator: " + locationIndicator);
         // Remove user's location from Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
@@ -451,60 +463,308 @@ public class HSPassenger extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
-            private void checkUserSchedule(Button toggleLocationButton) {
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
+    // Start schedule checking
+    private void startScheduleChecking(Button toggleLocationButton) {
+        // Check if the user is PAO first
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                // Fetch user role from Firestore or from a locally stored reference
-                db.collection("users") // Assuming you have a 'users' collection where roles are stored
-                        .document(user.getUid()) // Use the current user's unique ID
-                        .get()
-                        .addOnSuccessListener(documentSnapshot -> {
-                            if (documentSnapshot.exists()) {
-                                String role = documentSnapshot.getString("role");
+        db.collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
 
-                                if ("pao".equalsIgnoreCase(role)) { // Check if the user is a PAO
-                                    // Proceed to fetch the schedule for PAO users
-                                    db.collection("assigns")
-                                            .whereEqualTo("email", user.getEmail())
-                                            .get()
-                                            .addOnSuccessListener(queryDocumentSnapshots -> {
-                                                if (!queryDocumentSnapshots.isEmpty()) {
-                                                    // Schedule exists, enable the location button
-                                                    enableMyLocation();
-                                                    toggleLocationButton.setEnabled(true);
-                                                    toggleLocationButton.setText("Location is On");
-                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
-                                                    Toast.makeText(this, "Schedule verified.", Toast.LENGTH_SHORT).show();
-                                                } else {
-                                                    // No schedule found
-                                                    disableMyLocation();
-                                                    toggleLocationButton.setEnabled(false);
-                                                    toggleLocationButton.setText("Location is Off");
-                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
-                                                    Toast.makeText(this, "No schedule found.", Toast.LENGTH_LONG).show();
+                        // Only proceed if the user is PAO
+                        if ("pao".equalsIgnoreCase(role)) {
+                            if (isScheduleChecking) {
+                                // Skip starting if it's already running
+                                return;
+                            }
+
+                            if (handler != null && checkScheduleRunnable != null) {
+                                // Remove any existing scheduled task
+                                handler.removeCallbacks(checkScheduleRunnable);
+                            }
+
+                            handler = new Handler();
+                            isScheduleChecking = true;
+
+                            // Define the periodic task that will run every 10 seconds
+                            checkScheduleRunnable = new Runnable() {
+                                @Override
+                                public void run() {
+                                    // Log that we're checking the schedule
+                                    Log.d(TAG, "Checking user schedule...");
+
+                                    // Check the schedule and manage the toggle button state
+                                    checkUserSchedule(toggleLocationButton);
+                                    enableMyLocation();
+
+                                    // Continue checking every 10 seconds for better responsiveness
+                                    handler.postDelayed(this, 10000);
+                                }
+                            };
+
+                            // Log that the runnable is posted
+                            Log.d(TAG, "Posting checkScheduleRunnable...");
+                            handler.post(checkScheduleRunnable);
+                        }
+                    } else {
+                        // Handle case where user document doesn't exist
+                        Log.e(TAG, "User not found.");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching user role", e);
+                    // Handle failure without Toasts
+                });
+    }
+
+    private void stopScheduleChecking(Button toggleLocationButton) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+
+                        // Only proceed if the user is PAO
+                        if ("pao".equalsIgnoreCase(role)) {
+                            if (!isScheduleChecking) {
+                                // Skip stopping if the schedule checking is not running
+                                return;
+                            }
+
+                            // Remove the scheduled runnable and stop further checks
+                            if (handler != null && checkScheduleRunnable != null) {
+                                handler.removeCallbacks(checkScheduleRunnable);
+                            }
+
+                            isScheduleChecking = false; // Set the state to stopped
+
+                            // Turn off the location toggle button explicitly
+                            disableMyLocation();
+                            toggleLocationButton.setEnabled(false);
+                            toggleLocationButton.setText("Location is Off");
+                            toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching user role", e);
+                    // Handle failure, you can log it or take other actions, but no Toasts here
+                });
+    }
+
+    private void checkUserSchedule(Button toggleLocationButton) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Calendar calendar = Calendar.getInstance();
+        int currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK);
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        Log.d(TAG, "Current Time: " + currentHour + ":" + currentMinute);
+
+        db.collection("users")
+                .document(user.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String role = documentSnapshot.getString("role");
+
+                        if ("pao".equalsIgnoreCase(role)) {
+                            db.collection("assigns")
+                                    .whereEqualTo("email", user.getEmail())
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        if (!queryDocumentSnapshots.isEmpty()) {
+                                            boolean isScheduleValid = false;
+
+                                            for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                                                String fromDayStr = document.getString("fromday");
+                                                String toDayStr = document.getString("today");
+                                                String fromTimeStr = document.getString("fromtime");
+                                                String toTimeStr = document.getString("totime");
+
+                                                int fromDay = getDayOfWeek(fromDayStr);
+                                                int toDay = getDayOfWeek(toDayStr);
+
+                                                try {
+                                                    int[] fromTime = parseTime(fromTimeStr);
+                                                    int fromHour = fromTime[0], fromMinute = fromTime[1];
+                                                    int[] toTime = parseTime(toTimeStr);
+                                                    int toHour = toTime[0], toMinute = toTime[1];
+
+                                                    // Log parsed time values
+                                                    Log.d(TAG, "From Time: " + fromHour + ":" + fromMinute);
+                                                    Log.d(TAG, "To Time: " + toHour + ":" + toMinute);
+
+                                                    // Validate current day and time
+                                                    if (isScheduleValidForDay(currentDayOfWeek, currentHour, currentMinute,
+                                                            fromDay, fromHour, fromMinute, toDay, toHour, toMinute)) {
+                                                        isScheduleValid = true;
+                                                        break;
+                                                    }
+                                                } catch (IllegalArgumentException e) {
+                                                    Log.e(TAG, "Invalid time format for schedule", e);
                                                 }
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                // Handle errors in fetching the schedule
+                                            }
+
+                                            // Log if schedule is valid
+                                            Log.d(TAG, "Schedule valid: " + isScheduleValid);
+
+                                            if (isScheduleValid) {
+                                                enableMyLocation();
+                                                toggleLocationButton.setEnabled(false);
+                                                toggleLocationButton.setText("Location is On");
+                                                toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
+
+                                                // Update Firestore to indicate location is on
+                                                updateLocationIndicator("on");
+                                                Log.d(TAG, "Location Indicator: on"); // Prints "on"
+                                            } else {
                                                 disableMyLocation();
                                                 toggleLocationButton.setEnabled(false);
                                                 toggleLocationButton.setText("Location is Off");
                                                 toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
-                                                Toast.makeText(this, "Error verifying schedule. Please try again later.", Toast.LENGTH_LONG).show();
-                                                Log.e(TAG, "Error checking user schedule", e);
-                                            });
-                                } else {
-                                }
-                            } else {
-                                Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
-                            Log.e(TAG, "Error fetching user role", e);
-                        });
-            }
 
+                                                // Update Firestore to indicate location is off
+                                                updateLocationIndicator("off");
+                                                Log.d(TAG, "Location Indicator: off"); // Prints "off"
+                                            }
+
+                                        } else {
+                                            disableMyLocation();
+                                            toggleLocationButton.setEnabled(false);
+                                            toggleLocationButton.setText("Location is Off");
+                                            toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+
+                                            // Update Firestore to indicate location is off
+                                            updateLocationIndicator("off");
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.e(TAG, "Error checking schedules", e);
+                                        disableMyLocation();
+                                        toggleLocationButton.setEnabled(false);
+                                        toggleLocationButton.setText("Location is Off");
+                                        updateLocationIndicator("off");
+                                    });
+                        }
+                    } else {
+                        Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching user role", e);
+                    Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // Helper method to update the location indicator in Firestore
+    private void updateLocationIndicator(String state) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .document(user.getUid())
+                .update("locationindicator", state)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d(TAG, "Location indicator updated in Firestore: " + state);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error updating location indicator", e);
+                });
+    }
+
+
+
+    // Utility function to convert day names to integers
+    private int getDayOfWeek(String day) {
+        switch (day.toLowerCase()) {
+            case "sunday": return Calendar.SUNDAY;
+            case "monday": return Calendar.MONDAY;
+            case "tuesday": return Calendar.TUESDAY;
+            case "wednesday": return Calendar.WEDNESDAY;
+            case "thursday": return Calendar.THURSDAY;
+            case "friday": return Calendar.FRIDAY;
+            case "saturday": return Calendar.SATURDAY;
+            default: return -1; // Invalid day name
+        }
+    }
+
+    // Utility function to convert 12-hour time with AM/PM to 24-hour format
+    private int[] parseTime(String timeStr) throws IllegalArgumentException {
+        String[] parts = timeStr.split(" "); // Split "03:15 PM" into ["03:15", "PM"]
+        if (parts.length != 2) {
+            throw new IllegalArgumentException("Invalid time format: " + timeStr);
+        }
+
+        String[] timeParts = parts[0].split(":"); // Split "03:15" into ["03", "15"]
+        int hour = Integer.parseInt(timeParts[0]);
+        int minute = Integer.parseInt(timeParts[1]);
+        String period = parts[1]; // AM/PM
+
+        // Convert to 24-hour format
+        if (period.equalsIgnoreCase("PM") && hour != 12) {
+            hour += 12; // Convert PM to 24-hour format
+        } else if (period.equalsIgnoreCase("AM") && hour == 12) {
+            hour = 0; // Handle midnight (12 AM -> 0)
+        }
+
+        return new int[]{hour, minute};
+    }
+
+    private boolean isScheduleValidForDay(int currentDayOfWeek, int currentHour, int currentMinute,
+                                          int fromDay, int fromHour, int fromMinute,
+                                          int toDay, int toHour, int toMinute) {
+
+        // Check if current day is within the schedule range (across week boundaries)
+        boolean isDayValid = (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay) ||
+                (fromDay > toDay && (currentDayOfWeek >= fromDay || currentDayOfWeek <= toDay));
+
+        Log.d(TAG, "Checking day: " + currentDayOfWeek + " is valid: " + isDayValid);
+
+        // Handle the time window for the current day
+        boolean isTimeValid = false;
+        if (currentDayOfWeek == fromDay || currentDayOfWeek == toDay) {
+            // Validate the time window for the start and end day
+            boolean isAfter = isAfter(currentHour, currentMinute, fromHour, fromMinute);
+            boolean isBeforeOrEqual = isBefore(currentHour, currentMinute, toHour, toMinute) || (currentHour == toHour && currentMinute == toMinute);
+
+            if (isAfter && isBeforeOrEqual) {
+                isTimeValid = true;
+            } else if (fromDay == toDay && currentDayOfWeek == fromDay) {
+                // Check if the time spans over midnight (same day)
+                if (isAfter(currentHour, currentMinute, fromHour, fromMinute) ||
+                        isBefore(currentHour, currentMinute, toHour, toMinute)) {
+                    isTimeValid = true;
+                }
+            }
+        } else {
+            // For days in-between, always valid
+            isTimeValid = true;
+        }
+
+        Log.d(TAG, "Checking time: " + currentHour + ":" + currentMinute + " is valid: " + isTimeValid);
+
+        return isDayValid && isTimeValid;
+    }
+
+    // Helper functions
+    private boolean isAfter(int currentHour, int currentMinute, int hour, int minute) {
+        boolean result = (currentHour > hour || (currentHour == hour && currentMinute >= minute));
+        Log.d(TAG, "isAfter: " + result);
+        return result;
+    }
+
+    private boolean isBefore(int currentHour, int currentMinute, int hour, int minute) {
+        boolean result = (currentHour < hour || (currentHour == hour && currentMinute < minute));
+        Log.d(TAG, "isBefore: " + result);
+        return result;
+    }
 
     private void updateCurrentUserMarker(String userRole) {
         // Set marker icon based on the logged-in user's role

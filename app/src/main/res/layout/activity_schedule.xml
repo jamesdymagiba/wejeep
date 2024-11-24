@@ -79,7 +79,7 @@
                 <TextView
                     android:id="@+id/tvdriver"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"
@@ -104,14 +104,14 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center_vertical"
-                    android:text="Vehicle Unit:"
+                    android:text="Unit No:"
                     android:textColor="@color/black"
                     android:textSize="25sp" />
 
                 <TextView
                     android:id="@+id/tvunit"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"
@@ -143,7 +143,7 @@
                 <TextView
                     android:id="@+id/tvmodel"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"
@@ -175,7 +175,7 @@
                 <TextView
                     android:id="@+id/tvplate"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"
@@ -207,7 +207,7 @@
                 <TextView
                     android:id="@+id/tvday"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"
@@ -239,7 +239,7 @@
                 <TextView
                     android:id="@+id/tvtime"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:gravity="center"

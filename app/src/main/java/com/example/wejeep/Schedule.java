@@ -105,7 +105,7 @@ public class Schedule extends AppCompatActivity {
                             String day = documentSnapshot.getString("fromday") + " - " + documentSnapshot.getString("today");
                             String time = documentSnapshot.getString("fromtime") + " - " + documentSnapshot.getString("totime");
                             String unit = documentSnapshot.getString("unitnumber");
-                            String model = documentSnapshot.getString("vehicle"); // Correctly retrieve vehicle model
+                            String model = documentSnapshot.getString("vehiclemodel"); // Correctly retrieve vehicle model
                             String plate = documentSnapshot.getString("platenumber");
                             String driver = documentSnapshot.getString("driver");
 
