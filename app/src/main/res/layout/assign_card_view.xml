@@ -11,7 +11,7 @@
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="100dp">
+        android:layout_height="103dp">
 
         <LinearLayout
             android:layout_width="293dp"
@@ -27,7 +27,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/unit_no"
@@ -51,7 +51,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/plate_number"
@@ -75,7 +75,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/driver"
@@ -100,7 +100,7 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="Conductor:"
@@ -117,22 +117,52 @@
                     android:textSize="12sp" />
             </LinearLayout>
 
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="Schedule Num:"
+                    android:textColor="@color/black"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:id="@+id/tvSchedule"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Schedule 1"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:textSize="12sp"/>
+
+
+
+
+
+
+            </LinearLayout>
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal" >
+                android:orientation="horizontal">
+
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:text="Schedule:"
+                    android:text="Day:"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvFromDay"
                     android:layout_width="50dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:hint="Tuesday"
                     android:textColor="@color/black"
@@ -159,20 +189,19 @@
 
 
 
-
             </LinearLayout>
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="70dp"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/londrina_solid_regular"
                     android:text="Time:"
                     android:textColor="@color/black"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:fontFamily="@font/londrina_solid_regular"/>
 
                 <TextView
                     android:id="@+id/tvFromTime"
@@ -185,9 +214,8 @@
 
                 <TextView
                     android:layout_width="20dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:textAlignment="center"
                     android:text="-"
                     android:textColor="@color/black"
                     android:textSize="12sp"/>
@@ -195,7 +223,7 @@
                 <TextView
                     android:id="@+id/tvToTime"
                     android:layout_width="50dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:hint="12:30"
                     android:textColor="@color/black"

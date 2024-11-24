@@ -74,6 +74,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         EditTextToday.setEnabled(false);
         EditTextFromtime.setEnabled(false);
         EditTextTotime.setEnabled(false);
+        spinnerPlatenumber.setEnabled(false);
 
         // Set up adapters for spinners
 
@@ -104,6 +105,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         fetchPlatenumber();
         fetchConductor();
         fetchSchedules();
+        fetchAssignedData();
 
         spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -250,6 +252,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                 String selectedToDay = EditTextToday.getText().toString().trim();
                 String selectedToTime = EditTextTotime.getText().toString().trim();
                 String selectedFromTime = EditTextFromtime.getText().toString().trim();
+                String selectedSchedule = (String) spinnerSchedule.getSelectedItem(); // Get selected schedule from spinner
 
                 // Validate if all required fields are selected
                 if (selectedDriver != null && !selectedDriver.isEmpty() &&
@@ -260,7 +263,8 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                         selectedToDay != null && !selectedToDay.isEmpty() &&
                         selectedToTime != null && !selectedToTime.isEmpty() &&
                         selectedFromTime != null && !selectedFromTime.isEmpty() &&
-                        selectedFromDay != null && !selectedFromDay.isEmpty()) {
+                        selectedFromDay != null && !selectedFromDay.isEmpty() &&
+                        selectedSchedule != null && !selectedSchedule.isEmpty()) { // Check if schedule is selected
 
                     // Fetch the vehicleModel from the "units" collection
                     db.collection("units")
@@ -284,6 +288,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                                         assignData.put("fromtime", selectedFromTime);
                                         assignData.put("totime", selectedToTime);
                                         assignData.put("vehiclemodel", vehicleModel); // Include the vehicle model
+                                        assignData.put("schedule", selectedSchedule); // Include the schedule
 
                                         // Save the combined data in one document in the "assigns" collection
                                         db.collection("assigns")
@@ -319,6 +324,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
 
 
 
+
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -328,6 +334,140 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
 
 
     }
+
+    private void fetchAssignedData() {
+        db.collection("assigns")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        ArrayList<String> assignedDrivers = new ArrayList<>();
+                        ArrayList<String> assignedPlateNumbers = new ArrayList<>();
+                        ArrayList<String> assignedUnitNumbers = new ArrayList<>();
+                        ArrayList<String> assignedConductors = new ArrayList<>();
+                        ArrayList<String> assignedSchedules = new ArrayList<>();
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            assignedDrivers.add(document.getString("driver"));
+                            assignedPlateNumbers.add(document.getString("platenumber"));
+                            assignedUnitNumbers.add(document.getString("unitnumber"));
+                            assignedConductors.add(document.getString("conductor"));
+                            assignedSchedules.add(document.getString("schedule"));
+                        }
+
+                        // Now fetch and filter data for spinners
+                        fetchFilteredData(assignedDrivers, assignedPlateNumbers, assignedUnitNumbers, assignedConductors, assignedSchedules);
+                    } else {
+                        Toast.makeText(this, "Failed to fetch assigned data", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    private void fetchFilteredData(
+            ArrayList<String> assignedDrivers,
+            ArrayList<String> assignedPlateNumbers,
+            ArrayList<String> assignedUnitNumbers,
+            ArrayList<String> assignedConductors,
+            ArrayList<String> assignedSchedules
+    ) {
+        // Fetch drivers
+        db.collection("drivers")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        driverList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String driver = document.getString("name");
+                            if (driver != null && !assignedDrivers.contains(driver)) {
+                                driverList.add(driver);
+                            }
+                        }
+                        driverAdapter.notifyDataSetChanged();
+                    }
+                });
+
+        // Fetch plate numbers
+        db.collection("units")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        platenumberList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String plateNumber = document.getString("plateNumber");
+                            if (plateNumber != null) {
+                                // Count occurrences in the "assigns" collection
+                                db.collection("assigns")
+                                        .whereEqualTo("platenumber", plateNumber)
+                                        .get()
+                                        .addOnCompleteListener(assignTask -> {
+                                            if (assignTask.isSuccessful() && assignTask.getResult().size() < 2) {
+                                                platenumberList.add(plateNumber);
+                                                platenumberAdapter.notifyDataSetChanged();
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                });
+
+        // Fetch unit numbers
+        db.collection("units")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        unitnumberList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String unitNumber = document.getString("unitNumber");
+                            if (unitNumber != null) {
+                                // Count occurrences in the "assigns" collection
+                                db.collection("assigns")
+                                        .whereEqualTo("unitnumber", unitNumber)
+                                        .get()
+                                        .addOnCompleteListener(assignTask -> {
+                                            if (assignTask.isSuccessful() && assignTask.getResult().size() < 2) {
+                                                unitnumberList.add(unitNumber);
+                                                unitnumberAdapter.notifyDataSetChanged();
+                                            }
+                                        });
+                            }
+                        }
+                    }
+                });
+
+        // Fetch conductors
+        db.collection("users")
+                .whereEqualTo("role", "pao")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        conductorList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String conductor = document.getString("name");
+                            if (conductor != null && !assignedConductors.contains(conductor)) {
+                                conductorList.add(conductor);
+                            }
+                        }
+                        conductorAdapter.notifyDataSetChanged();
+                    }
+                });
+
+        // Fetch schedules
+        db.collection("schedules")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        scheduleList.clear();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            String schedule = document.getString("schedule");
+                            if (schedule != null && !assignedSchedules.contains(schedule)) {
+                                scheduleList.add(schedule);
+                            }
+                        }
+                        scheduleAdapter.notifyDataSetChanged();
+                    }
+                });
+    }
+
+
 
 
     private void fetchSchedules() {
