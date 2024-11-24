@@ -50,10 +50,11 @@ public class AssignAdapter extends RecyclerView.Adapter<AssignAdapter.AssignView
             intent.putExtra("Today", assign.getToday());
             intent.putExtra("Fromtime", assign.getFromtime());
             intent.putExtra("Totime", assign.getTotime());
-            intent.putExtra("unitnumber", assign.getunitnumber());
+            intent.putExtra("unitNumber", assign.getunitnumber());
+            intent.putExtra("conductorName", assign.getConductor());
             intent.putExtra("driverName", assign.getDriver());
-            intent.putExtra("platenumber", assign.getplatenumber());
-            intent.putExtra("schedule", assign.getSchedule());
+            intent.putExtra("plateNumber", assign.getplatenumber());
+            intent.putExtra("schedules", assign.getSchedule());
             ((AdminManageActiveUnitList) holder.itemView.getContext()).startActivityForResult(intent, 100);
         });
 
