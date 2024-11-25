@@ -90,6 +90,7 @@ public class PPassenger extends AppCompatActivity {
                                                                 user.delete()
                                                                         .addOnSuccessListener(aVoid2 -> {
                                                                             Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                            finish();
                                                                             startActivity(new Intent(PPassenger.this, Login.class));
                                                                         })
                                                                         .addOnFailureListener(e -> {
@@ -105,6 +106,7 @@ public class PPassenger extends AppCompatActivity {
                                                     user.delete()
                                                             .addOnSuccessListener(aVoid2 -> {
                                                                 Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                finish();
                                                                 startActivity(new Intent(PPassenger.this, Login.class));
                                                             })
                                                             .addOnFailureListener(e1 -> {

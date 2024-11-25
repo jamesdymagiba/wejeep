@@ -17,9 +17,6 @@
         android:theme="@style/Theme.WeJeep"
         tools:targetApi="31">
         <activity
-            android:name=".AdminAddVehicleUnit"
-            android:exported="false"/>
-        <activity
             android:name=".ActiveModernJeeps"
             android:exported="false" />
         <activity
@@ -65,6 +62,9 @@
             android:name=".AdminEditDriver"
             android:exported="false" />
         <activity
+            android:name=".AdminAddVehicleUnit"
+            android:exported="false" />
+        <activity
             android:name=".AdminAddDriver"
             android:exported="false" />
         <activity
@@ -95,12 +95,17 @@
         <activity
             android:name=".MainActivity"
             android:exported="true">
+        </activity>
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
