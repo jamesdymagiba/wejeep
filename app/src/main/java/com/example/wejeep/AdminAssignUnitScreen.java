@@ -380,6 +380,7 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
                             if (driver != null && !assignedDrivers.contains(driver)) {
                                 driverList.add(driver);
                             }
+
                         }
                         driverAdapter.notifyDataSetChanged();
                     }
