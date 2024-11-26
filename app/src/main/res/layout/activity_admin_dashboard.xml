@@ -35,61 +35,62 @@
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbarAdminDashboard"
             android:layout_centerHorizontal="true"
-            android:padding="16dp"
+            android:layout_marginTop="40dp"
             android:columnCount="2"
-            android:rowCount="4"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:rowCount="4">
 
             <LinearLayout
                 android:id="@+id/box_drivers"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="4dp"
-                android:layout_marginBottom="30dp"
                 android:layout_marginRight="30dp"
-                android:orientation="vertical"
+                android:layout_marginBottom="30dp"
                 android:background="@drawable/box_background"
-                android:padding="8dp"
-                android:layout_gravity="center">
+                android:orientation="vertical"
+                android:padding="8dp">
 
-            <ImageView
-                android:layout_width="100dp"
-                android:layout_height="80dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/driver" />
+                <ImageView
+                    android:layout_width="100dp"
+                    android:layout_height="80dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/driver" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/londrina_solid_regular"
-                android:text="Drivers"
-                android:textColor="@color/black"
-                android:textSize="16sp"
-                android:paddingTop="4dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:paddingTop="4dp"
+                    android:text="Drivers"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/tvDriverCount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:fontFamily="@font/londrina_solid_regular"
-                android:text="0"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
+                <TextView
+                    android:id="@+id/tvDriverCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:text="0"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/box_paos"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:layout_marginBottom="30dp"
-                android:orientation="vertical"
                 android:background="@drawable/box_background"
-                android:padding="8dp"
-                android:layout_gravity="center">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="100dp"
@@ -102,10 +103,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
+                    android:paddingTop="4dp"
                     android:text="PAOs"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:paddingTop="4dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvPAOCount"
@@ -114,22 +115,22 @@
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="0"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/box_units"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="4dp"
-                android:layout_marginBottom="30dp"
                 android:layout_marginRight="30dp"
-                android:orientation="vertical"
+                android:layout_marginBottom="30dp"
                 android:background="@drawable/box_background"
-                android:padding="8dp"
-                android:layout_gravity="center">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="100dp"
@@ -142,10 +143,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
+                    android:paddingTop="4dp"
                     android:text="Units"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:paddingTop="4dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvUnitCount"
@@ -154,21 +155,21 @@
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="0"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/box_schedules"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_margin="4dp"
                 android:layout_marginBottom="30dp"
-                android:orientation="vertical"
                 android:background="@drawable/box_background"
-                android:padding="8dp"
-                android:layout_gravity="center">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="100dp"
@@ -181,10 +182,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
+                    android:paddingTop="4dp"
                     android:text="Schedules"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:paddingTop="4dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvScheduleCount"
@@ -193,22 +194,22 @@
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="0"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/box_assignedSchedules"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_columnSpan="2"
+                android:layout_gravity="center_horizontal"
                 android:layout_margin="4dp"
                 android:layout_marginBottom="30dp"
-                android:orientation="vertical"
                 android:background="@drawable/box_background"
-                android:padding="8dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_columnSpan="2">
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <ImageView
                     android:layout_width="100dp"
@@ -221,10 +222,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
+                    android:paddingTop="4dp"
                     android:text="Assigned Schedules"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:paddingTop="4dp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvAssignedScheduleCount"
@@ -233,9 +234,9 @@
                     android:layout_gravity="center_horizontal"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:text="0"
+                    android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
         </GridLayout>

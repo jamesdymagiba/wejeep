@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     tools:context=".AdminEditSchedule">
 
     <androidx.appcompat.widget.Toolbar
@@ -84,7 +85,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/etFromDay"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.154"
+        app:layout_constraintHorizontal_bias="0.16"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.0" />
@@ -98,7 +99,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.155"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.213" />
@@ -112,7 +113,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.165"
+        app:layout_constraintHorizontal_bias="0.16"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.417" />
@@ -126,7 +127,7 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.625" />

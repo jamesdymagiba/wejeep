@@ -146,7 +146,7 @@
         app:layout_constraintTop_toBottomOf="@id/textInputLayout3" />
 
     <Button
-        android:id="@+id/btnNewAction"
+        android:id="@+id/btnBack"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="52dp"

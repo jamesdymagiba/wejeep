@@ -25,7 +25,7 @@ public class SignUpForPAO extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private FirebaseFunctions firebaseFunctions;
     private TextInputEditText etEmailSU, etPasswordSU, etNameSU;
-    private Button btnSignupSU;
+    private Button btnSignupSU , btnBack;
     private CustomLoadingDialog customLoadingDialog;
 
     @Override
@@ -42,7 +42,7 @@ public class SignUpForPAO extends AppCompatActivity {
         etPasswordSU = findViewById(R.id.etPasswordSU);
         etNameSU = findViewById(R.id.etNameSU);
         btnSignupSU = findViewById(R.id.btnSignPao);
-
+        btnBack = findViewById(R.id.btnBack);
         btnSignupSU.setOnClickListener(view -> {
             customLoadingDialog.showLoadingScreen();
             String email = String.valueOf(etEmailSU.getText());
@@ -55,7 +55,8 @@ public class SignUpForPAO extends AppCompatActivity {
                 customLoadingDialog.hideLoadingScreen();
             }
         });
-
+        // Handle Back button click
+        btnBack.setOnClickListener(v -> finish());
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

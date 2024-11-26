@@ -599,42 +599,34 @@ public class HSPassenger extends AppCompatActivity {
                                                     int[] toTime = parseTime(toTimeStr);
                                                     int toHour = toTime[0], toMinute = toTime[1];
 
-                                                    // Log parsed time values
                                                     Log.d(TAG, "From Time: " + fromHour + ":" + fromMinute);
                                                     Log.d(TAG, "To Time: " + toHour + ":" + toMinute);
 
-                                                    // Validate current day and time
-                                                    if (isScheduleValidForDay(currentDayOfWeek, currentHour, currentMinute,
+                                                    // Check if current day and time are valid for the range of days
+                                                    if (isScheduleValidForRange(currentDayOfWeek, currentHour, currentMinute,
                                                             fromDay, fromHour, fromMinute, toDay, toHour, toMinute)) {
                                                         isScheduleValid = true;
-                                                        break;
+                                                        break;  // Schedule is valid, break the loop
                                                     }
                                                 } catch (IllegalArgumentException e) {
                                                     Log.e(TAG, "Invalid time format for schedule", e);
                                                 }
                                             }
 
-                                            // Log if schedule is valid
-                                            Log.d(TAG, "Schedule valid: " + isScheduleValid);
-
                                             if (isScheduleValid) {
                                                 enableMyLocation();
                                                 toggleLocationButton.setEnabled(false);
                                                 toggleLocationButton.setText("Location is On");
                                                 toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
-
-                                                // Update Firestore to indicate location is on
                                                 updateLocationIndicator("on");
-                                                Log.d(TAG, "Location Indicator: on"); // Prints "on"
+                                                Log.d(TAG, "Location Indicator: on");
                                             } else {
                                                 disableMyLocation();
                                                 toggleLocationButton.setEnabled(false);
                                                 toggleLocationButton.setText("Location is Off");
                                                 toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
-
-                                                // Update Firestore to indicate location is off
                                                 updateLocationIndicator("off");
-                                                Log.d(TAG, "Location Indicator: off"); // Prints "off"
+                                                Log.d(TAG, "Location Indicator: off");
                                             }
 
                                         } else {
@@ -642,8 +634,6 @@ public class HSPassenger extends AppCompatActivity {
                                             toggleLocationButton.setEnabled(false);
                                             toggleLocationButton.setText("Location is Off");
                                             toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
-
-                                            // Update Firestore to indicate location is off
                                             updateLocationIndicator("off");
                                         }
                                     })
@@ -665,6 +655,7 @@ public class HSPassenger extends AppCompatActivity {
                 });
     }
 
+
     // Helper method to update the location indicator in Firestore
     private void updateLocationIndicator(String state) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -680,6 +671,8 @@ public class HSPassenger extends AppCompatActivity {
     }
 
 
+
+    // Utility function to convert day names to integers
 
     // Utility function to convert day names to integers
     private int getDayOfWeek(String day) {
@@ -717,42 +710,31 @@ public class HSPassenger extends AppCompatActivity {
         return new int[]{hour, minute};
     }
 
-    private boolean isScheduleValidForDay(int currentDayOfWeek, int currentHour, int currentMinute,
-                                          int fromDay, int fromHour, int fromMinute,
-                                          int toDay, int toHour, int toMinute) {
+    // Check if the current day and time is within the assigned schedule range
+    private boolean isScheduleValidForRange(int currentDayOfWeek, int currentHour, int currentMinute,
+                                            int fromDay, int fromHour, int fromMinute,
+                                            int toDay, int toHour, int toMinute) {
 
-        // Check if current day is within the schedule range (across week boundaries)
-        boolean isDayValid = (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay) ||
-                (fromDay > toDay && (currentDayOfWeek >= fromDay || currentDayOfWeek <= toDay));
-
-        Log.d(TAG, "Checking day: " + currentDayOfWeek + " is valid: " + isDayValid);
-
-        // Handle the time window for the current day
-        boolean isTimeValid = false;
-        if (currentDayOfWeek == fromDay || currentDayOfWeek == toDay) {
-            // Validate the time window for the start and end day
-            boolean isAfter = isAfter(currentHour, currentMinute, fromHour, fromMinute);
-            boolean isBeforeOrEqual = isBefore(currentHour, currentMinute, toHour, toMinute) || (currentHour == toHour && currentMinute == toMinute);
-
-            if (isAfter && isBeforeOrEqual) {
-                isTimeValid = true;
-            } else if (fromDay == toDay && currentDayOfWeek == fromDay) {
-                // Check if the time spans over midnight (same day)
-                if (isAfter(currentHour, currentMinute, fromHour, fromMinute) ||
-                        isBefore(currentHour, currentMinute, toHour, toMinute)) {
-                    isTimeValid = true;
-                }
-            }
+        // Check if current day is within the schedule range
+        boolean isDayValid = false;
+        if (fromDay <= toDay) {
+            isDayValid = (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay);
         } else {
-            // For days in-between, always valid
-            isTimeValid = true;
+            // Handle cross-week range (e.g., from Saturday to Monday)
+            isDayValid = (currentDayOfWeek >= fromDay || currentDayOfWeek <= toDay);
         }
 
-        Log.d(TAG, "Checking time: " + currentHour + ":" + currentMinute + " is valid: " + isTimeValid);
+        // Check if the current time is within the start and end time window
+        boolean isTimeValid = false;
+        if (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay) {
+            if ((currentHour > fromHour || (currentHour == fromHour && currentMinute >= fromMinute)) &&
+                    (currentHour < toHour || (currentHour == toHour && currentMinute <= toMinute))) {
+                isTimeValid = true;
+            }
+        }
 
         return isDayValid && isTimeValid;
     }
-
     // Helper functions
     private boolean isAfter(int currentHour, int currentMinute, int hour, int minute) {
         boolean result = (currentHour > hour || (currentHour == hour && currentMinute >= minute));

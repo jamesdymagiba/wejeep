@@ -77,7 +77,8 @@
                 <TextView
                     android:id="@+id/tvToDay"
                     android:layout_width="132dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="10dp"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:textColor="@color/black"
                     android:textSize="12sp" />
@@ -117,8 +118,9 @@
 
                 <TextView
                     android:id="@+id/tvToTime"
+                    android:layout_marginLeft="10dp"
                     android:layout_width="132dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/londrina_solid_regular"
                     android:textColor="@color/black"
                     android:textSize="12sp" />

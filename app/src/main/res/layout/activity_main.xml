@@ -112,7 +112,7 @@
         android:id="@+id/imageView10"
         android:layout_width="152dp"
         android:layout_height="285dp"
-        android:layout_marginTop="161dp"
+        android:layout_marginTop="155dp"
         android:layout_marginBottom="159dp"
         android:contentDescription="@string/contentDescriptionContent"
         app:layout_constraintBottom_toTopOf="@+id/textView3"
