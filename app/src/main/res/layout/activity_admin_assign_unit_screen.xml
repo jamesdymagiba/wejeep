@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backgroundColor"
     tools:context=".AdminAssignUnitScreen">
 
     <androidx.appcompat.widget.Toolbar
@@ -30,33 +31,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/toolbar_1" />
 
-    <androidx.constraintlayout.utils.widget.ImageFilterView
-        android:id="@+id/imgview_1"
-        android:layout_width="352dp"
-        android:layout_height="423dp"
-        android:layout_marginBottom="144dp"
+    <Spinner
+        android:id="@+id/spinnerConductor"
+        android:layout_width="260dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.466"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
-        app:layout_constraintVertical_bias="0.554"
-        app:srcCompat="@drawable/rectangle_white_bg"
-        tools:ignore="MissingConstraints" />
+        app:layout_constraintVertical_bias="0.32" />
 
     <TextView
-        android:id="@+id/textView36"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/textView33"
+        android:layout_width="48dp"
+        android:layout_height="18dp"
         android:fontFamily="@font/londrina_solid_regular"
-        android:text="To Day:"
+        android:text="@string/driver"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerDriver"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.62"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.706" />
+        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.974" />
 
     <TextView
         android:id="@+id/textView24"
@@ -65,133 +64,12 @@
         android:fontFamily="@font/londrina_solid_regular"
         android:text="@string/unit_no"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerUnitnumber"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.12"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.025" />
-
-    <TextView
-        android:id="@+id/textView25"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="From Day:"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.119"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.707" />
-
-    <TextView
-        android:id="@+id/textView34"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="Conductor:"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.121"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.362" />
-
-    <Spinner
-        android:id="@+id/spinnerDriver"
-        android:layout_width="285dp"
-        android:layout_height="45dp"
-        android:textAlignment="center"
-        android:background="@drawable/rounded_edit_text"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.417"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.248" />
-
-    <Spinner
-        android:id="@+id/spinnerConductor"
-        android:layout_width="285dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.417"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.433" />
-
-    <TextView
-        android:id="@+id/textView27"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="@string/plate_no"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.559"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.024" />
-
-    <TextView
-        android:id="@+id/textView33"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="@string/driver"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.114"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.19" />
-
-    <EditText
-        android:id="@+id/etFromday"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.123"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.804" />
-
-    <EditText
-        android:id="@+id/etFromtime"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.115"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.965" />
-
-    <EditText
-        android:id="@+id/etTotime"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.828"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.962" />
+        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.829" />
 
     <EditText
         android:id="@+id/etToday"
@@ -199,38 +77,26 @@
         android:layout_height="45dp"
         android:background="@drawable/rounded_edit_text"
         android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.828"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.801" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.779"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.542" />
 
-    <Spinner
-        android:id="@+id/spinnerUnitnumber"
-        android:layout_width="100dp"
-        android:layout_height="43dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.111"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.071" />
-
-    <Spinner
-        android:id="@+id/spinnerPlatenumber"
-        android:layout_width="150dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.806"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.066" />
+    <TextView
+        android:id="@+id/textView34"
+        android:layout_width="61dp"
+        android:layout_height="17dp"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="Conductor:"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerConductor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.174"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView37"
+        app:layout_constraintVertical_bias="0.984" />
 
     <TextView
         android:id="@+id/textView21"
@@ -238,14 +104,131 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/londrina_solid_regular"
         android:text="To Time:"
-        android:textColor="@color/black"
 
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/etTotime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.629"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.852" />
+        app:layout_constraintHorizontal_bias="0.611"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.989" />
+
+    <Spinner
+        android:id="@+id/spinnerPlatenumber"
+        android:layout_width="150dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.758"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.1" />
+
+    <TextView
+        android:id="@+id/textView35"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="Schedules:"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerSchedule"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textView27"
+        app:layout_constraintVertical_bias="0.981" />
+
+    <Spinner
+        android:id="@+id/spinnerUnitnumber"
+        android:layout_width="100dp"
+        android:layout_height="43dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.202"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.101" />
+
+    <EditText
+        android:id="@+id/etFromday"
+        android:layout_width="125dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.542" />
+
+    <Spinner
+        android:id="@+id/spinnerSchedule"
+        android:layout_width="260dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.43" />
+
+    <Spinner
+        android:id="@+id/spinnerDriver"
+        android:layout_width="260dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.212" />
+
+    <EditText
+        android:id="@+id/etTotime"
+        android:layout_width="125dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.779"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.652" />
+
+    <EditText
+        android:id="@+id/etFromtime"
+        android:layout_width="125dp"
+        android:layout_height="45dp"
+        android:background="@drawable/rounded_edit_text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.652" />
+
+    <TextView
+        android:id="@+id/textView36"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="To Day:"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/etToday"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.611"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerSchedule"
+        app:layout_constraintVertical_bias="0.555" />
 
     <TextView
         android:id="@+id/textView23"
@@ -254,12 +237,40 @@
         android:fontFamily="@font/londrina_solid_regular"
         android:text="From Time:"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintBottom_toTopOf="@+id/etFromtime"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.124"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.862" />
+        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.989" />
+
+    <TextView
+        android:id="@+id/textView25"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="From Day:"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/etFromday"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/spinnerSchedule"
+        app:layout_constraintVertical_bias="0.555" />
+
+    <TextView
+        android:id="@+id/textView27"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/plate_no"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/spinnerPlatenumber"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.612"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
+        app:layout_constraintVertical_bias="0.869" />
 
     <Button
         android:id="@+id/btnConfirm"
@@ -276,8 +287,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.216" />
+        app:layout_constraintTop_toBottomOf="@+id/textView37"
+        app:layout_constraintVertical_bias="0.804" />
 
     <Button
         android:id="@+id/btnBack"
@@ -295,33 +306,6 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnConfirm"
-        app:layout_constraintVertical_bias="0.247" />
-
-    <Spinner
-        android:id="@+id/spinnerSchedule"
-        android:layout_width="285dp"
-        android:layout_height="45dp"
-        android:background="@drawable/rounded_edit_text"
-        android:textAlignment="center"
-        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.417"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toBottomOf="@+id/spinnerConductor"
-        app:layout_constraintVertical_bias="0.141" />
-
-    <TextView
-        android:id="@+id/textView35"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/londrina_solid_regular"
-        android:text="Schedules:"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/spinnerSchedule"
-        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.129"
-        app:layout_constraintStart_toStartOf="@+id/imgview_1"
-        app:layout_constraintTop_toTopOf="@+id/textView27"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.339" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

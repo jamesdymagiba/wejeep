@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminAddUnitScreen">
+    tools:context=".AdminAddUnitScreen"
+    android:background="@color/backgroundColor">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_1"
@@ -191,7 +192,7 @@
 
     <EditText
         android:id="@+id/etUnitDateAdded"
-        android:layout_width="130dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:clickable="false"
@@ -202,10 +203,10 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.172"
+        app:layout_constraintHorizontal_bias="0.258"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.935" />
+        app:layout_constraintVertical_bias="0.938" />
 
     <Button
         android:id="@+id/btnAddVehicleModel"
@@ -215,7 +216,7 @@
         android:background="@drawable/bus_logo"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.592"
         app:layout_constraintStart_toEndOf="@+id/spinnerVehicleModel"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
         app:layout_constraintVertical_bias="0.385" />

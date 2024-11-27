@@ -122,7 +122,8 @@
         android:textColor="@color/blueTextColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"/>
 
 
     <com.google.android.material.textfield.TextInputLayout

@@ -94,29 +94,62 @@ public class ActiveModernJeeps extends AppCompatActivity {
 
     private void fetchActiveModernJeepData() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("assigns").get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String unitNumber = document.getString("unitnumber");
-                            String vehicleModel = document.getString("vehiclemodel");
-                            String driverName = document.getString("driver"); // Driver's name
-                            String paoName = document.getString("conductor");    // PAO's name
-                            String plateNumber = document.getString("platenumber");
-                            String documentId = document.getId();
 
-                            // Create the model object
-                            ActiveModernJeepModel jeepModel = new ActiveModernJeepModel(unitNumber, vehicleModel, driverName, paoName, plateNumber, documentId);
-                            activeModernJeepList.add(jeepModel);
+        // Fetch users with role 'pao' and 'locationindication' set to "on"
+        db.collection("users")
+                .whereEqualTo("role", "pao")
+                .whereEqualTo("locationindicator", "on")
+                .get()
+                .addOnCompleteListener(userTask -> {
+                    if (userTask.isSuccessful()) {
+                        List<String> paoEmails = new ArrayList<>();
+
+                        // Extract email addresses of matching users
+                        for (QueryDocumentSnapshot userDoc : userTask.getResult()) {
+                            String email = userDoc.getString("email");
+                            if (email != null) {
+                                paoEmails.add(email);
+                            }
                         }
-                        // Notify the adapter that data has changed
-                        adapter.notifyDataSetChanged();
+
+                        // Check if emails are in the assigns collection
+                        db.collection("assigns").get()
+                                .addOnCompleteListener(assignTask -> {
+                                    if (assignTask.isSuccessful()) {
+                                        for (QueryDocumentSnapshot assignDoc : assignTask.getResult()) {
+                                            String email = assignDoc.getString("email");
+
+                                            if (email != null && paoEmails.contains(email)) {
+                                                String unitNumber = assignDoc.getString("unitnumber");
+                                                String vehicleModel = assignDoc.getString("vehiclemodel");
+                                                String driverName = assignDoc.getString("driver");
+                                                String paoName = assignDoc.getString("conductor");
+                                                String plateNumber = assignDoc.getString("platenumber");
+                                                String documentId = assignDoc.getId();
+
+                                                // Create the model object
+                                                ActiveModernJeepModel jeepModel = new ActiveModernJeepModel(
+                                                        unitNumber, vehicleModel, driverName, paoName, plateNumber, documentId
+                                                );
+
+                                                // Add to the list
+                                                activeModernJeepList.add(jeepModel);
+                                            }
+                                        }
+                                        // Notify the adapter that data has changed
+                                        adapter.notifyDataSetChanged();
+                                    } else {
+                                        // Handle the error
+                                        Toast.makeText(ActiveModernJeeps.this, "Error getting assigns data.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     } else {
                         // Handle the error
-                        Toast.makeText(ActiveModernJeeps.this, "Error getting active modern jeeps.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ActiveModernJeeps.this, "Error getting user data.", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

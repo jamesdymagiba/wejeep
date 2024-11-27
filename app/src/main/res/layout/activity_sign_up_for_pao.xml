@@ -177,7 +177,8 @@
         android:textColor="@color/blueTextColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"/>
 
     <!-- ProgressBar (hidden initially, same constraints as in SignUp layout) -->
     <ProgressBar

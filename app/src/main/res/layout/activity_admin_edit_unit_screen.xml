@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".AdminEditUnitScreen">
+    tools:context=".AdminEditUnitScreen"
+    android:background="@color/backgroundColor">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_1"
@@ -145,7 +146,7 @@
 
     <EditText
         android:id="@+id/etPlateNumber"
-        android:layout_width="130dp"
+        android:layout_width="200dp"
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
@@ -155,28 +156,28 @@
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.22"
+        app:layout_constraintHorizontal_bias="0.304"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.686" />
+        app:layout_constraintVertical_bias="0.687" />
 
     <EditText
         android:id="@+id/etDateAdded"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="date"
+        android:layout_width="200dp"
+        android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
+        android:clickable="false"
         android:ems="10"
         android:hint="@string/abc_123"
-        android:clickable="false"
         android:importantForAutofill="no"
+        android:inputType="date"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.306"
+        app:layout_constraintHorizontal_bias="0.304"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.926" />
+        app:layout_constraintVertical_bias="0.938" />
 
     <TextView
         android:id="@+id/textView12"
