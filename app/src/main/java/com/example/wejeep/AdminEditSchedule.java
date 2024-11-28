@@ -72,39 +72,6 @@ public class AdminEditSchedule extends AppCompatActivity {
             Toast.makeText(this, "Invalid document ID.", Toast.LENGTH_SHORT).show();
         }
 
-
-
-        etFromDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Array of days of the week
-                String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
-
-                // Variable to keep track of the selected day (default -1, no day selected)
-                final int[] selectedDay = {-1};
-
-                // Create the SingleChoiceDialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(AdminEditSchedule.this);
-                builder.setTitle("Select Day of the Week")
-                        .setSingleChoiceItems(daysOfWeek, selectedDay[0], (dialog, which) -> {
-                            // Update selected day
-                            selectedDay[0] = which;
-                        })
-                        .setPositiveButton("OK", (dialog, which) -> {
-                            if (selectedDay[0] != -1) {
-                                // Set the selected day in the EditText
-                                etFromDay.setText(daysOfWeek[selectedDay[0]]);
-                            }
-                        })
-                        .setNegativeButton("Cancel", null);
-
-                // Show the dialog
-                builder.create().show();
-            }
-        });
-
-
-
         etFromDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +92,10 @@ public class AdminEditSchedule extends AppCompatActivity {
                             if (selectedDayFrom[0] != -1) {
                                 // Set the selected day in the EditText
                                 etFromDay.setText(daysOfWeek[selectedDayFrom[0]]);
+
+                                // Automatically calculate the "To Day"
+                                int toDayIndex = (selectedDayFrom[0] + 2) % 7; // Add 2 days and wrap around the week
+                                etToDay.setText(daysOfWeek[toDayIndex]); // Update etToDay with the calculated day
                             }
                         })
                         .setNegativeButton("Cancel", null);
@@ -134,45 +105,45 @@ public class AdminEditSchedule extends AppCompatActivity {
             }
         });
 
-// etToDay OnClickListener
-        etToDay.setOnClickListener(new View.OnClickListener() {
+        /*etToDay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Original array of days of the week
+                // Array of days of the week
                 String[] daysOfWeek = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
 
-                // Variable to keep track of the selected day in etFromDay
-                final String selectedFromDay = etFromDay.getText().toString();
+                // Get the currently calculated "To Day"
+                String selectedFromDay = etFromDay.getText().toString();
+                if (selectedFromDay.isEmpty()) {
+                    Toast.makeText(AdminAddScheduleScreen.this, "Please select From Day first!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                // Filter out the selectedFromDay from daysOfWeek
-                List<String> availableDays = new ArrayList<>(Arrays.asList(daysOfWeek));
-                availableDays.remove(selectedFromDay);
+                // Find the index of the "From Day" in the daysOfWeek array
+                int fromDayIndex = Arrays.asList(daysOfWeek).indexOf(selectedFromDay);
 
-                // Convert the List back to an array
-                String[] filteredDaysOfWeek = availableDays.toArray(new String[0]);
+                // Calculate the "To Day" index
+                int toDayIndex = (fromDayIndex + 2) % 7; // Add 2 days and wrap around the week
 
-                // Variable to keep track of the selected day for etToDay (default -1, no day selected)
-                final int[] selectedDayTo = {-1};
+                // Pre-select the calculated "To Day"
+                final int[] selectedDayTo = {toDayIndex};
 
                 // Create the SingleChoiceDialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(AdminEditSchedule.this);
                 builder.setTitle("Select Day of the Week")
-                        .setSingleChoiceItems(filteredDaysOfWeek, selectedDayTo[0], (dialog, which) -> {
+                        .setSingleChoiceItems(daysOfWeek, selectedDayTo[0], (dialog, which) -> {
                             // Update selected day
                             selectedDayTo[0] = which;
                         })
                         .setPositiveButton("OK", (dialog, which) -> {
-                            if (selectedDayTo[0] != -1) {
-                                // Set the selected day in the EditText if a valid day was selected
-                                etToDay.setText(filteredDaysOfWeek[selectedDayTo[0]]);
-                            }
+                            // Set the selected day in the EditText
+                            etToDay.setText(daysOfWeek[selectedDayTo[0]]);
                         })
                         .setNegativeButton("Cancel", null);
 
                 // Show the dialog
                 builder.create().show();
             }
-        });
+        });*/
 
         etFromTime.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -192,12 +163,41 @@ public class AdminEditSchedule extends AppCompatActivity {
                                 amPm = "AM";
                                 if (selectedHour == 0) selectedHour = 12;
                             }
-                            String time = String.format("%02d:%02d %s", selectedHour, selectedMinute, amPm);
-                            etFromTime.setText(time);
+                            String fromTime = String.format("%02d:%02d %s", selectedHour, selectedMinute, amPm);
+                            etFromTime.setText(fromTime);
+
+                            // Calculate new time by adding 7 hours and 30 minutes
+                            Calendar newCalendar = Calendar.getInstance();
+                            newCalendar.set(Calendar.HOUR_OF_DAY, selectedHour);
+                            newCalendar.set(Calendar.MINUTE, selectedMinute);
+
+                            // Add 7 hours and 30 minutes
+                            newCalendar.add(Calendar.HOUR_OF_DAY, 7);
+                            newCalendar.add(Calendar.MINUTE, 30);
+
+                            // Get the adjusted time
+                            int newHour24 = newCalendar.get(Calendar.HOUR_OF_DAY);
+                            int newMinute = newCalendar.get(Calendar.MINUTE);
+
+                            // Convert to 12-hour format and determine AM/PM
+                            String newAmPm;
+                            int newHour12;
+                            if (newHour24 >= 12) {
+                                newAmPm = "PM";
+                                newHour12 = (newHour24 > 12) ? newHour24 - 12 : newHour24; // Convert to 12-hour format
+                            } else {
+                                newAmPm = "AM";
+                                newHour12 = (newHour24 == 0) ? 12 : newHour24; // Handle midnight case
+                            }
+
+                            String toTime = String.format("%02d:%02d %s", newHour12, newMinute, newAmPm);
+                            etToTime.setText(toTime);
                         }, hour, minute, false); // 'false' for AM/PM format
                 timePickerDialog.show();
             }
         });
+
+
 
 
         etToTime.setOnClickListener(new View.OnClickListener() {

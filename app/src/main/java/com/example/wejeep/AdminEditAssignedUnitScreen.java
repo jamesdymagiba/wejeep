@@ -61,7 +61,6 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
         EditTextTotime.setEnabled(false);
         spinnerPlatenumber.setEnabled(false);
 
-        //tingen ko dito yon na cacrash
         // Get driver data from Intent
         documentId = getIntent().getStringExtra("documentId");
         String unitNumber = getIntent().getStringExtra("unitNumber");

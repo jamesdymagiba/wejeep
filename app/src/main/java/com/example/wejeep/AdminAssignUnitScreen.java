@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -76,36 +77,49 @@ public class AdminAssignUnitScreen extends AppCompatActivity {
         EditTextTotime.setEnabled(false);
         spinnerPlatenumber.setEnabled(false);
 
+
+
         // Set up adapters for spinners
+        try {
+            driverAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, driverList);
+            driverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerDriver.setAdapter(driverAdapter);
 
-        driverAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, driverList);
-        driverAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerDriver.setAdapter(driverAdapter);
+            conductorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, conductorList);
+            conductorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerConductor.setAdapter(conductorAdapter);
 
-        conductorAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, conductorList);
-        conductorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerConductor.setAdapter(conductorAdapter);
+            platenumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, platenumberList);
+            platenumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerPlatenumber.setAdapter(platenumberAdapter);
 
-        platenumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, platenumberList);
-        platenumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerPlatenumber.setAdapter(platenumberAdapter);
+            unitnumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitnumberList);
+            unitnumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerUnitnumber.setAdapter(unitnumberAdapter);
 
-        unitnumberAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, unitnumberList);
-        unitnumberAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerUnitnumber.setAdapter(unitnumberAdapter);
+            scheduleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, scheduleList);
+            scheduleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinnerSchedule.setAdapter(scheduleAdapter);
+        }catch (Exception error){
+            Log.e("AdminAssignUnitScreen", "The exception is: ", error);
+        }
 
-        scheduleAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, scheduleList);
-        scheduleAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSchedule.setAdapter(scheduleAdapter);
+
 
         // Fetch the schedule data from Firestore
-        fetchSchedules();
-        fetchDriver();
-        fetchUnits();
-        fetchPlatenumber();
-        fetchConductor();
-        fetchSchedules();
-        fetchAssignedData();
+        try {
+            fetchSchedules();
+            fetchDriver();
+            fetchUnits();
+            fetchPlatenumber();
+            fetchConductor();
+            fetchSchedules();
+            fetchAssignedData();
+        }
+        catch (Exception error) {
+            Log.e("AdminAssignUnitScreen", "The exception is: ", error);
+        }
+
 
         spinnerDriver.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
