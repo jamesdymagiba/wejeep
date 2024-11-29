@@ -4,6 +4,7 @@ import static androidx.fragment.app.FragmentManager.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -30,6 +31,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
@@ -41,7 +44,7 @@ public class PPassenger extends AppCompatActivity {
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
-    Button btnEditProfilePP;
+    Button btnEditProfilePP, btnDeleteAccountPP;
     private static final String TAG = "PPassenger";
 
     @Override
@@ -54,6 +57,71 @@ public class PPassenger extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarPP);
         btnEditProfilePP = findViewById(R.id.btnEditProfilePP);
+        btnDeleteAccountPP = findViewById(R.id.btnDeleteAccountPP);
+
+        btnDeleteAccountPP.setOnClickListener(view -> {
+            // Show confirmation dialog
+            new AlertDialog.Builder(view.getContext())
+                    .setTitle("Delete Account")
+                    .setMessage("Are you sure you want to delete your account? This action cannot be undone.")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        // Get current user ID (UID)
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user != null) {
+                            String userId = user.getUid();
+
+                            // Delete user document from Firestore
+                            FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .document(userId)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> {
+                                        // Check if the user has a profile picture
+                                        FirebaseStorage storage = FirebaseStorage.getInstance();
+                                        StorageReference profilePicRef = storage.getReference().child("profile_pictures/" + userId + ".jpg");
+
+                                        // Try to check if the profile picture exists before attempting to delete
+                                        profilePicRef.getMetadata()
+                                                .addOnSuccessListener(metadata -> {
+                                                    // If metadata is found, delete the profile picture
+                                                    profilePicRef.delete()
+                                                            .addOnSuccessListener(aVoid1 -> {
+                                                                // Delete the account from Firebase Authentication
+                                                                user.delete()
+                                                                        .addOnSuccessListener(aVoid2 -> {
+                                                                            Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                            finish();
+                                                                            startActivity(new Intent(PPassenger.this, Login.class));
+                                                                        })
+                                                                        .addOnFailureListener(e -> {
+                                                                            Toast.makeText(view.getContext(), "Failed to delete account: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                                        });
+                                                            })
+                                                            .addOnFailureListener(e -> {
+                                                                Toast.makeText(view.getContext(), "Failed to delete profile picture: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                                            });
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    // If no profile picture is found, just proceed with deleting the account
+                                                    user.delete()
+                                                            .addOnSuccessListener(aVoid2 -> {
+                                                                Toast.makeText(view.getContext(), "Account deleted successfully.", Toast.LENGTH_SHORT).show();
+                                                                finish();
+                                                                startActivity(new Intent(PPassenger.this, Login.class));
+                                                            })
+                                                            .addOnFailureListener(e1 -> {
+                                                                Toast.makeText(view.getContext(), "Failed to delete account: " + e1.getMessage(), Toast.LENGTH_LONG).show();
+                                                            });
+                                                });
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Toast.makeText(view.getContext(), "Failed to delete Firestore document: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    });
+                        }
+                    })
+                    .setNegativeButton("No", null) // Do nothing if No is clicked
+                    .show();
+        });
 
         btnEditProfilePP.setOnClickListener(view -> {
             startActivity(new Intent(PPassenger.this, EPPassenger.class));

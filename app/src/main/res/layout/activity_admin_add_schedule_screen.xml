@@ -20,7 +20,7 @@
         android:id="@+id/textView28"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add Schedule"
+        android:text="@string/add_schedule"
         android:fontFamily="@font/londrina_solid_regular"
         android:textColor="@color/white"
         android:textSize="25sp"
@@ -31,146 +31,177 @@
 
     <androidx.constraintlayout.utils.widget.ImageFilterView
         android:id="@+id/imgview_1"
-        android:layout_width="370dp"
-        android:layout_height="370dp"
+        android:layout_width="378dp"
+        android:layout_height="391dp"
         android:layout_marginBottom="144dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
+        app:layout_constraintHorizontal_bias="0.484"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_1"
-        app:layout_constraintVertical_bias="0.491"
+        app:layout_constraintVertical_bias="0.492"
         app:srcCompat="@drawable/rectangle_white_bg"
         tools:ignore="MissingConstraints" />
+
+    <EditText
+        android:id="@+id/etSchedule"
+        android:layout_width="210dp"
+        android:layout_height="43dp"
+        android:background="@drawable/rounded_edit_text"
+        android:clickable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:inputType="text"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.47"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.954" />
+
+    <TextView
+        android:id="@+id/tvSchedule"
+        android:layout_width="66dp"
+        android:layout_height="20dp"
+        android:fontFamily="@font/londrina_solid_regular"
+        android:text="Schedule"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
+        app:layout_constraintEnd_toEndOf="@+id/imgview_1"
+        app:layout_constraintHorizontal_bias="0.16"
+        app:layout_constraintStart_toStartOf="@+id/imgview_1"
+        app:layout_constraintTop_toTopOf="@+id/imgview_1"
+        app:layout_constraintVertical_bias="0.84" />
 
     <TextView
         android:id="@+id/textView29"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:fontFamily="@font/londrina_solid_regular"
         android:text="@string/from_day"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/etfromday"
+        app:layout_constraintBottom_toTopOf="@+id/etFromDay"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
         app:layout_constraintHorizontal_bias="0.154"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.09" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textView30"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/to_day"
         android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/to_day"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.155"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.276" />
+        app:layout_constraintVertical_bias="0.213" />
 
     <TextView
         android:id="@+id/textView31"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/from_time"
         android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/from_time"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.165"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.524" />
+        app:layout_constraintVertical_bias="0.417" />
 
     <TextView
         android:id="@+id/textView32"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/to_time"
         android:fontFamily="@font/londrina_solid_regular"
+        android:text="@string/to_time"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.157"
+        app:layout_constraintHorizontal_bias="0.158"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.757" />
+        app:layout_constraintVertical_bias="0.625" />
 
     <EditText
         android:id="@+id/etfromday"
-        android:layout_width="wrap_content"
-        android:layout_height="48sp"
+        android:layout_width="210dp"
+        android:layout_height="43dp"
         android:background="@drawable/rounded_edit_text"
-        android:ems="10"
-        android:hint="@string/select_day"
-        android:focusable="false"
         android:clickable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="Enter From Day"
         android:inputType="text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.111" />
+        app:layout_constraintVertical_bias="0.106" />
 
     <EditText
         android:id="@+id/ettoday"
-        android:layout_width="wrap_content"
-        android:layout_height="48sp"
+        android:layout_width="210dp"
+        android:layout_height="43dp"
         android:background="@drawable/rounded_edit_text"
-        android:ems="10"
-        android:hint="@string/select_day"
-        android:focusable="false"
         android:clickable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="Enter To Day"
         android:inputType="text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.388" />
+        app:layout_constraintVertical_bias="0.298" />
 
     <EditText
         android:id="@+id/etfromtime"
-        android:layout_width="wrap_content"
-        android:layout_height="48sp"
+        android:layout_width="210dp"
+        android:layout_height="43dp"
         android:background="@drawable/rounded_edit_text"
-        android:ems="10"
-        android:hint="@string/select_time"
         android:clickable="false"
+        android:ems="10"
         android:focusable="false"
-        android:inputType="time|datetime"
+        android:hint="Enter From Time"
+        android:inputType="text"
         android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.645" />
+        app:layout_constraintVertical_bias="0.522" />
 
     <EditText
         android:id="@+id/ettotime"
-        android:layout_width="wrap_content"
-        android:layout_height="48sp"
-        android:ems="10"
-        android:inputType="time|datetime"
-        android:hint="@string/select_time"
-        android:focusable="false"
-        android:clickable="false"
-        android:textAlignment="center"
+        android:layout_width="210dp"
+        android:layout_height="43dp"
         android:background="@drawable/rounded_edit_text"
+        android:clickable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:hint="Enter To Time"
+        android:inputType="text"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="@+id/imgview_1"
         app:layout_constraintEnd_toEndOf="@+id/imgview_1"
-        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintHorizontal_bias="0.47"
         app:layout_constraintStart_toStartOf="@+id/imgview_1"
         app:layout_constraintTop_toTopOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.91" />
+        app:layout_constraintVertical_bias="0.741" />
 
     <Button
         android:id="@+id/btnConfirm"
@@ -186,12 +217,13 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgview_1"
-        app:layout_constraintVertical_bias="0.475" />
+        app:layout_constraintVertical_bias="0.301" />
 
     <Button
         android:id="@+id/btnBack"
         android:layout_width="220dp"
         android:layout_height="50dp"
+        android:layout_marginBottom="48dp"
         android:background="@drawable/round_btn_blue"
         android:fontFamily="@font/londrina_solid_regular"
         android:text="@string/back"
@@ -202,6 +234,6 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnConfirm"
-        app:layout_constraintVertical_bias="0.252" />
+        app:layout_constraintVertical_bias="0.353" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

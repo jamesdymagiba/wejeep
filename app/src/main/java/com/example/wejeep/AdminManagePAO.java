@@ -1,29 +1,21 @@
 package com.example.wejeep;
 
-import androidx.annotation.NonNull;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.Menu;
+import android.widget.Button;
+import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
-
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -45,7 +37,7 @@ public class AdminManagePAO extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_manage_pao);
 
-        Toolbar toolbar = findViewById(R.id.toolbarAdminManagesPao);
+        Toolbar toolbar = findViewById(R.id.toolbarAdminManagePao);
 
         // Initialize Firestore
         db = FirebaseFirestore.getInstance();
@@ -92,7 +84,7 @@ public class AdminManagePAO extends AppCompatActivity {
         recyclerViewPAO = findViewById(R.id.recyclerViewPAO);
         recyclerViewPAO.setLayoutManager(new LinearLayoutManager(this));
         paoList = new ArrayList<>();
-        paoAdapter = new PAOAdapter(paoList, db);
+        paoAdapter = new PAOAdapter(paoList, db, this);
         recyclerViewPAO.setAdapter(paoAdapter);
     }
     private void loadPAOsFromFirestore() {
@@ -106,9 +98,9 @@ public class AdminManagePAO extends AppCompatActivity {
                             String name = document.getString("name");
                             String email = document.getString("email");
                             String documentId = document.getId();  // Get document ID
-                            String dateAdded = document.getString("dateAdded"); // Retrieve date added
-                            if (name != null && email != null && dateAdded != null) {  // Check for null values
-                                paoList.add(new PAOModel(name, email, documentId, dateAdded));  // Include date added
+                            String dateadded = document.getString("dateadded"); // Retrieve date added
+                            if (name != null && email != null && dateadded != null) {  // Check for null values
+                                paoList.add(new PAOModel(name, email, documentId, dateadded));  // Include date added
                             }
                         }
                         paoAdapter.notifyDataSetChanged();  // Notify adapter of data changes

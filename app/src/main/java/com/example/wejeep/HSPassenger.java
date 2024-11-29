@@ -1,13 +1,12 @@
 package com.example.wejeep;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,8 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -27,14 +24,12 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
-import androidx.core.view.MenuCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.caverock.androidsvg.BuildConfig;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
@@ -43,14 +38,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
-
-import android.graphics.drawable.Drawable;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -65,7 +60,6 @@ public class HSPassenger extends AppCompatActivity {
     private NavigationManager navigationManager;
     private MenuVisibilityManager menuVisibilityManager;
     private Menu menu;
-
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     ActionBarDrawerToggle drawerToggle;
@@ -76,14 +70,7 @@ public class HSPassenger extends AppCompatActivity {
     private LocationCallback locationCallback;
     private Handler locationTimerHandler;
     private Runnable locationTimerRunnable;
-    //Obsolete code
-    /**@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        MenuCompat.setGroupDividerEnabled(menu, true);
-        return true;
-    }
-     **/
+    private LocationListener locationListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,8 +83,25 @@ public class HSPassenger extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbarHSP);
 
+        // Initialize location services
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Set up location callback
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(@NonNull LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    updateLocationOnMap(location);
+                    updateLocationInFirestore(location);
+                }
+            }
+        };
+
         // Initialize navigationManager and navigationView for menuVisibilityManager
-        navigationManager = new NavigationManager(this);
+        navigationManager = new NavigationManager(this, fusedLocationClient, locationCallback, mapView);
         navigationView = findViewById(R.id.nav_view);
 
         // Initialize MenuVisibilityManager with the NavigationView
@@ -124,15 +128,12 @@ public class HSPassenger extends AppCompatActivity {
 
         //Add profile picture and name from firestore in header
         UserProfileManager.checkAuthAndUpdateUI(FirebaseAuth.getInstance(), navigationView, this);
-        //Check user's role and update the marker icon
-        fetchUserRole();
 
         // Configure the osmDroid library
         Configuration.getInstance().setUserAgentValue(BuildConfig.APPLICATION_ID);
+
         // Initialize the Map
-        mapView = findViewById(R.id.map);
-        mapView.setMultiTouchControls(true);
-        mapView.getController().setZoom(19.0);
+        initializeMapView();
 
         // Initialize the marker
         locationMarker = new Marker(mapView);
@@ -140,24 +141,28 @@ public class HSPassenger extends AppCompatActivity {
 
         // Set custom icon for the marker
         locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.people));
-
-        // Initialize location services
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        // Set up location callback
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                for (Location location : locationResult.getLocations()) {
-                    updateLocationOnMap(location);
-                    updateLocationInFirestore(location);
-                }
-            }
-        };
         // Set up the toggle button
         Button toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
+
+        // Disable button initially until the schedule is verified
+        toggleLocationButton.setEnabled(true);
+
+        // Check user's schedule
+        checkUserSchedule(toggleLocationButton);
+
+        toggleLocationButton.setOnClickListener(v -> {
+            if (isLocationEnabled) {
+                disableMyLocation();
+            } else {
+                enableMyLocation();
+            }
+        });
+
+        //Check user's role and update the marker icon
+        fetchUserRole();
+
+        // Set up the toggle button
+        toggleLocationButton = findViewById(R.id.btnToggleLocationHSP);
         toggleLocationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,8 +173,6 @@ public class HSPassenger extends AppCompatActivity {
                 }
             }
         });
-
-
 
         // Check for location permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -184,7 +187,21 @@ public class HSPassenger extends AppCompatActivity {
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
     }
-
+    private void clearMap() {
+        if (mapView != null) {
+            mapView.getOverlays().clear();
+            mapView.invalidate();
+        }
+    }
+    private void initializeMapView() {
+        if (mapView == null) {
+            mapView = findViewById(R.id.map);
+            mapView.setMultiTouchControls(true);
+            mapView.getController().setZoom(19.0);
+        }
+        mapView.getOverlays().clear(); // Clear previous markers
+        mapView.invalidate(); // Refresh the map
+    }
     private void enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED &&
@@ -193,7 +210,7 @@ public class HSPassenger extends AppCompatActivity {
             isLocationEnabled = true;
             LocationRequest locationRequest = LocationRequest.create();
             locationRequest.setInterval(1000); // 1 second
-            locationRequest.setFastestInterval(500); // 0.5 seconds
+            locationRequest.setFastestInterval(500); // .5 seconds
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
             if (locationCallback == null) {
@@ -211,8 +228,20 @@ public class HSPassenger extends AppCompatActivity {
             toggleLocationButton.setText("Location is On");
             toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
 
-            startLocationTimer();
-            Toast.makeText(this, "Location will be turned off automatically after 5 minutes", Toast.LENGTH_SHORT).show();
+            // Check the user's role and skip the timer for "pao" role
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String userId = user.getUid();
+            db.collection("users").document(userId).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String userRole = documentSnapshot.getString("role");
+                            if (!"pao".equalsIgnoreCase(userRole)) {
+                                startLocationTimer(); // Start timer only for non-pao users
+                                Toast.makeText(HSPassenger.this, "Location will be turned off automatically after 5 minutes", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+
         } else {
             Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
         }
@@ -232,16 +261,9 @@ public class HSPassenger extends AppCompatActivity {
         toggleLocationButton.setText("Location is Off");
         toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
 
-        // Remove user's location from Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = user.getUid();
-        db.collection("locations").document(userId).delete()
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed from Firestore"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error removing location", e));
-
+        removeUserLocationFromFirestore();
         cancelLocationTimer();
     }
-
     private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
@@ -273,23 +295,16 @@ public class HSPassenger extends AppCompatActivity {
                                         .addOnSuccessListener(userDocument -> {
                                             if (userDocument.exists()) {
                                                 String userRole = userDocument.getString("role");
+                                                Log.d(TAG, "User role: " + userRole);
+                                                mapView.invalidate();
 
-                                                // Create a marker for other users' locations
-                                                Marker otherUserMarker = new Marker(mapView);
-                                                otherUserMarker.setPosition(geoPoint);
-
-                                                // Set marker icon based on user role
-                                                if ("passenger".equals(userRole)) {
-                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
-                                                } else if ("pao".equals(userRole)) {
-                                                    otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+                                                try{
+                                                    addMarkerToMap(geoPoint,userRole);
+                                                }catch (Exception error){
+                                                    Log.e("HSPassenger","The exception is: ",error);
                                                 }
 
-                                                //otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon)); removed because admin will not be tracked anymore
 
-                                                // Add the marker to the map
-                                                mapView.getOverlays().add(otherUserMarker);
-                                                mapView.invalidate();
                                             }
                                         });
                             } else {
@@ -299,8 +314,27 @@ public class HSPassenger extends AppCompatActivity {
                     }
                 });
     }
+    private void addMarkerToMap(GeoPoint geoPoint, String userRole) {
+        if (mapView == null) {
+            Log.e(TAG, "mapView is null. Reinitializing...");
+            mapView = new MapView(this); // or use the context for the fragment
+            mapView.setTileSource(TileSourceFactory.MAPNIK);
+            mapView.setBuiltInZoomControls(true);
+            mapView.setMultiTouchControls(true);
+        }
 
+        Marker otherUserMarker = new Marker(mapView);
+        otherUserMarker.setPosition(geoPoint);
 
+        if ("passenger".equals(userRole)) {
+            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+        } else if ("pao".equals(userRole)) {
+            otherUserMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+        }
+
+        mapView.getOverlays().add(otherUserMarker);
+        mapView.invalidate();
+    }
     private GeoPoint initialCenterPoint = null; // Store the initial center point
 
     private void updateLocationOnMap(Location location) {
@@ -321,7 +355,7 @@ public class HSPassenger extends AppCompatActivity {
     }
     private void centerMapOnUserLocation(GeoPoint geoPoint) {
         mapView.getController().setCenter(geoPoint);
-        mapView.getController().setZoom(19.0); // Set your desired zoom level
+        mapView.getController().setZoom(19.0);
     }
 
     private void updateLocationInFirestore(Location location) {
@@ -373,14 +407,19 @@ public class HSPassenger extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        mapView.onResume();
+        if (mapView != null) {
+            mapView.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        mapView.onPause();
-        if (isLocationEnabled) {
+        if (mapView != null) {
+            mapView.onPause();
+            clearMap();
+        }
+        if(isLocationEnabled){
             disableMyLocation();
         }
     }
@@ -388,16 +427,17 @@ public class HSPassenger extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        cancelLocationTimer();
-        mapView.onDetach();
-        removeUserLocationFromFirestore();
+        if (mapView != null) {
+            clearMap();
+            mapView.onDetach();
+        }
     }
     private void removeUserLocationFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
         db.collection("locations").document(userId).delete()
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed on sign out"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error removing location on sign out", e));
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed in firestore"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error removing location in firestore", e));
     }
 
     private void fetchUserRole() {
@@ -413,22 +453,83 @@ public class HSPassenger extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
+            private void checkUserSchedule(Button toggleLocationButton) {
+                FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+                // Fetch user role from Firestore or from a locally stored reference
+                db.collection("users") // Assuming you have a 'users' collection where roles are stored
+                        .document(user.getUid()) // Use the current user's unique ID
+                        .get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String role = documentSnapshot.getString("role");
+
+                                if ("pao".equalsIgnoreCase(role)) { // Check if the user is a PAO
+                                    // Proceed to fetch the schedule for PAO users
+                                    db.collection("assigns")
+                                            .whereEqualTo("email", user.getEmail())
+                                            .get()
+                                            .addOnSuccessListener(queryDocumentSnapshots -> {
+                                                if (!queryDocumentSnapshots.isEmpty()) {
+                                                    // Schedule exists, enable the location button
+                                                    enableMyLocation();
+                                                    toggleLocationButton.setEnabled(true);
+                                                    toggleLocationButton.setText("Location is On");
+                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_blue));
+                                                    Toast.makeText(this, "Schedule verified.", Toast.LENGTH_SHORT).show();
+                                                } else {
+                                                    // No schedule found
+                                                    disableMyLocation();
+                                                    toggleLocationButton.setEnabled(false);
+                                                    toggleLocationButton.setText("Location is Off");
+                                                    toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+                                                    Toast.makeText(this, "No schedule found.", Toast.LENGTH_LONG).show();
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                // Handle errors in fetching the schedule
+                                                disableMyLocation();
+                                                toggleLocationButton.setEnabled(false);
+                                                toggleLocationButton.setText("Location is Off");
+                                                toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
+                                                Toast.makeText(this, "Error verifying schedule. Please try again later.", Toast.LENGTH_LONG).show();
+                                                Log.e(TAG, "Error checking user schedule", e);
+                                            });
+                                } else {
+                                }
+                            } else {
+                                Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, "Error fetching user role", e);
+                        });
+            }
+
+
     private void updateCurrentUserMarker(String userRole) {
-        // Set marker icon based on the logged-in user's role
-        if ("passenger".equals(userRole)) {
-            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.self_marker_icon));
-        } else if ("pao".equals(userRole)) {
-            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
-        } else {
-            // Default marker for other roles or if role is not defined
-            locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+
+        if(user!=null){
+            // Set marker icon based on the logged-in user's role
+            if ("passenger".equals(userRole)) {
+                locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.self_marker_icon));
+            } else if ("pao".equals(userRole)) {
+                locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.pao_marker));
+            } else {
+                // Default marker for other roles or if role is not defined
+                locationMarker.setIcon(ContextCompat.getDrawable(this, R.drawable.passenger_marker_icon));
+            }
+
+            // Add or update the marker on the map
+            if (!mapView.getOverlays().contains(locationMarker)) {
+                mapView.getOverlays().add(locationMarker);
+            }
+            mapView.invalidate();  // Refresh the map
+        }else{
+            Log.e("HSPassenger","Error Updating Current User Marker");
         }
 
-        // Add or update the marker on the map
-        if (!mapView.getOverlays().contains(locationMarker)) {
-            mapView.getOverlays().add(locationMarker);
-        }
-        mapView.invalidate();  // Refresh the map
     }
     @Override
     public void onBackPressed() {

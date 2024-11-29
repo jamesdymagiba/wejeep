@@ -61,6 +61,19 @@ public class AdminEditDriver extends AppCompatActivity {
             Toast.makeText(AdminEditDriver.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
+           String driverNamePattern = "^[a-zA-Z ]{2,}$";
+        if (!updatedName.matches(driverNamePattern)) {
+            etDriverName.setError("Name must be at least 2 characters and contain only letters and spaces");
+            return;
+        }
+
+        String phoneNumberPattern = "^09\\d{9}$";
+        if (!updatedContact.matches(phoneNumberPattern)) {
+            etDriverContact.setError("Phone number must be 11 digits and start with '09'");
+            return;
+        }
+
+
 
         // Update the driver document in Firestore
         db.collection("drivers").document(documentId)

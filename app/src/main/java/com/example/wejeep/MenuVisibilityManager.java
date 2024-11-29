@@ -71,6 +71,9 @@ public class MenuVisibilityManager {
                 // Set other admin-specific menu items visible
                 break;
             default:
+                menu.setGroupVisible(R.id.passenger, false);
+                menu.setGroupVisible(R.id.pao, false);
+                menu.setGroupVisible(R.id.admin, false);
                 Log.w("MenuVisibilityManager", "Unknown user role: " + userRole);
                 break;
         }
