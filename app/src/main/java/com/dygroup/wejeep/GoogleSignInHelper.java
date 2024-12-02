@@ -23,12 +23,14 @@ public class GoogleSignInHelper {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private Activity activity;
+    private CustomLoadingDialog customLoadingDialog;
     private static final int RC_SIGN_IN = 9001;
 
     public GoogleSignInHelper(Activity activity) {
         this.activity = activity;
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance(); // Initialize Firestore
+        customLoadingDialog = new CustomLoadingDialog(activity);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(activity.getString(R.string.default_web_client_id))
@@ -101,6 +103,7 @@ public class GoogleSignInHelper {
 
                 callback.onSignInSuccess(user);
             } else {
+                customLoadingDialog.showLoadingScreen();
                 storeUserInFirestore(user);
                 Intent intent = new Intent(activity, HSPassenger.class); // Default redirection after first sign-in
                 activity.startActivity(intent);
@@ -133,6 +136,7 @@ public class GoogleSignInHelper {
                 Log.w(TAG, "Error checking if user exists", task.getException());
             }
         });
+        customLoadingDialog.hideLoadingScreen();
     }
 
     public interface SignInCallback {
