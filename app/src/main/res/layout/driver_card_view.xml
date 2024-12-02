@@ -27,12 +27,12 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:layout_width="110dp"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/londrina_solid_regular"
                     android:text="@string/drivername"
                     android:textColor="@color/black"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:textSize="16sp" />
 
                 <TextView
                     android:id="@+id/tvDriverName"
@@ -55,7 +55,7 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"/>
 
                 <TextView
@@ -79,7 +79,7 @@
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     android:fontFamily="@font/londrina_solid_regular"
-                    android:layout_width="wrap_content"
+                    android:layout_width="110dp"
                     android:layout_height="wrap_content"/>
 
                 <TextView
