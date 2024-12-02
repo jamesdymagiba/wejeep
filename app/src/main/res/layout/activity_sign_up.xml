@@ -81,6 +81,7 @@
         app:layout_constraintStart_toStartOf="@+id/imageView6"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout3" />
 
+
     <Button
         android:id="@+id/btnGoogleSU"
         android:layout_width="170dp"
@@ -121,7 +122,8 @@
         android:textColor="@color/blueTextColor"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="invisible"/>
 
 
     <com.google.android.material.textfield.TextInputLayout

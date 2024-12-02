@@ -8,4 +8,5 @@
     <color name="orangeTextColor">#FE6F1F</color>
     <color name="ellipseColor">#B56023</color>
     <color name="gray">#808080</color>
+    <color name="red">	#ff4545</color>
 </resources>

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/backgroundColor">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbarAdminEdit"
@@ -30,7 +31,7 @@
             android:textSize="20sp" />
     </androidx.appcompat.widget.Toolbar>
 
-                   <EditText
+    <EditText
         android:id="@+id/etDriverName"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -41,9 +42,23 @@
         android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/etDriverContact"
         app:layout_constraintEnd_toEndOf="@+id/etDriverContact"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/etDriverContact"
         app:layout_constraintTop_toBottomOf="@+id/toolbarAdminEdit" />
+
+    <EditText
+        android:id="@+id/etDateAdded"
+        android:layout_width="270dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginBottom="155dp"
+        android:background="@drawable/rounded_edit_text"
+        android:hint="@string/driverdateadded"
+        android:inputType="date"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/btnApplyChanges"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etDriverContact" />
 
     <EditText
         android:id="@+id/etDriverContact"
@@ -59,20 +74,6 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/etDateAdded"
         app:layout_constraintTop_toBottomOf="@+id/etDriverName" />
-
-    <EditText
-        android:id="@+id/etDateAdded"
-        android:layout_width="270dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="155dp"
-        android:background="@drawable/rounded_edit_text"
-        android:hint="@string/driverdateadded"
-        android:inputType="date"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/btnApplyChanges"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/etDriverContact" />
 
     <Button
         android:id="@+id/btnApplyChanges"

@@ -7,6 +7,59 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:117155658476:android:548e79344e4887f23743c9",
+        "android_client_info": {
+          "package_name": "com.dygroup.wejeep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117155658476-24l2ctv0mqdjtf1ikt1du3kgsfls2dvs.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dygroup.wejeep",
+            "certificate_hash": "7a58116e51b14dad39edddf304331f0b7b1c55e8"
+          }
+        },
+        {
+          "client_id": "117155658476-6lhjq0hs5gf9ufteskpio5rqn4eausmq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dygroup.wejeep",
+            "certificate_hash": "50b3bcca1d0e33489219728353137972ea9cb655"
+          }
+        },
+        {
+          "client_id": "117155658476-gp9agb3smqf0l0oibh4qtkubcjb07baf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dygroup.wejeep",
+            "certificate_hash": "fe18ec26b61e135a70509188ddff323f2dc9a6b4"
+          }
+        },
+        {
+          "client_id": "117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCa97JoTnvU6Tsd0Aj5Dyrlk0b3VZWR-Io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117155658476-svbc8353sj48t1dh53h50qh13cq9qb99.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:117155658476:android:ad0e5faeab38f2583743c9",
         "android_client_info": {
           "package_name": "com.example.wejeep"

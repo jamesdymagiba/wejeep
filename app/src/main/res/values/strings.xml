@@ -79,6 +79,9 @@
     <string name="forget_password">Forget Password</string>
     <string name="admin_dashboard">Admin Dashboard</string>
     <string name="profile_picture">Profile Picture</string>
+    <string name="add_vehicle">Add Vehicle</string>
+    <string name="edit_assigned">Edit Assigned</string>
+    <string name="edit_assign_unit">Edit Assign Unit</string>
     <string name="add_pao">Add Pao</string>
     <string name="weekly_schedule">Weekly Schedule</string>
     <string name="sign_up_for_pao">Sign up for PAO</string>
@@ -89,6 +92,5 @@
     <string name="date_added_pao">Date Added :</string>
     <string name="active_modern_jeep_s">Active Modern Jeep/s</string>
     <string name="pao">PAO:</string>
-
-
+    <string name="delete_account">Delete Account</string>
 </resources>
