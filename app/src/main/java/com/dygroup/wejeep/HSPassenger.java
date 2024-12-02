@@ -598,6 +598,9 @@ public class HSPassenger extends AppCompatActivity {
 
         Log.d(TAG, "Current Time: " + currentHour + ":" + currentMinute);
 
+        // Disable mapView initially to prevent user interaction while checking the schedule
+        mapView.setEnabled(false);
+
         db.collection("users")
                 .document(user.getUid())
                 .get()
@@ -651,6 +654,7 @@ public class HSPassenger extends AppCompatActivity {
                                                 Log.d(TAG, "Location Indicator: on");
                                             } else {
                                                 disableMyLocation();
+                                                mapView.setEnabled(false);
                                                 toggleLocationButton.setEnabled(false);
                                                 toggleLocationButton.setText("Location is Off");
                                                 toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
@@ -660,29 +664,42 @@ public class HSPassenger extends AppCompatActivity {
 
                                         } else {
                                             disableMyLocation();
+                                            mapView.setEnabled(false);
                                             toggleLocationButton.setEnabled(false);
                                             toggleLocationButton.setText("Location is Off");
                                             toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
                                             updateLocationIndicator("off");
                                         }
+
+                                        // Enable mapView after checking the schedule
+                                        mapView.setEnabled(true);
                                     })
                                     .addOnFailureListener(e -> {
                                         Log.e(TAG, "Error checking schedules", e);
                                         disableMyLocation();
+                                        mapView.setEnabled(false);
                                         toggleLocationButton.setEnabled(false);
                                         toggleLocationButton.setText("Location is Off");
                                         updateLocationIndicator("off");
+
+                                        // Enable mapView after error
+                                        mapView.setEnabled(true);
                                     });
                         }
                     } else {
                         Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
+                        // Enable mapView if the user is not found
+                        mapView.setEnabled(true);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error fetching user role", e);
                     Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
+                    // Enable mapView after failure
+                    mapView.setEnabled(true);
                 });
     }
+
 
 
     // Helper method to update the location indicator in Firestore

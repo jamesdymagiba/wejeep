@@ -3,15 +3,14 @@ package com.dygroup.wejeep;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -52,7 +51,7 @@ public class NavigationManager {
                 stopLocationUpdates();
                 clearMap();
                 FirebaseAuth.getInstance().signOut();
-                finishAndStartActivity(currentActivity, Login.class);
+                finishAndStartActivity(currentActivity, MainActivity.class);
                 return true;
             case R.id.itmProfileHSP:
                 showToast("Profile");
