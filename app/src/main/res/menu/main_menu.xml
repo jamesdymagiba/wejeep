@@ -19,7 +19,8 @@
     </group>
     <group
         android:checkableBehavior="single"
-        android:id="@+id/pao">
+        android:id="@+id/pao"
+        android:visible="false">
         <item
             android:title="Pao"
             android:icon="@drawable/pao_icon"/>
@@ -30,7 +31,8 @@
     </group>
     <group
         android:checkableBehavior="single"
-        android:id="@+id/admin">
+        android:id="@+id/admin"
+        android:visible="false">
         <item
             android:title="Admin"
             android:icon="@drawable/admin_icon" />
