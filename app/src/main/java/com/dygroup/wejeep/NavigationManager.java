@@ -52,7 +52,7 @@ public class NavigationManager {
                 stopLocationUpdates();
                 clearMap();
                 FirebaseAuth.getInstance().signOut();
-                finishAndStartActivity(currentActivity, Login.class);
+                finishAndStartActivity(currentActivity, MainActivity.class);
                 return true;
             case R.id.itmProfileHSP:
                 showToast("Profile");
