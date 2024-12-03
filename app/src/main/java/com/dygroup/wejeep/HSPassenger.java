@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,8 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -193,6 +196,9 @@ public class HSPassenger extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+        FirebaseFirestore dbs = FirebaseFirestore.getInstance();
+        TextView passengerCountTextView = findViewById(R.id.tvPassengerCount);
+        listenForPassengerCount(dbs, passengerCountTextView);  // Call the private function
     }
 
     private void enableMyLocation() {
@@ -410,20 +416,55 @@ public class HSPassenger extends AppCompatActivity {
         mapView.getController().setCenter(geoPoint);
         mapView.getController().setZoom(19.0); // Set your desired zoom level
     }
+    private void listenForPassengerCount(FirebaseFirestore db, TextView tvPassengerCount) {
+        // Reference to the locations collection
+        CollectionReference locationsRef = db.collection("locations");
 
+        // Real-time listener to count documents where the role is 'passenger'
+        locationsRef.whereEqualTo("role", "passenger")
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.e("FirestoreError", "Error listening to locations collection", e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        // Count the number of documents in the snapshot
+                        int passengerCount = querySnapshot.size();
+
+                        // Update the TextView with the new count
+                        tvPassengerCount.setText(String.valueOf(passengerCount));
+                    }
+                });
+    }
     private void updateLocationInFirestore(Location location) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
 
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("latitude", location.getLatitude());
-        locationData.put("longitude", location.getLongitude());
-        locationData.put("timestamp", System.currentTimeMillis());
+        // Reference to the user document in the 'users' collection
+        DocumentReference userRef = db.collection("users").document(userId);
 
-        db.collection("locations").document(userId)
-                .set(locationData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+        // Retrieve the user's role before updating the location
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+
+                // Prepare location data including the user's role
+                Map<String, Object> locationData = new HashMap<>();
+                locationData.put("latitude", location.getLatitude());
+                locationData.put("longitude", location.getLongitude());
+                locationData.put("timestamp", System.currentTimeMillis());
+                locationData.put("role", role); // Add the role to the location data
+
+                // Update the 'locations' collection
+                db.collection("locations").document(userId)
+                        .set(locationData)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+            } else {
+                Log.w(TAG, "User document not found");
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving user role", e));
     }
 
     @Override
@@ -706,11 +747,6 @@ public class HSPassenger extends AppCompatActivity {
                     Log.e(TAG, "Error updating location indicator", e);
                 });
     }
-
-
-
-    // Utility function to convert day names to integers
-
     // Utility function to convert day names to integers
     private int getDayOfWeek(String day) {
         switch (day.toLowerCase()) {
