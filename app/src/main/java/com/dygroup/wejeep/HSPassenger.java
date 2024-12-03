@@ -336,6 +336,7 @@ public class HSPassenger extends AppCompatActivity {
                         Log.w(TAG, "Listen failed.", e);
                         return;
                     }
+
                     // Clear other users' markers (won't clear the current user's marker)
                     for (int i = mapView.getOverlays().size() - 1; i >= 0; i--) {
                         Overlay overlay = mapView.getOverlays().get(i);
@@ -343,8 +344,10 @@ public class HSPassenger extends AppCompatActivity {
                             mapView.getOverlays().remove(overlay);
                         }
                     }
+
+                    String currentUserId = user.getUid();
+
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
-                        String currentUserId = user.getUid();
                         Double latitude = document.getDouble("latitude");
                         Double longitude = document.getDouble("longitude");
 
@@ -353,41 +356,51 @@ public class HSPassenger extends AppCompatActivity {
 
                             // Skip the current user's location
                             if (document.getId().equals(currentUserId)) {
-                                continue; // Skip adding marker for the current user
+                                continue;
                             }
 
-                            // Fetch the user's role
                             String userId = document.getId();
-                            db.collection("users").document(userId).get()
-                                    .addOnSuccessListener(userDocument -> {
-                                        if (userDocument.exists()) {
-                                            String userRole = userDocument.getString("role");
 
-                                            // Ensure passengers only see themselves and PAOs
-                                            if (userRole.equals("passenger")) {
-                                                if (!userId.equals(currentUserId) && !"pao".equals(userRole)) {
-                                                    return; // Skip other passengers
-                                                }
-                                            }
+                            // Fetch the role of the current user
+                            db.collection("users").document(currentUserId).get()
+                                    .addOnSuccessListener(currentUserDocument -> {
+                                        if (currentUserDocument.exists()) {
+                                            String currentUserRole = currentUserDocument.getString("role");
 
-                                            Log.d(TAG, "User role: " + userRole);
-                                            mapView.invalidate();
+                                            // Fetch the role of the other user
+                                            db.collection("users").document(userId).get()
+                                                    .addOnSuccessListener(otherUserDocument -> {
+                                                        if (otherUserDocument.exists()) {
+                                                            String otherUserRole = otherUserDocument.getString("role");
 
-                                            // Add markers for other users
-                                            try {
-                                                addOthersMarkerToMap(geoPoint, userRole);
-                                            } catch (Exception error) {
-                                                Log.e("HSPassenger", "The exception is: ", error);
-                                            }
+                                                            try{
+                                                                // Logic for PAO: See all passengers and other PAOs
+                                                                if ("pao".equals(currentUserRole)) {
+                                                                    if ("passenger".equals(otherUserRole) || "pao".equals(otherUserRole)) {
+                                                                        addOthersMarkerToMap(geoPoint, otherUserRole);
+                                                                    }
+                                                                }
+                                                                // Logic for Passenger: See themselves and all PAOs
+                                                                else if ("passenger".equals(currentUserRole)) {
+                                                                    if ("pao".equals(otherUserRole) || userId.equals(currentUserId)) {
+                                                                        addOthersMarkerToMap(geoPoint, otherUserRole);
+                                                                    }
+                                                                }
+                                                            }catch (Exception er){
+                                                                Log.e(TAG, "Exception error when adding other users marker to map", e);
+                                                            }
+                                                        }
+                                                    })
+                                                    .addOnFailureListener(error -> Log.e(TAG, "Error fetching other user's role", error));
                                         }
-                                    });
+                                    })
+                                    .addOnFailureListener(error -> Log.e(TAG, "Error fetching current user's role", error));
                         } else {
                             Log.w(TAG, "Latitude or Longitude is null for document: " + document.getId());
                         }
                     }
                 });
     }
-
     private GeoPoint initialCenterPoint = null; // Store the initial center point
 
     private void updateLocationOnMap(Location location) {
@@ -455,14 +468,11 @@ public class HSPassenger extends AppCompatActivity {
             locationTimerHandler.removeCallbacks(locationTimerRunnable);
         }
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -471,7 +481,6 @@ public class HSPassenger extends AppCompatActivity {
             disableMyLocation();
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -486,7 +495,6 @@ public class HSPassenger extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed on sign out"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error removing location on sign out", e));
     }
-
     private void fetchUserRole() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
@@ -500,7 +508,6 @@ public class HSPassenger extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
-    // Start schedule checking
     private void startScheduleChecking(Button toggleLocationButton) {
         // Check if the user is PAO first
         FirebaseFirestore db = FirebaseFirestore.getInstance();
