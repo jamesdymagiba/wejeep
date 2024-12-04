@@ -189,6 +189,19 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
                 // Do nothing
             }
         });
+        spinnerConductor.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Get the selected conductor's name
+                selectedConductor = conductorList.get(position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Reset the selected conductor if nothing is selected
+                selectedConductor = null;
+            }
+        });
 
 
         // Fetch data for spinners and set initial selections
@@ -242,29 +255,37 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
                 });
     }
 
-    private void fetchUnits(String unitNumber) {  ///////////////////////////
-        db.collection("assigns")
+    private void fetchUnits(String unitNumber) {
+        db.collection("units") // Access the "units" collection
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        unitnumberList.clear();
+                        unitnumberList.clear(); // Clear the existing list
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            String unitnumber = document.getString("unitnumber");
-                            if (unitnumber != null) {
-                                unitnumberList.add(unitnumber);
+                            String unitnumber = document.getString("unitNumber"); // Retrieve the "unitNumber" field
+                            if (unitnumber != null && !unitnumber.isEmpty()) {
+                                unitnumberList.add(unitnumber); // Add it to the list
                             }
                         }
-                        unitnumberAdapter.notifyDataSetChanged();
+                        if (unitnumberList.isEmpty()) {
+                            Toast.makeText(this, "No unit numbers found.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            unitnumberAdapter.notifyDataSetChanged(); // Notify the adapter about data changes
 
-                        // Ensure the spinner selection is set after the adapter is updated
-                        if (unitNumber != null && !unitNumber.isEmpty()) {
-                            setSpinnerSelection(spinnerUnitnumber, unitNumber);
+                            // Set the initial selection if unitNumber is provided
+                            if (unitNumber != null && !unitNumber.isEmpty()) {
+                                setSpinnerSelection(spinnerUnitnumber, unitNumber);
+                            }
                         }
                     } else {
                         Toast.makeText(this, "Failed to fetch units: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error fetching units: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private void fetchPlatenumber(String plateNumber) {
         db.collection("assigns")
@@ -303,37 +324,62 @@ public class AdminEditAssignedUnitScreen extends AppCompatActivity {
     }
 
     private void applyChanges() {
-        // Get the selected items from the spinners
+        // Get the selected items from the spinners and text fields
         String updatedUnitNumber = spinnerUnitnumber.getSelectedItem().toString().trim();
         String updatedPlatenumber = spinnerPlatenumber.getSelectedItem().toString().trim();
         String updatedDriver = spinnerDriver.getSelectedItem().toString().trim();
         String updatedConductor = spinnerConductor.getSelectedItem().toString().trim();
+        String updateSchedule = spinnerSchedule.getSelectedItem().toString().trim();
         String updatedFromday = EditTextFromday.getText().toString().trim();
         String updatedFromtime = EditTextFromtime.getText().toString().trim();
         String updatedTotime = EditTextTotime.getText().toString().trim();
         String updatedToday = EditTextToday.getText().toString().trim();
 
-
-
-        if (updatedUnitNumber.isEmpty() || updatedPlatenumber.isEmpty() || updatedDriver.isEmpty() || updatedFromday.isEmpty() || updatedTotime.isEmpty() || updatedToday.isEmpty() || updatedFromday.isEmpty() || updatedConductor.isEmpty()) {
+        if (updatedUnitNumber.isEmpty() || updatedPlatenumber.isEmpty() || updatedDriver.isEmpty() ||
+                updatedFromday.isEmpty() || updatedTotime.isEmpty() || updatedToday.isEmpty() ||
+                updatedConductor.isEmpty()) {
             Toast.makeText(AdminEditAssignedUnitScreen.this, "Please fill all the fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Update the document in Firestore
-        db.collection("assigns").document(documentId)
-                .update("unitnumber", updatedUnitNumber,
-                        "platenumber", updatedPlatenumber,
-                        "driver", updatedDriver, "conductor", updatedConductor, "fromday", updatedFromday,
-                "today", updatedToday, "fromtime", updatedFromtime, "totime", updatedTotime)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(AdminEditAssignedUnitScreen.this, "Updated successfully", Toast.LENGTH_SHORT).show();
-                    setResult(RESULT_OK);
-                    finish();
-                })
-                .addOnFailureListener(e -> Toast.makeText(AdminEditAssignedUnitScreen.this, "Error updating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-    }
+        // Fetch the email for the selected conductor
+        db.collection("users")
+                .whereEqualTo("name", updatedConductor)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        String conductorEmail = task.getResult().getDocuments().get(0).getString("email");
 
+                        if (conductorEmail != null) {
+                            // Update the document in Firestore
+                            db.collection("assigns").document(documentId)
+                                    .update("unitnumber", updatedUnitNumber,
+                                            "platenumber", updatedPlatenumber,
+                                            "driver", updatedDriver,
+                                            "conductor", updatedConductor,
+                                            "email", conductorEmail,
+                                            "fromday", updatedFromday,
+                                            "today", updatedToday,
+                                            "fromtime", updatedFromtime,
+                                            "totime", updatedTotime,
+                                            "schedule", updateSchedule)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(AdminEditAssignedUnitScreen.this, "Updated successfully", Toast.LENGTH_SHORT).show();
+                                        setResult(RESULT_OK);
+                                        finish();
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(AdminEditAssignedUnitScreen.this, "Error updating: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        } else {
+                            Toast.makeText(AdminEditAssignedUnitScreen.this, "Email not found for the selected conductor", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(AdminEditAssignedUnitScreen.this, "Failed to fetch email for the selected conductor", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(AdminEditAssignedUnitScreen.this, "Error fetching conductor email: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
     // Set the selected item in a spinner based on the provided value
     private void setSpinnerSelection(Spinner spinner, String value) {
         if (value == null) return;

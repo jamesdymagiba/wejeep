@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -414,17 +415,42 @@ public class HSPassenger extends AppCompatActivity {
     private void updateLocationInFirestore(Location location) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
+        TextView tvPassenger = findViewById(R.id.tvPassengers);
 
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("latitude", location.getLatitude());
-        locationData.put("longitude", location.getLongitude());
-        locationData.put("timestamp", System.currentTimeMillis());
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists() && documentSnapshot.contains("role")) {
+                        String role = documentSnapshot.getString("role");
 
-        db.collection("locations").document(userId)
-                .set(locationData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+                        // Prepare data to update in Firestore
+                        Map<String, Object> locationData = new HashMap<>();
+                        locationData.put("latitude", location.getLatitude());
+                        locationData.put("longitude", location.getLongitude());
+                        locationData.put("timestamp", System.currentTimeMillis());
+                        locationData.put("role", role); // Include the fetched role
+
+                        // Update the user's location in the "locations" collection
+                        db.collection("locations").document(userId)
+                                .set(locationData)
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d(TAG, "Location updated in Firestore");
+
+                                    // Update the passenger count
+                                    fetchPassengerCountRealtime(tvPassenger);
+                                })
+                                .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+                    } else {
+                        Log.w(TAG, "Role not found for user");
+                        Toast.makeText(this, "Role not found for user", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error fetching user role", e);
+                    Toast.makeText(this, "Error fetching user role", Toast.LENGTH_SHORT).show();
+                });
     }
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -823,5 +849,29 @@ public class HSPassenger extends AppCompatActivity {
         } else {
             BackPressHandler.handleBackPress(this);
         }
+    }
+    private void fetchPassengerCountRealtime(TextView tvPassenger) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Listen for real-time updates in the "locations" collection
+        db.collection("locations")
+                .whereEqualTo("role", "passenger") // Filter documents with role = "passenger"
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        Toast.makeText(this, "Failed to fetch passenger count", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        // Count the number of documents returned
+                        int passengerCount = querySnapshot.size();
+
+                        // Update the TextView with the calculated number
+                        tvPassenger.setText(String.valueOf(passengerCount));
+                    } else {
+                        Log.w(TAG, "QuerySnapshot was null.");
+                    }
+                });
     }
 }
