@@ -40,6 +40,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -48,9 +49,12 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class HSPassenger extends AppCompatActivity {
 
@@ -76,6 +80,7 @@ public class HSPassenger extends AppCompatActivity {
     private Handler handler;
     private Runnable checkScheduleRunnable;
     private boolean isScheduleChecking = false; // To track the state
+    private String currentUserRole;
     //Obsolete code
     /**@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -368,13 +373,20 @@ public class HSPassenger extends AppCompatActivity {
                                     .addOnSuccessListener(userDocument -> {
                                         if (userDocument.exists()) {
                                             String userRole = userDocument.getString("role");
-
+                                            if(currentUserRole.equals("pao")){
+                                                try {
+                                                    addOthersMarkerToMap(geoPoint, userRole);
+                                                } catch (Exception error) {
+                                                    Log.e("HSPassenger", "The exception is: ", error);
+                                                }
+                                            }
                                             // Ensure passengers only see themselves and PAOs
                                             if (userRole.equals("passenger")) {
-                                                if (!userId.equals(currentUserId) && !"pao".equals(userRole)) {
+                                                if (!"pao".equals(userRole)) {
                                                     return; // Skip other passengers
                                                 }
                                             }
+
 
                                             Log.d(TAG, "User role: " + userRole);
                                             mapView.invalidate();
@@ -534,6 +546,8 @@ public class HSPassenger extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String userRole = documentSnapshot.getString("role");
+                        currentUserRole = documentSnapshot.getString("role");
+                        Log.d(TAG,"Current user role is: "+currentUserRole);
                         updateCurrentUserMarker(userRole);  // Update the current user's marker based on role
                     }
                 })
