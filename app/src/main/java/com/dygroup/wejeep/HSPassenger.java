@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -34,9 +35,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -45,9 +49,12 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class HSPassenger extends AppCompatActivity {
 
@@ -73,6 +80,7 @@ public class HSPassenger extends AppCompatActivity {
     private Handler handler;
     private Runnable checkScheduleRunnable;
     private boolean isScheduleChecking = false; // To track the state
+    private String currentUserRole;
     //Obsolete code
     /**@Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -193,6 +201,9 @@ public class HSPassenger extends AppCompatActivity {
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
+        FirebaseFirestore dbs = FirebaseFirestore.getInstance();
+        TextView passengerCountTextView = findViewById(R.id.tvPassengerCount);
+        listenForPassengerCount(dbs, passengerCountTextView);  // Call the private function
     }
 
     private void enableMyLocation() {
@@ -328,7 +339,7 @@ public class HSPassenger extends AppCompatActivity {
         mapView.invalidate();
     }
 
-    private void listenToOtherUsersLocations() {
+   private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -336,7 +347,6 @@ public class HSPassenger extends AppCompatActivity {
                         Log.w(TAG, "Listen failed.", e);
                         return;
                     }
-
                     // Clear other users' markers (won't clear the current user's marker)
                     for (int i = mapView.getOverlays().size() - 1; i >= 0; i--) {
                         Overlay overlay = mapView.getOverlays().get(i);
@@ -344,10 +354,8 @@ public class HSPassenger extends AppCompatActivity {
                             mapView.getOverlays().remove(overlay);
                         }
                     }
-
-                    String currentUserId = user.getUid();
-
                     for (DocumentSnapshot document : queryDocumentSnapshots.getDocuments()) {
+                        String currentUserId = user.getUid();
                         Double latitude = document.getDouble("latitude");
                         Double longitude = document.getDouble("longitude");
 
@@ -356,45 +364,41 @@ public class HSPassenger extends AppCompatActivity {
 
                             // Skip the current user's location
                             if (document.getId().equals(currentUserId)) {
-                                continue;
+                                continue; // Skip adding marker for the current user
                             }
 
+                            // Fetch the user's role
                             String userId = document.getId();
+                            db.collection("users").document(userId).get()
+                                    .addOnSuccessListener(userDocument -> {
+                                        if (userDocument.exists()) {
+                                            String userRole = userDocument.getString("role");
+                                            if(currentUserRole.equals("pao")){
+                                                try {
+                                                    addOthersMarkerToMap(geoPoint, userRole);
+                                                } catch (Exception error) {
+                                                    Log.e("HSPassenger", "The exception is: ", error);
+                                                }
+                                            }
+                                            // Ensure passengers only see themselves and PAOs
+                                            if (userRole.equals("passenger")) {
+                                                if (!"pao".equals(userRole)) {
+                                                    return; // Skip other passengers
+                                                }
+                                            }
 
-                            // Fetch the role of the current user
-                            db.collection("users").document(currentUserId).get()
-                                    .addOnSuccessListener(currentUserDocument -> {
-                                        if (currentUserDocument.exists()) {
-                                            String currentUserRole = currentUserDocument.getString("role");
 
-                                            // Fetch the role of the other user
-                                            db.collection("users").document(userId).get()
-                                                    .addOnSuccessListener(otherUserDocument -> {
-                                                        if (otherUserDocument.exists()) {
-                                                            String otherUserRole = otherUserDocument.getString("role");
+                                            Log.d(TAG, "User role: " + userRole);
+                                            mapView.invalidate();
 
-                                                            try{
-                                                                // Logic for PAO: See all passengers and other PAOs
-                                                                if ("pao".equals(currentUserRole)) {
-                                                                    if ("passenger".equals(otherUserRole) || "pao".equals(otherUserRole)) {
-                                                                        addOthersMarkerToMap(geoPoint, otherUserRole);
-                                                                    }
-                                                                }
-                                                                // Logic for Passenger: See themselves and all PAOs
-                                                                else if ("passenger".equals(currentUserRole)) {
-                                                                    if ("pao".equals(otherUserRole) || userId.equals(currentUserId)) {
-                                                                        addOthersMarkerToMap(geoPoint, otherUserRole);
-                                                                    }
-                                                                }
-                                                            }catch (Exception er){
-                                                                Log.e(TAG, "Exception error when adding other users marker to map", e);
-                                                            }
-                                                        }
-                                                    })
-                                                    .addOnFailureListener(error -> Log.e(TAG, "Error fetching other user's role", error));
+                                            // Add markers for other users
+                                            try {
+                                                addOthersMarkerToMap(geoPoint, userRole);
+                                            } catch (Exception error) {
+                                                Log.e("HSPassenger", "The exception is: ", error);
+                                            }
                                         }
-                                    })
-                                    .addOnFailureListener(error -> Log.e(TAG, "Error fetching current user's role", error));
+                                    });
                         } else {
                             Log.w(TAG, "Latitude or Longitude is null for document: " + document.getId());
                         }
@@ -423,22 +427,55 @@ public class HSPassenger extends AppCompatActivity {
         mapView.getController().setCenter(geoPoint);
         mapView.getController().setZoom(19.0); // Set your desired zoom level
     }
+    private void listenForPassengerCount(FirebaseFirestore db, TextView tvPassengerCount) {
+        // Reference to the locations collection
+        CollectionReference locationsRef = db.collection("locations");
 
+        // Real-time listener to count documents where the role is 'passenger'
+        locationsRef.whereEqualTo("role", "passenger")
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.e("FirestoreError", "Error listening to locations collection", e);
+                        return;
+                    }
+
+                    if (querySnapshot != null) {
+                        // Count the number of documents in the snapshot
+                        int passengerCount = querySnapshot.size();
+
+                        // Update the TextView with the new count
+                        tvPassengerCount.setText(String.valueOf(passengerCount));
+                    }
+                });
+    }
     private void updateLocationInFirestore(Location location) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
+        // Reference to the user document in the 'users' collection
+        DocumentReference userRef = db.collection("users").document(userId);
 
-        Map<String, Object> locationData = new HashMap<>();
-        locationData.put("latitude", location.getLatitude());
-        locationData.put("longitude", location.getLongitude());
-        locationData.put("timestamp", System.currentTimeMillis());
+        // Retrieve the user's role before updating the location
+        userRef.get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
 
-        db.collection("locations").document(userId)
-                .set(locationData)
-                .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
-                .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+                // Prepare location data including the user's role
+                Map<String, Object> locationData = new HashMap<>();
+                locationData.put("latitude", location.getLatitude());
+                locationData.put("longitude", location.getLongitude());
+                locationData.put("timestamp", System.currentTimeMillis());
+                locationData.put("role", role); // Add the role to the location data
+
+                // Update the 'locations' collection
+                db.collection("locations").document(userId)
+                        .set(locationData)
+                        .addOnSuccessListener(aVoid -> Log.d(TAG, "Location updated in Firestore"))
+                        .addOnFailureListener(e -> Log.w(TAG, "Error updating location", e));
+            } else {
+                Log.w(TAG, "User document not found");
+            }
+        }).addOnFailureListener(e -> Log.w(TAG, "Error retrieving user role", e));
     }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);  // Call super method
@@ -503,6 +540,8 @@ public class HSPassenger extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String userRole = documentSnapshot.getString("role");
+                        currentUserRole = documentSnapshot.getString("role");
+                        Log.d(TAG,"Current user role is: "+currentUserRole);
                         updateCurrentUserMarker(userRole);  // Update the current user's marker based on role
                     }
                 })
@@ -613,6 +652,9 @@ public class HSPassenger extends AppCompatActivity {
 
         Log.d(TAG, "Current Time: " + currentHour + ":" + currentMinute);
 
+        // Disable mapView initially to prevent user interaction while checking the schedule
+        mapView.setEnabled(false);
+
         db.collection("users")
                 .document(user.getUid())
                 .get()
@@ -666,6 +708,7 @@ public class HSPassenger extends AppCompatActivity {
                                                 Log.d(TAG, "Location Indicator: on");
                                             } else {
                                                 disableMyLocation();
+                                                mapView.setEnabled(false);
                                                 toggleLocationButton.setEnabled(false);
                                                 toggleLocationButton.setText("Location is Off");
                                                 toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
@@ -675,29 +718,42 @@ public class HSPassenger extends AppCompatActivity {
 
                                         } else {
                                             disableMyLocation();
+                                            mapView.setEnabled(false);
                                             toggleLocationButton.setEnabled(false);
                                             toggleLocationButton.setText("Location is Off");
                                             toggleLocationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.round_btn_orange));
                                             updateLocationIndicator("off");
                                         }
+
+                                        // Enable mapView after checking the schedule
+                                        mapView.setEnabled(true);
                                     })
                                     .addOnFailureListener(e -> {
                                         Log.e(TAG, "Error checking schedules", e);
                                         disableMyLocation();
+                                        mapView.setEnabled(false);
                                         toggleLocationButton.setEnabled(false);
                                         toggleLocationButton.setText("Location is Off");
                                         updateLocationIndicator("off");
+
+                                        // Enable mapView after error
+                                        mapView.setEnabled(true);
                                     });
                         }
                     } else {
                         Toast.makeText(this, "User not found.", Toast.LENGTH_SHORT).show();
+                        // Enable mapView if the user is not found
+                        mapView.setEnabled(true);
                     }
                 })
                 .addOnFailureListener(e -> {
                     Log.e(TAG, "Error fetching user role", e);
                     Toast.makeText(this, "Error fetching user role.", Toast.LENGTH_SHORT).show();
+                    // Enable mapView after failure
+                    mapView.setEnabled(true);
                 });
     }
+
 
 
     // Helper method to update the location indicator in Firestore
@@ -713,11 +769,6 @@ public class HSPassenger extends AppCompatActivity {
                     Log.e(TAG, "Error updating location indicator", e);
                 });
     }
-
-
-
-    // Utility function to convert day names to integers
-
     // Utility function to convert day names to integers
     private int getDayOfWeek(String day) {
         switch (day.toLowerCase()) {

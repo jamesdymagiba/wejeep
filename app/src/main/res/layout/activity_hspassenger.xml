@@ -30,11 +30,27 @@
                 android:textSize="20sp" />
         </androidx.appcompat.widget.Toolbar>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="Passenger Count"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+        <TextView
+            android:id="@+id/tvPassengerCount"
+            android:layout_width="wrap_content"
+            android:layout_height="20dp"
+            android:fontFamily="@font/londrina_solid_regular"
+            android:text="0"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
         <org.osmdroid.views.MapView
             android:id="@+id/map"
             android:layout_width="300dp"
             android:layout_height="500dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="10dp"
             android:layout_gravity="center"/>
 
         <Button
