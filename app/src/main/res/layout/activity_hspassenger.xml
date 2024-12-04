@@ -34,8 +34,9 @@
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:fontFamily="@font/londrina_solid_regular"
-            android:text="Passenger Count"
+            android:text="Passenger Count:"
             android:textColor="@color/black"
+            android:layout_gravity="center"
             android:textSize="20sp" />
         <TextView
             android:id="@+id/tvPassengerCount"
@@ -44,6 +45,7 @@
             android:fontFamily="@font/londrina_solid_regular"
             android:text="0"
             android:textColor="@color/black"
+            android:layout_gravity="center"
             android:textSize="20sp" />
 
         <org.osmdroid.views.MapView
