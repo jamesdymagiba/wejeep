@@ -338,7 +338,7 @@ public class HSPassenger extends AppCompatActivity {
         mapView.invalidate();
     }
 
-    private void listenToOtherUsersLocations() {
+   private void listenToOtherUsersLocations() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("locations")
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -420,8 +420,6 @@ public class HSPassenger extends AppCompatActivity {
                             });
                 });
     }
-
-
     private GeoPoint initialCenterPoint = null; // Store the initial center point
 
     private void updateLocationOnMap(Location location) {
@@ -522,14 +520,11 @@ public class HSPassenger extends AppCompatActivity {
             locationTimerHandler.removeCallbacks(locationTimerRunnable);
         }
     }
-
-
     @Override
     protected void onResume() {
         super.onResume();
         mapView.onResume();
     }
-
     @Override
     protected void onPause() {
         super.onPause();
@@ -538,7 +533,6 @@ public class HSPassenger extends AppCompatActivity {
             disableMyLocation();
         }
     }
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -553,7 +547,6 @@ public class HSPassenger extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "Location removed on sign out"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error removing location on sign out", e));
     }
-
     private void fetchUserRole() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         String userId = user.getUid();
@@ -567,7 +560,6 @@ public class HSPassenger extends AppCompatActivity {
                 })
                 .addOnFailureListener(e -> Log.w(TAG, "Error fetching user role", e));
     }
-    // Start schedule checking
     private void startScheduleChecking(Button toggleLocationButton) {
         // Check if the user is PAO first
         FirebaseFirestore db = FirebaseFirestore.getInstance();
