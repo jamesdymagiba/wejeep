@@ -50,6 +50,7 @@ public class NavigationManager {
                 Log.d("NavigationManager", "Signout clicked, calling stopLocationUpdates()");
                 stopLocationUpdates();
                 clearMap();
+                updateLocationIndicatorToOff();
                 FirebaseAuth.getInstance().signOut();
                 finishAndStartActivity(currentActivity, MainActivity.class);
                 return true;
@@ -134,6 +135,27 @@ public class NavigationManager {
 
     private void showToast(String message) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+    private void updateLocationIndicatorToOff() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            String userId = user.getUid();
+
+            // Update the location indicator to "off" in Firestore
+            db.collection("users")
+
+                    .document(userId)
+                    .update("locationindicator", "off")
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("LocationIndicator", "Location indicator turned off in Firestore");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("LocationIndicator", "Error turning off location indicator", e);
+                    });
+        }
     }
 
     private void finishAndStartActivity(Activity currentActivity, Class<?> targetActivity) {
