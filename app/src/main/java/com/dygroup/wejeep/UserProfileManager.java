@@ -42,8 +42,10 @@ public class UserProfileManager {
                     ImageView ivProfilePictureHSP = navigationView.findViewById(R.id.ivProfilePictureHSP);
                     TextView tvNameHSP = navigationView.findViewById(R.id.tvNameHSP);
 
-                    // Set the name from Firestore
-                    tvNameHSP.setText(name);
+                    // Null check for tvNameHSP before setting the text
+                    if (tvNameHSP != null && name != null) {
+                        tvNameHSP.setText(name);
+                    }
 
                     // Load the profile picture from Firestore or use a placeholder if it doesn't exist
                     if (profilePicture != null && !profilePicture.isEmpty()) {

@@ -150,6 +150,7 @@
         android:layout_height="48dp"
         android:background="@drawable/rounded_edit_text"
         android:ems="10"
+        android:enabled="false"
         android:hint="@string/abc_123"
         android:importantForAutofill="no"
         android:inputType="text"

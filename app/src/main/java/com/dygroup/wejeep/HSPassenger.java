@@ -40,7 +40,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
@@ -49,12 +48,9 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.Overlay;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class HSPassenger extends AppCompatActivity {
 
@@ -529,9 +525,6 @@ public class HSPassenger extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mapView.onPause();
-        if (isLocationEnabled) {
-            disableMyLocation();
-        }
     }
     @Override
     protected void onDestroy() {
@@ -823,38 +816,57 @@ public class HSPassenger extends AppCompatActivity {
                                             int fromDay, int fromHour, int fromMinute,
                                             int toDay, int toHour, int toMinute) {
 
-        // Check if current day is within the schedule range
+        Log.d(TAG, "Current Day: " + currentDayOfWeek + ", From Day: " + fromDay + ", To Day: " + toDay);
+
+        // Check if the current day is within the schedule range
         boolean isDayValid = false;
         if (fromDay <= toDay) {
             isDayValid = (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay);
         } else {
-            // Handle cross-week range (e.g., from Saturday to Monday)
             isDayValid = (currentDayOfWeek >= fromDay || currentDayOfWeek <= toDay);
         }
 
+        Log.d(TAG, "Is Day Valid: " + isDayValid);
+
         // Check if the current time is within the start and end time window
         boolean isTimeValid = false;
-        if (currentDayOfWeek >= fromDay && currentDayOfWeek <= toDay) {
-            if ((currentHour > fromHour || (currentHour == fromHour && currentMinute >= fromMinute)) &&
-                    (currentHour < toHour || (currentHour == toHour && currentMinute <= toMinute))) {
-                isTimeValid = true;
+
+        if (currentDayOfWeek == fromDay) {
+            isTimeValid = isAfter(currentHour, currentMinute, fromHour, fromMinute);
+        } else if (currentDayOfWeek == toDay) {
+            isTimeValid = isBefore(currentHour, currentMinute, toHour, toMinute);
+        } else if (isDayValid) {
+            isTimeValid = true;
+        }
+
+        // Handle cross-midnight times
+        if (fromHour > toHour || (fromHour == toHour && fromMinute > toMinute)) {
+            if (currentDayOfWeek == fromDay) {
+                isTimeValid = isAfter(currentHour, currentMinute, fromHour, fromMinute) ||
+                        isBefore(currentHour, currentMinute, toHour, toMinute);
+            } else if (currentDayOfWeek == toDay) {
+                isTimeValid = isBefore(currentHour, currentMinute, toHour, toMinute);
             }
         }
 
+        Log.d(TAG, "Is Time Valid: " + isTimeValid);
+
         return isDayValid && isTimeValid;
     }
-    // Helper functions
-    private boolean isAfter(int currentHour, int currentMinute, int hour, int minute) {
-        boolean result = (currentHour > hour || (currentHour == hour && currentMinute >= minute));
-        Log.d(TAG, "isAfter: " + result);
-        return result;
-    }
 
-    private boolean isBefore(int currentHour, int currentMinute, int hour, int minute) {
-        boolean result = (currentHour < hour || (currentHour == hour && currentMinute < minute));
-        Log.d(TAG, "isBefore: " + result);
-        return result;
-    }
+
+    // Helper functions
+        private boolean isAfter(int currentHour, int currentMinute, int hour, int minute) {
+            boolean result = (currentHour > hour || (currentHour == hour && currentMinute >= minute));
+            Log.d(TAG, "isAfter: " + result);
+            return result;
+        }
+
+        private boolean isBefore(int currentHour, int currentMinute, int hour, int minute) {
+            boolean result = (currentHour < hour || (currentHour == hour && currentMinute < minute));
+            Log.d(TAG, "isBefore: " + result);
+            return result;
+        }
 
     private void updateCurrentUserMarker(String userRole) {
         // Set marker icon based on the logged-in user's role
