@@ -530,9 +530,6 @@ public class HSPassenger extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mapView.onPause();
-        if (isLocationEnabled) {
-            disableMyLocation();
-        }
     }
 
     @Override
