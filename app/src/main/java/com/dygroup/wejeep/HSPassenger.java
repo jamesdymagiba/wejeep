@@ -197,8 +197,35 @@ public class HSPassenger extends AppCompatActivity {
                     LOCATION_PERMISSION_REQUEST_CODE);
         }
         FirebaseFirestore dbs = FirebaseFirestore.getInstance();
+        TextView passengerCountText = findViewById(R.id.tvPCountText);
         TextView passengerCountTextView = findViewById(R.id.tvPassengerCount);
-        listenForPassengerCount(dbs, passengerCountTextView);  // Call the private function
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        dbs.collection("users").document(userId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                String role = documentSnapshot.getString("role");
+                if ("pao".equals(role)) {
+                    // Show the TextViews if the user is a PAO
+                    passengerCountText.setVisibility(View.VISIBLE);
+                    passengerCountTextView.setVisibility(View.VISIBLE);
+
+                    // Call the private function to start listening for the passenger count
+                    listenForPassengerCount(dbs, passengerCountTextView);
+                } else {
+                    // Hide the TextViews for non-PAO users
+                    passengerCountText.setVisibility(View.GONE);
+                    passengerCountTextView.setVisibility(View.GONE);
+                }
+            } else {
+                // Handle the case where the document does not exist
+                passengerCountText.setVisibility(View.GONE);
+                passengerCountTextView.setVisibility(View.GONE);
+            }
+        }).addOnFailureListener(e -> {
+            // Handle errors
+            passengerCountText.setVisibility(View.GONE);
+            passengerCountTextView.setVisibility(View.GONE);
+        });
+
     }
 
     private void enableMyLocation() {
@@ -301,6 +328,18 @@ public class HSPassenger extends AppCompatActivity {
 
         removeUserLocationFromFirestore();
         cancelLocationTimer();
+    }
+    public void stopLocationUpdates() {
+        if (fusedLocationClient != null) {
+            fusedLocationClient.removeLocationUpdates(locationCallback)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "Location updates stopped");
+                        } else {
+                            Log.w(TAG, "Failed to stop location updates", task.getException());
+                        }
+                    });
+        }
     }
 
     private void initializeMapView() {
@@ -527,11 +566,10 @@ public class HSPassenger extends AppCompatActivity {
         mapView.onPause();
     }
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        cancelLocationTimer();
-        mapView.onDetach();
+    protected void onStop() {
+        super.onStop();
         removeUserLocationFromFirestore();
+        stopLocationUpdates();
     }
     private void removeUserLocationFromFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
